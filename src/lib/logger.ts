@@ -2,11 +2,21 @@ import { isDev } from "./env";
 import pino from "pino";
 import pretty from "pino-pretty";
 
-export const Logger = isDev
-  ? pino(
+function buildLogger() {
+  if (isDev) {
+    const logger = pino(
       pretty({
+        levelFirst: true,
         colorize: true,
-        minimumLevel: "debug",
       })
-    )
-  : pino();
+    );
+
+    logger.level = "debug";
+    return logger;
+  }
+
+  const logger = pino();
+  return logger;
+}
+
+export const Logger = buildLogger();

@@ -4,14 +4,15 @@ import { t } from "elysia";
 import {
   ApolloServer,
   BaseContext,
+  GraphQLServerContext,
   type ApolloServerOptions,
 } from "@apollo/server";
-import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-plugin-landing-page-graphql-playground";
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
 } from "@apollo/server/plugin/landingPage/default";
 import { type StartStandaloneServerOptions } from "@apollo/server/standalone";
+import { isDev } from "./env";
 
 export interface ServerRegistration<Path extends string = "/graphql">
   extends Omit<StartStandaloneServerOptions<any>, "context"> {
@@ -37,22 +38,16 @@ export class ElysiaApolloServer<
     enablePlayground,
     context = async () => {},
   }: ServerRegistration<Path>) {
-    const landing = enablePlayground
-      ? ApolloServerPluginLandingPageGraphQLPlayground({
-          endpoint: path,
-        })
-      : process.env.ENV === "production"
-      ? ApolloServerPluginLandingPageProductionDefault({
-          footer: false,
-        })
-      : ApolloServerPluginLandingPageLocalDefault({
-          footer: false,
-        });
+    const landing =
+      isDev || enablePlayground
+        ? ApolloServerPluginLandingPageLocalDefault({ footer: false })
+        : ApolloServerPluginLandingPageProductionDefault({ footer: false });
 
     await this.start();
 
-    // @ts-ignore
-    const landingPage = await landing!.serverWillStart!({}).then((r) =>
+    const landingPage = await landing.serverWillStart!(
+      {} as GraphQLServerContext
+    ).then((r) =>
       r?.renderLandingPage ? r.renderLandingPage().then((r) => r.html) : null
     );
 
@@ -125,7 +120,7 @@ export class ElysiaApolloServer<
 
 export const apolloMiddleware = async <Path extends string = "/graphql">({
   path,
-  enablePlayground = process.env.ENV !== "production",
+  enablePlayground = isDev,
   context,
   ...config
 }: ElysiaApolloConfig<Path>) =>

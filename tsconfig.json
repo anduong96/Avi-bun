@@ -19,6 +19,9 @@
     "experimentalDecorators": true,
     "types": [
       "bun-types" // add Bun global
-    ]
+    ],
+    "paths": {
+      "@app/*": ["./src/*"]
+    }
   }
 }

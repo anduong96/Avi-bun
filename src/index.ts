@@ -1,21 +1,18 @@
+import "@app/api/rest";
 import "reflect-metadata";
 
 import { ENV, isDev } from "./lib/env";
 
 import { Elysia } from "elysia";
+import { GraphqlMiddleware } from "./api/graphql";
 import { Logger } from "./lib/logger";
-import { apolloMiddleware } from "./lib/elysia.apollo";
-import { gqlSchema } from "./api/graphql";
+import { RestMiddleware } from "@app/api/rest";
 import { prisma } from "./lib/prisma";
 
 const app = new Elysia();
 
-app.use(
-  apolloMiddleware({
-    schema: gqlSchema,
-    enablePlayground: false,
-  })
-);
+app.use(RestMiddleware);
+app.use(GraphqlMiddleware);
 
 app.listen(ENV.PORT, (server) => {
   if (isDev) {

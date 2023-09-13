@@ -25,4 +25,3 @@ export class GQL_UserFlight {
   updatedAt: Date
 
   // skip overwrite 👇
-}

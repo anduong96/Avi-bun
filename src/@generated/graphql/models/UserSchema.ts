@@ -6,4 +6,3 @@ export class GQL_UserSchema {
   id: string
 
   // skip overwrite 👇
-}

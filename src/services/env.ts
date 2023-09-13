@@ -8,6 +8,8 @@ const schema = Yup.object({
   NODE_ENV: Yup.string()
     .oneOf(["development", "staging", "test", "production"])
     .default("development"),
+
+  DATABASE_URL: Yup.string().required(),
 });
 
 export const ENV = await schema.validate(process.env);

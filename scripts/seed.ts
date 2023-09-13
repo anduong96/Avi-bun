@@ -1,7 +1,7 @@
 import { ImageType } from "@prisma/client";
-import { Logger } from "@app/lib/logger";
+import { Logger } from "@app/services/logger";
 import axios from "axios";
-import { prisma } from "@app/lib/prisma";
+import { prisma } from "@app/services/prisma";
 
 const client = axios.create({
   baseURL: "https://raw.githubusercontent.com/anduong96/airlines-logos/main",
@@ -84,9 +84,9 @@ async function populateCities() {
       location: { coordinates: number[] };
     }>
   >("/cities.json");
-  models.$transaction([
-    models.city.deleteMany({}),
-    models.city.createMany({
+  prisma.$transaction([
+    prisma.city.deleteMany({}),
+    prisma.city.createMany({
       data: response.data.map((item) => ({
         name: item.name,
         code: item.iata,
@@ -110,9 +110,9 @@ async function populateCountries() {
     }>
   >("/countries.json");
 
-  models.$transaction([
-    models.country.deleteMany({}),
-    models.country.createMany({
+  prisma.$transaction([
+    prisma.country.deleteMany({}),
+    prisma.country.createMany({
       data: response.data.map((item) => ({
         isoCode: item.isoCode,
         name: item.name,

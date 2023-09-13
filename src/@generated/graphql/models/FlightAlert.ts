@@ -29,4 +29,3 @@ export class GQL_FlightAlert {
   createdAt: Date
 
   // skip overwrite 👇
-}

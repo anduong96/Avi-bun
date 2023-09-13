@@ -27,17 +27,17 @@ services:
   #     - pgadmin-data:/var/lib/pgadmin
   #   restart: unless-stopped
 
-  api-server:
-    depends_on:
-      - db-posgres
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    # env_file:
-    # - .env
-    ports:
-      - "3000:3000"
-    # restart: always
+  # api-server:
+  #   depends_on:
+  #     - db-posgres
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   # env_file:
+  #   # - .env
+  #   ports:
+  #     - "3000:3000"
+  #   # restart: always
 
 volumes:
   postgres-data:

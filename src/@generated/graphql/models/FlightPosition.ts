@@ -40,4 +40,3 @@ export class GQL_FlightPosition {
   Flight: GQL_Flight
 
   // skip overwrite 👇
-}

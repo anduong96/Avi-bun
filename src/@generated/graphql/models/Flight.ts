@@ -106,4 +106,3 @@ export class GQL_Flight {
   FlightPlan?: GQL_FlightPlan
 
   // skip overwrite 👇
-}

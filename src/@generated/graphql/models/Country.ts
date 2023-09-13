@@ -22,4 +22,3 @@ export class GQL_Country {
   flagImageType: GQL_ImageType
 
   // skip overwrite 👇
-}

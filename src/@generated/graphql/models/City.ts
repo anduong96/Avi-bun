@@ -24,4 +24,3 @@ export class GQL_City {
   longitude: number
 
   // skip overwrite 👇
-}

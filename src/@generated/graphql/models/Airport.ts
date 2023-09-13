@@ -46,4 +46,3 @@ export class GQL_Airport {
   DestinationFlights: GQL_Flight[]
 
   // skip overwrite 👇
-}

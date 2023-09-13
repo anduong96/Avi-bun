@@ -1,11 +1,11 @@
 import { isDev } from "./env";
 import pino from "pino";
-import pretty from "pino-pretty";
 
-function buildLogger() {
+async function buildLogger() {
   if (isDev) {
+    const pretty = await import("pino-pretty");
     const logger = pino(
-      pretty({
+      pretty.default({
         levelFirst: true,
         colorize: true,
       })
@@ -19,4 +19,4 @@ function buildLogger() {
   return logger;
 }
 
-export const Logger = buildLogger();
+export const Logger = await buildLogger();

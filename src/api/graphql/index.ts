@@ -2,7 +2,7 @@ import * as ElysiaApollo from "@elysiajs/apollo";
 
 import { HealthResolver } from "./health/health.resolver";
 import { buildSchema } from "type-graphql";
-import { isDev } from "../../lib/env";
+import { isDev } from "../../services/env";
 import path from "path";
 
 const gqlSchema = await buildSchema({

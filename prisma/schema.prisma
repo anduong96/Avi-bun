@@ -5,6 +5,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 // https://github.com/YassinEldeeb/prisma-tgql-types-gen
 generator PrismaTypeGraphQLTypesGenerator {
   provider           = "bunx prisma-typegraphql-types-generator"
@@ -13,11 +18,6 @@ generator PrismaTypeGraphQLTypesGenerator {
   // useYarn            = true // Optional if you want `graphql-scalars` installation to be done via yarn defaults to "npm"
   // exportedNameSuffix = "GQL" // Optional if you want to add a suffix to the end of your exported class names and enums
   exportedNamePrefix = "GQL_" // Optional if you want to prefix your exported class names and enums
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum ImageType {

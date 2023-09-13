@@ -64,4 +64,3 @@ export class GQL_FlightPromptness {
   expiresAt: Date
 
   // skip overwrite 👇
-}

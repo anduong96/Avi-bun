@@ -28,4 +28,3 @@ export class GQL_Airline {
   isLowCost: boolean
 
   // skip overwrite 👇
-}

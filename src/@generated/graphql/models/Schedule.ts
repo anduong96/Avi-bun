@@ -39,4 +39,3 @@ export class GQL_Schedule {
   updatedAt: Date
 
   // skip overwrite 👇
-}

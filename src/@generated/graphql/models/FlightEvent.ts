@@ -39,4 +39,3 @@ export class GQL_FlightEvent {
   timestamp: Date
 
   // skip overwrite 👇
-}

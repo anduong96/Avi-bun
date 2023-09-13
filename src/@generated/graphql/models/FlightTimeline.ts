@@ -24,4 +24,3 @@ export class GQL_FlightTimeline {
   hasAlerted: boolean
 
   // skip overwrite 👇
-}

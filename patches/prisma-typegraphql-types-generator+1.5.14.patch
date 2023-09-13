@@ -1,0 +1,15 @@
+diff --git a/node_modules/prisma-typegraphql-types-generator/dist/generator.js b/node_modules/prisma-typegraphql-types-generator/dist/generator.js
+index 796d0f0..761646e 100644
+--- a/node_modules/prisma-typegraphql-types-generator/dist/generator.js
++++ b/node_modules/prisma-typegraphql-types-generator/dist/generator.js
+@@ -49,6 +49,10 @@ const { version } = require('../package.json');
+         version,
+     }),
+     onGenerate: async (options) => {
++        if (process.env.SKIP_GEN_GRAPHQL) {
++            console.warn('Skipping Graphql models generation')
++            return
++        }
+         const extractedData = (0, extractFieldsModifications_1.ExtractFieldsModifications)(options.datamodel);
+         const splitScalars = !!options.generator.config.splitScalarAndObjectTypeFields;
+         const exportedNameSuffix = options.generator.config.exportedNameSuffix || '';

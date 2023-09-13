@@ -2,18 +2,25 @@
   "name": "avi-bun",
   "module": "index.ts",
   "license": "UNLICENSED",
-  "type": "module",
   "scripts": {
     "start": "bun run ./src/index.ts",
     "dev": "bun run --hot ./src/index.ts",
     "codegen": "prisma generate",
-    "build": "bun run codegen"
+    "build": "bun run codegen",
+    "prisma:generate": "bunx prisma generate",
+    "prisma:deploy": "bunx prisma migrate deploy",
+    "prisma:seed": "npm run run-bin ./bin/seed.database"
   },
   "resolutions": {
     "graphql": "^16.8.0"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "@prisma/generator-helper": "^5.3.0",
+    "@types/lodash": "^4.14.198",
+    "bun-types": "latest",
+    "prettier": "^3.0.3",
+    "prisma-typegraphql-types-generator": "^1.5.14",
+    "typegraphql-prisma": "^0.27.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -21,9 +28,11 @@
   "dependencies": {
     "@apollo/server": "^4.9.3",
     "@elysiajs/apollo": "^0.6.0",
+    "axios": "^1.5.0",
     "elysia": "^0.6.23",
     "graphql": "^16.8.0",
     "graphql-scalars": "^1.22.2",
+    "lodash": "^4.17.21",
     "pino": "^8.15.1",
     "pino-pretty": "^10.2.0",
     "prisma": "^5.2.0",

@@ -1,5 +1,6 @@
+import * as ElysiaApollo from "@elysiajs/apollo";
+
 import { HealthResolver } from "./health/health.resolver";
-import { apolloMiddleware } from "@app/lib/elysia.apollo";
 import { buildSchema } from "type-graphql";
 import { isDev } from "../../lib/env";
 import path from "path";
@@ -11,7 +12,7 @@ const gqlSchema = await buildSchema({
     : undefined,
 });
 
-export const GraphqlMiddleware = apolloMiddleware({
+export const GraphqlMiddleware = ElysiaApollo.apollo({
   schema: gqlSchema,
-  enablePlayground: isDev,
+  enablePlayground: false,
 });

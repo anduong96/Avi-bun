@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ImageType {
+  SVG
+  PNG
+}
+
+enum AlertChannel {
+  PUSH
+}
+
+enum FlightVendor {
+  FLIGHT_STATS
+}
+
+enum ValueType {
+  NUMBER
+  STRING
+  DATE
+  BOOLEAN
+}
+
+enum FlightStatus {
+  SCHEDULED
+  DEPARTED
+  DELAYED
+  ARRIVED
+  CANCELED
+  ARCHIVED
+  LANDED
+}
+
+model Airline {
+  id String @id @default(uuid())
+
+  name                 String
+  iata                 String
+  logoFullImageURL     String
+  logoFullImageType    ImageType
+  logoCompactImageURL  String
+  logoCompactImageType ImageType
+  isLowCost            Boolean
+
+  @@unique([iata])
+}

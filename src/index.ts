@@ -6,6 +6,7 @@ import { Elysia } from "elysia";
 import { Logger } from "./lib/logger";
 import { apolloMiddleware } from "./lib/elysia.apollo";
 import { gqlSchema } from "./api/graphql";
+import { prisma } from "./lib/prisma";
 
 const app = new Elysia();
 
@@ -20,4 +21,8 @@ app.listen(ENV.PORT, (server) => {
   if (isDev) {
     Logger.info(`Server listening on http://localhost:${server.port}`);
   }
+});
+
+app.on("stop", async () => {
+  await prisma.$disconnect();
 });

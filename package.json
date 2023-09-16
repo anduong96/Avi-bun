@@ -3,8 +3,8 @@
   "module": "index.ts",
   "license": "UNLICENSED",
   "scripts": {
-    "start": "bun run ./src/index.ts",
-    "dev": "bun run --hot ./src/index.ts",
+    "start": "bun ./src/index.ts",
+    "dev": "bun --inspect --hot ./src/index.ts",
     "codegen": "prisma generate",
     "build": "bun run codegen",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

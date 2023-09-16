@@ -29,9 +29,9 @@ export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
 
         const duration = moment.duration(moment().diff(start)).asMilliseconds();
 
-        console.log({
-          query,
+        logger.debug({
           duration: `${duration} ms`,
+          query,
         });
       },
       // eslint-disable-next-line @typescript-eslint/require-await

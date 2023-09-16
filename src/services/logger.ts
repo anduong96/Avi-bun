@@ -1,22 +1,18 @@
-import { isDev } from "./env";
-import pino from "pino";
+import { compact } from 'lodash';
+import { isDev } from './env';
+import pino from 'pino';
 
-async function buildLogger() {
-  if (isDev) {
-    const pretty = await import("pino-pretty");
-    const logger = pino(
-      pretty.default({
-        levelFirst: true,
-        colorize: true,
-      })
-    );
-
-    logger.level = "debug";
-    return logger;
-  }
-
-  const logger = pino();
-  return logger;
-}
-
-export const Logger = await buildLogger();
+export const Logger = pino({
+  level: 'debug',
+  transport: {
+    targets: compact([
+      isDev && {
+        level: 'debug',
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+        },
+      },
+    ]),
+  },
+});

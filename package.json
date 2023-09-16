@@ -9,6 +9,7 @@
     "build": "bun run codegen",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
+    "postinstall": "bunx patch-package",
     "prisma:generate": "bunx prisma generate",
     "prisma:deploy": "bunx prisma migrate deploy",
     "prisma:seed": "npm run run-bin ./bin/seed.database"

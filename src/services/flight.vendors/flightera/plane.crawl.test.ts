@@ -1,17 +1,24 @@
 import * as Cheerio from 'cheerio';
 
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { getDescription, getIcao, getSeatConfiguration } from './plane.crawl';
+import {
+  getAircraftFromHtml,
+  getDescription,
+  getIcao,
+  getSeatConfiguration,
+} from './plane.crawl';
 
 import axios from 'axios';
 
 describe('Flight Vendor: Flightera', () => {
   let $: Cheerio.CheerioAPI;
+  let html: string;
 
   beforeAll(async () => {
     const route = 'https://www.flightera.net/en/planes/N725AN';
     const response = await axios.get(route);
-    $ = Cheerio.load(response.data);
+    html = response.data;
+    $ = Cheerio.load(html);
   });
 
   test('getSeatConfiguration', async () => {
@@ -29,5 +36,10 @@ describe('Flight Vendor: Flightera', () => {
   test('getDescription', async () => {
     const description = getDescription($);
     expect(description).toBeString();
+  });
+
+  test('getAircraftFromHtml', async () => {
+    const aircraft = getAircraftFromHtml(html);
+    expect(aircraft).toBeTruthy();
   });
 });

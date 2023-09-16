@@ -32,7 +32,9 @@
   "dependencies": {
     "@apollo/server": "^4.9.3",
     "@elysiajs/apollo": "^0.6.0",
+    "@prisma/client": "5.2.0",
     "axios": "^1.5.0",
+    "cheerio": "^1.0.0-rc.12",
     "elysia": "^0.6.23",
     "generate-unique-id": "^2.0.3",
     "gitops-secrets": "^0.0.6",

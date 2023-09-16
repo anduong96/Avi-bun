@@ -3,7 +3,7 @@ import { isDev } from './env';
 import pino from 'pino';
 
 export const Logger = pino({
-  level: 'debug',
+  level: isDev ? 'debug' : 'info',
   transport: {
     targets: compact([
       isDev && {

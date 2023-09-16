@@ -1,9 +1,9 @@
-import { registerEnumType } from 'type-graphql'
+import { registerEnumType } from 'type-graphql';
 
 export enum GQL_ImageType {
   SVG = 'SVG',
-  PNG = 'PNG'
+  PNG = 'PNG',
 }
 registerEnumType(GQL_ImageType, {
-    name: 'ImageType',
-})
+  name: 'ImageType',
+});

@@ -1,12 +1,12 @@
-import "@app/api/rest";
-import "reflect-metadata";
+import '@app/api/rest';
+import 'reflect-metadata';
 
-import { ENV, isDev } from "./services/env";
+import { ENV, isDev } from './services/env';
 
-import { Elysia } from "elysia";
-import { GraphqlMiddleware } from "./api/graphql";
-import { Logger } from "./services/logger";
-import { RestMiddleware } from "@app/api/rest";
+import { Elysia } from 'elysia';
+import { GraphqlMiddleware } from './api/graphql';
+import { Logger } from './services/logger';
+import { RestMiddleware } from '@app/api/rest';
 
 const app = new Elysia();
 

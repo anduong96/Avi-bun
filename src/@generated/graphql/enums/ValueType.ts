@@ -1,11 +1,11 @@
-import { registerEnumType } from 'type-graphql'
+import { registerEnumType } from 'type-graphql';
 
 export enum GQL_ValueType {
   NUMBER = 'NUMBER',
   STRING = 'STRING',
   DATE = 'DATE',
-  BOOLEAN = 'BOOLEAN'
+  BOOLEAN = 'BOOLEAN',
 }
 registerEnumType(GQL_ValueType, {
-    name: 'ValueType',
-})
+  name: 'ValueType',
+});

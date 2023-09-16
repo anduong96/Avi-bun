@@ -1,8 +1,8 @@
-import { registerEnumType } from 'type-graphql'
+import { registerEnumType } from 'type-graphql';
 
 export enum GQL_AlertChannel {
-  PUSH = 'PUSH'
+  PUSH = 'PUSH',
 }
 registerEnumType(GQL_AlertChannel, {
-    name: 'AlertChannel',
-})
+  name: 'AlertChannel',
+});

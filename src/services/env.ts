@@ -1,11 +1,15 @@
 import * as Yup from 'yup';
 
+import { BasicObject } from '@app/types/common';
 import { merge } from 'lodash';
 import { providers } from 'gitops-secrets';
 
-const remoteConfig = await providers.doppler
-  .fetch({ dopplerToken: process.env.DOPPLER_TOKEN })
-  .catch(() => ({}));
+const DOPPLER_TOKEN = process.env.DOPPLER_TOKEN;
+const remoteConfig: BasicObject = DOPPLER_TOKEN
+  ? await providers.doppler
+      .fetch({ dopplerToken: DOPPLER_TOKEN })
+      .catch(() => ({}))
+  : {};
 
 /**
  * @see {@link https://github.com/jquense/yup}
@@ -17,7 +21,9 @@ const schema = Yup.object({
     .default('development'),
 
   DATABASE_URL: Yup.string().required(),
-});
+  AERO_DATABOX_API_KEY: Yup.string().optional(),
+  AIR_LABS_API_KEY: Yup.string().optional(),
+}).constantCase();
 
 export const ENV = await schema.validate(merge(process.env, remoteConfig));
 

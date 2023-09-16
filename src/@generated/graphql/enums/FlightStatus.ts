@@ -1,4 +1,4 @@
-import { registerEnumType } from 'type-graphql'
+import { registerEnumType } from 'type-graphql';
 
 export enum GQL_FlightStatus {
   SCHEDULED = 'SCHEDULED',
@@ -7,8 +7,8 @@ export enum GQL_FlightStatus {
   ARRIVED = 'ARRIVED',
   CANCELED = 'CANCELED',
   ARCHIVED = 'ARCHIVED',
-  LANDED = 'LANDED'
+  LANDED = 'LANDED',
 }
 registerEnumType(GQL_FlightStatus, {
-    name: 'FlightStatus',
-})
+  name: 'FlightStatus',
+});

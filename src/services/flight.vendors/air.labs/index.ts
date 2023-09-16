@@ -1,11 +1,10 @@
 import { AirLabsFlightResponse, AirLabsResponse } from './types';
 
 import { ENV } from '@app/services/env';
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 
-export class AirLabs {
-  static readonly instance = new AirLabs();
-
+export class AirLabs extends Singleton<AirLabs>() {
   private readonly client = axios.create({
     baseURL: 'https://airlabs.co/api/v9',
     params: {

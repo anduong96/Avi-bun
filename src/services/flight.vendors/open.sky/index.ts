@@ -1,11 +1,10 @@
 import { OpenSky_Aircraft, OpenSky_AircraftPosition } from './types';
 
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 import moment from 'moment';
 
-export class OpenSky {
-  static readonly instance = new OpenSky();
-
+export class OpenSky extends Singleton<OpenSky>() {
   private readonly client = axios.create({
     baseURL: 'https://opensky-network.org',
   });
@@ -52,7 +51,7 @@ export class OpenSky {
 
     const data = response.data;
     return {
-      positions: data.path.map((position) => {
+      positions: data.path.map(position => {
         const [ts, latitude, longitude, altitude, , isGrounded] = position;
         return {
           latitude,

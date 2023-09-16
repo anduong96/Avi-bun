@@ -12,14 +12,14 @@ import {
 import axios, { AxiosError } from 'axios';
 
 import { Logger } from '@app/services/logger';
+import { Singleton } from '@app/lib/singleton';
 import { flatten } from 'lodash';
 import generateUniqueId from 'generate-unique-id';
 import moment from 'moment-timezone';
 import { parseFlightIdFromUrl } from './utils';
 import { tryNice } from 'try-nice';
 
-export class FlightStatsService {
-  static readonly instance = new FlightStatsService();
+export class FlightStats extends Singleton<FlightStats>() {
   private logger = Logger.child({ name: 'FlightStats' });
 
   private readonly client = axios.create({

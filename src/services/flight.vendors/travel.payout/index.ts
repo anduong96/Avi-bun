@@ -1,9 +1,8 @@
 import { IataByIpResp } from './types';
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 
-export class TravelerPayout {
-  static readonly instance = new TravelerPayout();
-
+export class TravelerPayout extends Singleton<TravelerPayout>() {
   private readonly client = axios.create({
     baseURL: 'https://www.travelpayouts.com',
   });

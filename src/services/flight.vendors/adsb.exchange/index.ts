@@ -1,4 +1,5 @@
 import { ADSB_AircraftTrace } from './types';
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 import moment from 'moment';
 import { toLower } from 'lodash';
@@ -7,9 +8,7 @@ import { toLower } from 'lodash';
  * Does not work right now because missing `/traces/{plane_id?}`
  * 42 is not the correct id
  */
-export class AdsbExchange {
-  static readonly instance = new AdsbExchange();
-
+export class AdsbExchange extends Singleton<AdsbExchange>() {
   private getClient(aircraftIcao: string) {
     return axios.create({
       baseURL: 'https://globe.adsbexchange.com',
@@ -24,7 +23,7 @@ export class AdsbExchange {
 
     return {
       timestamp: timestamp.toDate(),
-      positions: result.trace.map((entry) => {
+      positions: result.trace.map(entry => {
         const [
           secAfterTs,
           lat,

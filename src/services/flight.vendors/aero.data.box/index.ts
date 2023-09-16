@@ -1,15 +1,14 @@
 import { AeroDataBoxAircraft, AeroDataBoxFlight } from './types';
 
 import { ENV } from '@app/services/env';
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 import moment from 'moment';
 
 /**
  * @see https://doc.aerodatabox.com
  */
-export class AeroDataBox {
-  static readonly instance = new AeroDataBox();
-
+export class AeroDataBox extends Singleton<AeroDataBox>() {
   private readonly client = axios.create({
     baseURL: 'https://aerodatabox.p.rapidapi.com',
     headers: {

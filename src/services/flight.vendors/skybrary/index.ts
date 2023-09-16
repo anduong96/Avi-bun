@@ -1,8 +1,7 @@
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 
-export class SkybraryApiService {
-  static readonly instance = new SkybraryApiService();
-
+export class Skybrary extends Singleton<Skybrary>() {
   private readonly client = axios.create({
     baseURL: 'https://skybrary.aero',
   });

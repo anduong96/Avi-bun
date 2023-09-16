@@ -1,9 +1,8 @@
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 import { getAircraftFromHtml } from './plane.crawl';
 
-export class Flightera {
-  static readonly instance = new Flightera();
-
+export class Flightera extends Singleton<Flightera>() {
   private readonly client = axios.create({
     baseURL: 'https://www.flightera.net',
     // headers: {

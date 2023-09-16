@@ -1,8 +1,7 @@
+import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 
-export class Doc8643 {
-  static readonly instance = new Doc8643();
-
+export class Doc8643 extends Singleton<Doc8643>() {
   private readonly client = axios.create({
     baseURL: 'https://doc8643.com',
   });

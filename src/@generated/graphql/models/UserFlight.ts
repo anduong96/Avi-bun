@@ -1,27 +1,28 @@
-import { Field, ObjectType, ID } from 'type-graphql'
-import { GQL_Flight } from './Flight'
+import { Field, ObjectType, ID } from 'type-graphql';
+import { GQL_Flight } from './Flight';
 
 @ObjectType()
 export class GQL_UserFlight {
-  @Field((_type) => ID)
-  id: string
+  @Field(_type => ID)
+  id: string;
 
   @Field()
-  userID: string
+  userID: string;
 
   @Field()
-  flightID: string
+  flightID: string;
 
-  @Field((_type) => GQL_Flight)
-  flight: GQL_Flight
-
-  @Field()
-  shouldAlert: boolean
+  @Field(_type => GQL_Flight)
+  flight: GQL_Flight;
 
   @Field()
-  createdAt: Date
+  shouldAlert: boolean;
 
   @Field()
-  updatedAt: Date
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 
   // skip overwrite 👇
+}

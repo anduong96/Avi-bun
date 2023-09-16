@@ -12,9 +12,10 @@ module.exports = {
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'prettier',
   ],
-  ignorePatterns: ['.eslintrc.js', '**/*.js'],
+  ignorePatterns: ['.eslintrc.js', '**/*.js', 'src/@generated/**/*'],
   rules: {
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
   },
 };

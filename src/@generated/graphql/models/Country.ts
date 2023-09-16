@@ -1,24 +1,25 @@
-import { Field, ObjectType, ID } from 'type-graphql'
-import { GQL_ImageType } from '../enums/ImageType'
+import { Field, ObjectType, ID } from 'type-graphql';
+import { GQL_ImageType } from '../enums/ImageType';
 
 @ObjectType()
 export class GQL_Country {
-  @Field((_type) => ID)
-  id: string
+  @Field(_type => ID)
+  id: string;
 
   @Field()
-  name: string
+  name: string;
 
   @Field()
-  isoCode: string
+  isoCode: string;
 
   @Field()
-  dialCode: string
+  dialCode: string;
 
   @Field()
-  flagImageURL: string
+  flagImageURL: string;
 
-  @Field((_type) => GQL_ImageType)
-  flagImageType: GQL_ImageType
+  @Field(_type => GQL_ImageType)
+  flagImageType: GQL_ImageType;
 
   // skip overwrite 👇
+}

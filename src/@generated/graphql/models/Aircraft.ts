@@ -1,39 +1,40 @@
-import { Field, ObjectType, Int } from 'type-graphql'
-import { GQL_AircraftPosition } from './AircraftPosition'
+import { Field, ObjectType, Int } from 'type-graphql';
+import { GQL_AircraftPosition } from './AircraftPosition';
 
 @ObjectType()
 export class GQL_Aircraft {
-  @Field((_type) => Int)
-  id: number
+  @Field(_type => Int)
+  id: number;
 
   @Field()
-  iata: string
+  iata: string;
 
   @Field({ nullable: true })
-  icao?: string
+  icao?: string;
 
   @Field()
-  name: string
+  name: string;
 
   @Field()
-  airlineIata: string
+  airlineIata: string;
 
   @Field({ nullable: true })
-  description?: string
+  description?: string;
 
   @Field()
-  tailNumber: string
+  tailNumber: string;
 
   @Field({ nullable: true })
-  imageURL?: string
+  imageURL?: string;
 
   @Field()
-  createdAt: Date
+  createdAt: Date;
 
   @Field()
-  updatedAt: Date
+  updatedAt: Date;
 
-  @Field((_type) => GQL_AircraftPosition, { nullable: true })
-  AircraftPosition?: GQL_AircraftPosition
+  @Field(_type => GQL_AircraftPosition, { nullable: true })
+  AircraftPosition?: GQL_AircraftPosition;
 
   // skip overwrite 👇
+}

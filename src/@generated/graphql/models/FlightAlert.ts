@@ -1,31 +1,32 @@
-import { Field, ObjectType, ID } from 'type-graphql'
-import { GQL_Flight } from './Flight'
-import { GQL_AlertChannel } from '../enums/AlertChannel'
+import { Field, ObjectType, ID } from 'type-graphql';
+import { GQL_Flight } from './Flight';
+import { GQL_AlertChannel } from '../enums/AlertChannel';
 
 @ObjectType()
 export class GQL_FlightAlert {
-  @Field((_type) => ID)
-  id: string
+  @Field(_type => ID)
+  id: string;
 
   @Field()
-  flightID: string
+  flightID: string;
 
-  @Field((_type) => GQL_Flight)
-  flight: GQL_Flight
-
-  @Field()
-  title: string
+  @Field(_type => GQL_Flight)
+  flight: GQL_Flight;
 
   @Field()
-  body: string
-
-  @Field((_type) => [GQL_AlertChannel])
-  channel: GQL_AlertChannel[]
+  title: string;
 
   @Field()
-  receiptID: string
+  body: string;
+
+  @Field(_type => [GQL_AlertChannel])
+  channel: GQL_AlertChannel[];
 
   @Field()
-  createdAt: Date
+  receiptID: string;
+
+  @Field()
+  createdAt: Date;
 
   // skip overwrite 👇
+}

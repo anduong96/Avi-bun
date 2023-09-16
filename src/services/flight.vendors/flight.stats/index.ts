@@ -63,10 +63,10 @@ export class FlightStatsService {
       await this.client.get<FlightStatResp<FlightStatSearchItemV2[]>>(route);
 
     const mappedFlights = flatten(
-      response.data.data.map((entry) => {
+      response.data.data.map(entry => {
         const dateStr = `${entry.date1}-${entry.year}`;
         const date = moment(dateStr, 'DD-MMM-YYYY');
-        return entry.flights.map((flight) => ({
+        return entry.flights.map(flight => ({
           ...flight,
           flightID: parseFlightIdFromUrl(flight.url),
           date,
@@ -78,8 +78,8 @@ export class FlightStatsService {
 
     const populated = await Promise.all(
       mappedFlights
-        .filter((flight) => now.isSameOrBefore(flight.date, 'date'))
-        .map((flight) =>
+        .filter(flight => now.isSameOrBefore(flight.date, 'date'))
+        .map(flight =>
           this.getFlightDetails({
             date: flight.date.toDate(),
             airlineIata: args.airlineIata,
@@ -132,6 +132,7 @@ export class FlightStatsService {
 
       this.logger.error(
         'Failed to fetch flight',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         axiosError.request?.res?.responseUrl,
       );
 

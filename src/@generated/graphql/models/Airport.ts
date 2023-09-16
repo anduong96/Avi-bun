@@ -1,48 +1,49 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql'
-import { GQL_Flight } from './Flight'
+import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { GQL_Flight } from './Flight';
 
 @ObjectType()
 export class GQL_Airport {
-  @Field((_type) => ID)
-  id: string
+  @Field(_type => ID)
+  id: string;
 
   @Field()
-  name: string
+  name: string;
 
   @Field()
-  iata: string
+  iata: string;
 
   @Field()
-  timezone: string
+  timezone: string;
 
   @Field()
-  cityName: string
+  cityName: string;
 
   @Field()
-  cityCode: string
+  cityCode: string;
 
   @Field()
-  countryCode: string
+  countryCode: string;
 
-  @Field((_type) => Int, { nullable: true })
-  elevation?: number
+  @Field(_type => Int, { nullable: true })
+  elevation?: number;
 
   @Field({ nullable: true })
-  countyName?: string
+  countyName?: string;
 
   @Field({ nullable: true })
-  state?: string
+  state?: string;
 
-  @Field((_type) => Int)
-  latitude: number
+  @Field(_type => Int)
+  latitude: number;
 
-  @Field((_type) => Int)
-  longitude: number
+  @Field(_type => Int)
+  longitude: number;
 
-  @Field((_type) => [GQL_Flight])
-  OriginFlights: GQL_Flight[]
+  @Field(_type => [GQL_Flight])
+  OriginFlights: GQL_Flight[];
 
-  @Field((_type) => [GQL_Flight])
-  DestinationFlights: GQL_Flight[]
+  @Field(_type => [GQL_Flight])
+  DestinationFlights: GQL_Flight[];
 
   // skip overwrite 👇
+}

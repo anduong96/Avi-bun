@@ -1,26 +1,27 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql'
+import { Field, ObjectType, ID, Int } from 'type-graphql';
 
 @ObjectType()
 export class GQL_City {
-  @Field((_type) => ID)
-  id: string
+  @Field(_type => ID)
+  id: string;
 
   @Field()
-  name: string
+  name: string;
 
   @Field()
-  countryCode: string
+  countryCode: string;
 
   @Field()
-  code: string
+  code: string;
 
   @Field()
-  timezone: string
+  timezone: string;
 
-  @Field((_type) => Int)
-  latitude: number
+  @Field(_type => Int)
+  latitude: number;
 
-  @Field((_type) => Int)
-  longitude: number
+  @Field(_type => Int)
+  longitude: number;
 
   // skip overwrite 👇
+}

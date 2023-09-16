@@ -1,26 +1,27 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql'
+import { Field, ObjectType, ID, Int } from 'type-graphql';
 
 @ObjectType()
 export class GQL_FlightTimeline {
-  @Field((_type) => ID)
-  id: string
+  @Field(_type => ID)
+  id: string;
 
   @Field()
-  flightID: string
+  flightID: string;
 
   @Field()
-  title: string
+  title: string;
 
-  @Field((_type) => Int)
-  index: number
-
-  @Field()
-  source: string
+  @Field(_type => Int)
+  index: number;
 
   @Field()
-  timestamp: Date
+  source: string;
 
   @Field()
-  hasAlerted: boolean
+  timestamp: Date;
+
+  @Field()
+  hasAlerted: boolean;
 
   // skip overwrite 👇
+}

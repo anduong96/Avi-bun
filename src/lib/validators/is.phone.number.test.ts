@@ -1,6 +1,5 @@
-import { describe, expect, it, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
-import { isEmailAddress } from "./is.email.address";
 import { isPhoneNumber } from "./is.phone.number";
 
 describe("lib::isPhoneNumber", () => {
@@ -11,7 +10,10 @@ describe("lib::isPhoneNumber", () => {
   });
 
   test("invalid phone number", () => {
-    expect(isEmailAddress("notanemail")).toBe(false);
-    expect(isEmailAddress("invalid.email@")).toBe(false);
+    expect(isPhoneNumber(undefined)).toBe(false);
+    expect(isPhoneNumber("")).toBe(false);
+    expect(isPhoneNumber("+1415")).toBe(false);
+    expect(isPhoneNumber("14155552671")).toBe(false);
+    expect(isPhoneNumber("+1415A552671")).toBe(false);
   });
 });

@@ -9,6 +9,8 @@ describe("lib::isEmailAdress", () => {
   });
 
   test("invalid email address", () => {
+    expect(isEmailAddress(undefined)).toBe(false);
+    expect(isEmailAddress("")).toBe(false);
     expect(isEmailAddress("notanemail")).toBe(false);
     expect(isEmailAddress("invalid.email@")).toBe(false);
   });

@@ -12,6 +12,6 @@ export function isPhoneNumber(phoneNumber?: string): boolean {
     return false;
   }
 
-  const regex = /^\+[1-9]\d{1,14}$/; // E.164 format regular expression
-  return regex.test(phoneNumber);
+  const regEx = /^\+[1-9]\d{10,14}$/;
+  return regEx.test(phoneNumber);
 }

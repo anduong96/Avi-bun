@@ -7,6 +7,7 @@
     "dev": "bun run --hot ./src/index.ts",
     "codegen": "prisma generate",
     "build": "bun run codegen",
+    "lint": "eslint",
     "test": "bun test --bail",
     "test:coverage": "bun test --coverage",
     "postinstall": "bunx patch-package",
@@ -20,11 +21,17 @@
   "devDependencies": {
     "@prisma/generator-helper": "^5.3.0",
     "@types/lodash": "^4.14.198",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
     "bun-types": "latest",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "pino-pretty": "^10.2.0",
     "prettier": "^3.0.3",
     "prisma-typegraphql-types-generator": "^1.5.14",
-    "typegraphql-prisma": "^0.27.0"
+    "typegraphql-prisma": "^0.27.0",
+    "typescript": "^5.2.2"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

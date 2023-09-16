@@ -7,27 +7,30 @@ import moment from 'moment';
 const logger = Logger.child({ name: 'Apollo Log' });
 
 export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
-  async requestDidStart(context) {
+  async requestDidStart(requestContext) {
     const start = new Date();
-    const request = context.request;
+    const request = requestContext.request;
     const query = request.query;
     const op = request.operationName;
-    let shouldLog = isDev;
+
+    let shouldLog = false;
 
     if (op !== 'IntrospectionQuery' && !query?.includes('IntrospectionQuery')) {
       shouldLog = isDev;
     }
 
     return {
-      async willSendResponse() {
-        console.log(
-          moment.duration(moment().diff(start)).asMilliseconds() + 'ms',
+      async willSendResponse(_requestContext) {
+        const duration = moment.duration(moment().diff(start)).asMilliseconds();
+
+        console.log({
           query,
-        );
+          duration: `${duration} ms`,
+        });
       },
-      async didEncounterErrors(context) {
+      async didEncounterErrors(requestContext) {
         logger.error(query);
-        logger.error(context.errors[0]);
+        logger.error(requestContext.errors[0]);
       },
     };
   },

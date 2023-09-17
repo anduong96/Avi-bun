@@ -1,3 +1,3 @@
-export type UnknownClass = {
-  new (...args: unknown[]): unknown;
+export type Class<T> = {
+  new (...args: unknown[]): T;
 };

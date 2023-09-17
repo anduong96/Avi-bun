@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from 'type-graphql';
-
 import { GQL_Aircraft } from './Aircraft';
+import { Field, ObjectType, Int } from 'type-graphql';
 
 @ObjectType()
 export class GQL_AircraftPosition {

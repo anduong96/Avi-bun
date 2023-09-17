@@ -306,7 +306,7 @@ model UserFlight {
   @@unique([flightID, userID])
 }
 
-model Schedule {
+model ScheduledJob {
   id           String @id @default(uuid())
   name         String
   lockDuration Int

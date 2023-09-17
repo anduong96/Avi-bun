@@ -1,6 +1,7 @@
 import * as ElysiaApollo from '@elysiajs/apollo';
 
-import { ApolloLogPlugin } from '@app/lib/graphql/log.plugin';
+import { ApolloLogPlugin } from '@app/api/graphql/_plugins/log.plugin';
+import { AuthChecker } from './_auth/auth.checker';
 import { HealthResolver } from './health/health.resolver';
 import { buildSchema } from 'type-graphql';
 import { isDev } from '../../services/env';
@@ -8,6 +9,7 @@ import path from 'path';
 
 const gqlSchema = await buildSchema({
   resolvers: [HealthResolver],
+  authChecker: AuthChecker,
   emitSchemaFile: isDev
     ? path.resolve(import.meta.dir, '../../../', 'schema.graphql')
     : undefined,

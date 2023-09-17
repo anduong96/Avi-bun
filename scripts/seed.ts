@@ -1,10 +1,10 @@
-import { ImageType } from "@prisma/client";
-import { Logger } from "@app/services/logger";
-import axios from "axios";
-import { prisma } from "@app/services/prisma";
+import { ImageType } from '@prisma/client';
+import { Logger } from '@app/services/logger';
+import axios from 'axios';
+import { prisma } from '@app/prisma';
 
 const client = axios.create({
-  baseURL: "https://raw.githubusercontent.com/anduong96/airlines-logos/main",
+  baseURL: 'https://raw.githubusercontent.com/anduong96/airlines-logos/main',
 });
 
 async function populateAirlines() {
@@ -18,11 +18,11 @@ async function populateAirlines() {
       logoFullImageURL: string;
       logoCompactImageURL: string;
     }>
-  >("/airlines.json");
+  >('/airlines.json');
   await prisma.$transaction([
     prisma.airline.deleteMany({}),
     prisma.airline.createMany({
-      data: response.data.map((item) => ({
+      data: response.data.map(item => ({
         name: item.name,
         iata: item.iata,
         isLowCost: item.isLowCost,
@@ -50,14 +50,14 @@ async function populateAirports() {
       countyName: string;
       location: { coordinates: number[] };
     }>
-  >("/airports.json");
+  >('/airports.json');
 
   await prisma.$transaction([
     prisma.airport.deleteMany({}),
     prisma.airport.createMany({
       data: response.data
-        .filter((item) => !item.cityCode.includes("Raiway Stn"))
-        .map((item) => ({
+        .filter(item => !item.cityCode.includes('Raiway Stn'))
+        .map(item => ({
           iata: item.iata,
           name: item.name,
           latitude: item.location?.coordinates[1] ?? -1,
@@ -83,11 +83,11 @@ async function populateCities() {
       countryCode: string;
       location: { coordinates: number[] };
     }>
-  >("/cities.json");
+  >('/cities.json');
   prisma.$transaction([
     prisma.city.deleteMany({}),
     prisma.city.createMany({
-      data: response.data.map((item) => ({
+      data: response.data.map(item => ({
         name: item.name,
         code: item.iata,
         latitude: item.location?.coordinates[1] ?? -1,
@@ -108,12 +108,12 @@ async function populateCountries() {
       flagImageType: ImageType;
       flagImageUri: string;
     }>
-  >("/countries.json");
+  >('/countries.json');
 
   prisma.$transaction([
     prisma.country.deleteMany({}),
     prisma.country.createMany({
-      data: response.data.map((item) => ({
+      data: response.data.map(item => ({
         isoCode: item.isoCode,
         name: item.name,
         dialCode: item.dialCode,
@@ -124,7 +124,7 @@ async function populateCountries() {
   ]);
 }
 
-Logger.warn("Upserting database");
+Logger.warn('Upserting database');
 const r = await Promise.allSettled([
   populateAirlines(),
   populateCountries(),
@@ -132,4 +132,4 @@ const r = await Promise.allSettled([
   populateAirports(),
 ]);
 
-Logger.warn("seed result", r);
+Logger.warn('seed result', r);

@@ -204,6 +204,7 @@ export abstract class Job {
       return this.sync();
     }
 
+    this.logger.debug(`Run in ${delayTime}ms`);
     await sleep(delayTime);
     return this.sync();
   }

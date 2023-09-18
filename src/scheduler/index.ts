@@ -5,6 +5,7 @@ import { Logger } from '@app/services/logger';
 import { Prisma } from '@app/prisma';
 import { ScheduledJob } from '@prisma/client';
 import { Singleton } from '@app/lib/singleton';
+import { noop } from 'lodash';
 
 export class Scheduler extends Singleton<Scheduler>() {
   private readonly jobsToInitiate = [ArchiveFlightJob];
@@ -12,6 +13,7 @@ export class Scheduler extends Singleton<Scheduler>() {
   private readonly logger = Logger.child({ name: Scheduler.name });
 
   async start() {
+    this.logger.debug('Starting scheduler');
     for await (const job of this.jobsToInitiate) {
       await this.defineJob(job);
     }
@@ -34,12 +36,9 @@ export class Scheduler extends Singleton<Scheduler>() {
     ]);
 
     job.setDef(jobDef);
+    job.sync().catch(noop);
+
     this.logger.debug(`Defined Job: ${job.name}`);
-
-    if (this.initiatedJobs.get(job.id)) {
-      await job.stop();
-    }
-
     this.initiatedJobs.set(job.id, job);
   }
 }

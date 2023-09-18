@@ -7,11 +7,11 @@ import { ENV, isDev } from './services/env';
 import { Elysia } from 'elysia';
 import { GraphqlMiddleware } from './api/graphql';
 import { Logger } from './services/logger';
-import { Prisma } from './prisma';
 import { RestMiddleware } from '@app/api/rest';
 import { Scheduler } from '@app/scheduler';
+import { prisma } from './prisma';
 
-await Prisma.$connect();
+await prisma.$connect();
 await Scheduler.instance.start();
 
 const app = new Elysia();

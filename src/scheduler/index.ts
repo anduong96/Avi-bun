@@ -2,15 +2,16 @@ import { ArchiveFlightJob } from './defined.jobs/flight.archive.job';
 import { Class } from '@app/types/class';
 import { Job } from './job';
 import { Logger } from '@app/services/logger';
-import { Prisma } from '@app/prisma';
+import { RemindCheckinFlightsJob } from './defined.jobs/flight.checkin.reminder.job';
 import { ScheduledJob } from '@prisma/client';
 import { Singleton } from '@app/lib/singleton';
 import { noop } from 'lodash';
+import { prisma } from '@app/prisma';
 
 export class Scheduler extends Singleton<Scheduler>() {
-  private readonly jobsToInitiate = [ArchiveFlightJob];
   private readonly initiatedJobs: Map<ScheduledJob['id'], Job> = new Map();
   private readonly logger = Logger.child({ name: Scheduler.name });
+  private readonly jobsToInitiate = [ArchiveFlightJob, RemindCheckinFlightsJob];
 
   async start() {
     this.logger.debug('Starting scheduler');
@@ -21,8 +22,8 @@ export class Scheduler extends Singleton<Scheduler>() {
 
   private async defineJob<T extends Class<Job>>(JobInstance: T) {
     const job = new JobInstance();
-    const [jobDef] = await Prisma.$transaction([
-      Prisma.scheduledJob.upsert({
+    const [jobDef] = await prisma.$transaction([
+      prisma.scheduledJob.upsert({
         where: {
           name: job.name,
         },

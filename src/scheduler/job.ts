@@ -1,7 +1,8 @@
+import { isNil, noop } from 'lodash';
+
 import { Logger } from '@app/services/logger';
 import { Prisma } from '@app/prisma';
 import { ScheduledJob } from '@prisma/client';
-import { isNil } from 'lodash';
 import moment from 'moment';
 import parser from 'cron-parser';
 import { sleep } from 'bun';
@@ -100,7 +101,6 @@ export abstract class Job {
    */
   private async updateJobDef(next: ScheduledJob): Promise<void> {
     this._internal = next;
-
     await Prisma.scheduledJob.update({
       where: {
         id: this.id,
@@ -117,6 +117,8 @@ export abstract class Job {
         id: true,
       },
     });
+
+    this.logger.debug(`Job def updated: ${this.id}`);
   }
 
   /**
@@ -191,7 +193,7 @@ export abstract class Job {
       next.nextRunAt = this.getNextRunAt(new Date());
 
       this._isProcessing = false;
-      await this.updateJobDef(next);
+      this.updateJobDef(next).catch(noop);
     }
   }
 

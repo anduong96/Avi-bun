@@ -2,12 +2,10 @@ import {
   FlightDetails,
   FlightProgress,
   FlightStatAirportCondition,
-  FlightStatFlight,
   FlightStatPromptness,
   FlightStatResp,
   FlightStatSearchItemV2,
   RandomFlight,
-  SearchFlightParam,
 } from './types';
 import axios, { AxiosError } from 'axios';
 
@@ -30,20 +28,6 @@ class _FlightStats extends Singleton<_FlightStats>() {
       }),
     },
   });
-
-  /**
-   * @deprecated
-   * The function `getFlight` retrieves flight data based on the provided date, airline IATA code, and
-   * flight number.
-   * @param {SearchFlightParam}  - - `date`: The date of the flight in the format `YYYY-MM-DD`.
-   * @returns the data property of the response from the flight tracker API.
-   */
-  async getFlight({ date, airlineIata, flightNumber }: SearchFlightParam) {
-    const dateStr = moment(date).format('YYYY/MM/DD');
-    const route = `/api-next/flight-tracker/${airlineIata}/${flightNumber}/${dateStr}`;
-    const response = await this.client.get<FlightStatFlight>(route);
-    return response.data.data;
-  }
 
   /**
    * The function `searchFlightsV2` searches for flight information based on the airline IATA code and
@@ -74,7 +58,9 @@ class _FlightStats extends Singleton<_FlightStats>() {
       }),
     );
 
-    this.logger.debug('Search Flights Resp', mappedFlights);
+    this.logger.debug({
+      mappedFlights,
+    });
 
     const populated = await Promise.all(
       mappedFlights
@@ -168,7 +154,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
     const response =
       await this.client.get<FlightStatResp<RandomFlight[]>>(route);
 
-    return response.data.data[0];
+    return response.data.data[0]._source;
   }
 }
 

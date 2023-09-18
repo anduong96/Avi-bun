@@ -13,16 +13,17 @@
     "postinstall": "bunx patch-package",
     "prisma:generate": "bunx prisma generate",
     "prisma:deploy": "bunx prisma migrate deploy",
+    "prisma:dev": "bunx prisma migrate dev",
     "prisma:seed": "npm run run-bin ./bin/seed.database"
   },
   "resolutions": {
     "graphql": "^16.8.0"
   },
   "devDependencies": {
-    "@prisma/generator-helper": "^5.3.0",
+    "@prisma/generator-helper": "^5.3.1",
     "@types/lodash": "^4.14.198",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
     "bun-types": "latest",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
@@ -34,17 +35,17 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@apollo/server": "^4.9.3",
     "@elysiajs/apollo": "^0.6.0",
-    "@prisma/client": "5.2.0",
+    "@prisma/client": "5.3.1",
     "axios": "^1.5.0",
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "1.0.0-rc.12",
     "cron-parser": "^4.9.0",
     "cron-time-generator": "^2.0.0",
-    "elysia": "^0.6.23",
+    "elysia": "^0.6.24",
     "firebase-admin": "^11.10.1",
     "generate-unique-id": "^2.0.3",
     "gitops-secrets": "^0.0.6",
@@ -54,7 +55,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "pino": "^8.15.1",
-    "prisma": "^5.2.0",
+    "prisma": "^5.3.1",
     "reflect-metadata": "^0.1.13",
     "try-nice": "^4.0.4",
     "type-graphql": "2.0.0-beta.3",

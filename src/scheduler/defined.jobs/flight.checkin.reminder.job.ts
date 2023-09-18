@@ -6,7 +6,7 @@ import { prisma } from '@app/prisma';
 import { sendFlightAlert } from '@app/services/alerts/flight.alert';
 
 export class RemindCheckinFlightsJob extends Job {
-  cronTime: string = CronTime.every(10).minutes();
+  readonly cronTime: string = CronTime.every(10).minutes();
 
   async onProcess() {
     const floor = moment().add(24, 'hours');

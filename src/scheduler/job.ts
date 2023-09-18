@@ -1,10 +1,10 @@
 import { isNil, noop } from 'lodash';
 
 import { Logger } from '@app/services/logger';
-import { Prisma } from '@app/prisma';
 import { ScheduledJob } from '@prisma/client';
 import moment from 'moment';
 import parser from 'cron-parser';
+import { prisma } from '@app/prisma';
 import { sleep } from 'bun';
 
 /**
@@ -101,7 +101,7 @@ export abstract class Job {
    */
   private async updateJobDef(next: ScheduledJob): Promise<void> {
     this._internal = next;
-    await Prisma.scheduledJob.update({
+    await prisma.scheduledJob.update({
       where: {
         id: this.id,
       },
@@ -134,27 +134,22 @@ export abstract class Job {
     }
 
     this.logger.debug('Acquiring lock');
-    const [entry] = await Prisma.$transaction([
-      Prisma.scheduledJob.update({
-        where: {
-          id: this._internal.id,
-          OR: [
-            {
-              unlockAt: null,
-            },
-            {
-              unlockAt: {
-                lte: moment().toDate(),
-              },
-            },
-          ],
-        },
-        data: {
-          unlockAt: moment().add(this.lockDurationMs, 'milliseconds').toDate(),
-          lastRunAt: moment().toDate(),
-        },
-      }),
-    ]).catch(() => [null]);
+    const [entry] = await prisma
+      .$transaction([
+        prisma.scheduledJob.update({
+          where: {
+            id: this._internal.id,
+            OR: [{ unlockAt: null }, { unlockAt: { lte: moment().toDate() } }],
+          },
+          data: {
+            unlockAt: moment()
+              .add(this.lockDurationMs, 'milliseconds')
+              .toDate(),
+            lastRunAt: moment().toDate(),
+          },
+        }),
+      ])
+      .catch(() => [null]);
 
     const hasLock = !isNil(entry);
     this.logger.debug('Has lock', hasLock);

@@ -19,7 +19,7 @@ import moment from 'moment-timezone';
 import { parseFlightIdFromUrl } from './utils';
 import { tryNice } from 'try-nice';
 
-export class FlightStats extends Singleton<FlightStats>() {
+class _FlightStats extends Singleton<_FlightStats>() {
   private logger = Logger.child({ name: 'FlightStats' });
 
   private readonly client = axios.create({
@@ -139,7 +139,7 @@ export class FlightStats extends Singleton<FlightStats>() {
       throw error;
     }
 
-    return result;
+    return result.data;
   }
 
   async getFlightProgress(args: {
@@ -171,3 +171,5 @@ export class FlightStats extends Singleton<FlightStats>() {
     return response.data.data[0];
   }
 }
+
+export const FlightStats = _FlightStats.instance;

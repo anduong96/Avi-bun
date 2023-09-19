@@ -50,6 +50,6 @@ export async function sendFlightAlert(
       recordID: entry.id,
     });
   } catch (e) {
-    Logger.error(e);
+    Logger.error(e, 'Failed to send flight alert');
   }
 }

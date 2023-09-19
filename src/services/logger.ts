@@ -11,6 +11,8 @@ export const Logger = pino({
         target: 'pino-pretty',
         options: {
           colorize: true,
+          singleLine: true,
+          levelFirst: true,
         },
       },
     ]),

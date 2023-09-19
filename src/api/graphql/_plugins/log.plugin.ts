@@ -7,7 +7,6 @@ import moment from 'moment';
 const logger = Logger.child({ name: 'Apollo Log' });
 
 export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
-  // eslint-disable-next-line @typescript-eslint/require-await
   async requestDidStart(requestContext) {
     const start = new Date();
     const request = requestContext.request;
@@ -20,11 +19,10 @@ export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
       shouldLog = isDev;
     }
 
-    return {
-      // eslint-disable-next-line @typescript-eslint/require-await
-      async willSendResponse() {
+    return Promise.resolve({
+      willSendResponse() {
         if (!shouldLog) {
-          return;
+          return Promise.resolve();
         }
 
         const duration = moment.duration(moment().diff(start)).asMilliseconds();
@@ -33,12 +31,13 @@ export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
           duration: `${duration} ms`,
           query,
         });
+
+        return Promise.resolve();
       },
-      // eslint-disable-next-line @typescript-eslint/require-await
-      async didEncounterErrors(requestContext) {
-        logger.error(query);
-        logger.error(requestContext.errors[0]);
+      didEncounterErrors(requestContext) {
+        logger.error(requestContext.errors[0], query);
+        return Promise.resolve();
       },
-    };
+    });
   },
 };

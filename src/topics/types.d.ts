@@ -1,3 +1,3 @@
 import { Topic } from './topic';
 
-export type TopicListener = (topic: Topic) => void;
+export type TopicListener = (topic: Topic) => void | Promise<void>;

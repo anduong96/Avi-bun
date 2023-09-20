@@ -37,11 +37,11 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
     topicMap.set(ID, onTopic as TopicListener);
 
     const logger = this.logger;
-    logger.debug('Added listener to topic[%s] ID[%s]', topic.name, ID);
+    logger.debug('Added listener to topic[%s]', topic.name, ID);
 
     return function unsubscribe() {
       topicMap.delete(ID);
-      logger.debug('Removed listener to topic[%s] ID[%s]', topic.name, ID);
+      logger.debug('Removed listener to topic[%s]', topic.name, ID);
     };
   }
 

@@ -1,7 +1,7 @@
 import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 
-export class Skybrary extends Singleton<Skybrary>() {
+export class _Skybrary extends Singleton<_Skybrary>() {
   private readonly client = axios.create({
     baseURL: 'https://skybrary.aero',
   });
@@ -26,3 +26,5 @@ export class Skybrary extends Singleton<Skybrary>() {
     return `${this.baseURL}/sites/default/files/${aircraftIcao}.jpg`;
   }
 }
+
+export const Skybrary = _Skybrary.instance;

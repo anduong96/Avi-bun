@@ -9,7 +9,7 @@ export function getSeatConfiguration($: Cheerio.CheerioAPI) {
     .find('span')
     .map((_i, el) => $(el).text())
     .toArray()
-    .map((entry) => {
+    .map(entry => {
       const [count, type] = entry.split(' ');
       return {
         count: Number(count),
@@ -17,7 +17,7 @@ export function getSeatConfiguration($: Cheerio.CheerioAPI) {
       };
     });
 
-  const seatMap = keyBy(parts, (item) => item.type);
+  const seatMap = keyBy(parts, item => item.type);
   const Economy = seatMap['Economy'];
   const First = seatMap['First'];
   const Business = seatMap['Business'];
@@ -41,11 +41,29 @@ export function getDescription($: Cheerio.CheerioAPI) {
   return desc.trim();
 }
 
+export function getModel($: Cheerio.CheerioAPI) {
+  const target = $('dt:contains("MODEL")');
+  const model = target.parent().find('a').text();
+  return model.trim();
+}
+
+export function getAirlineIata($: Cheerio.CheerioAPI) {
+  const target = $('dt:contains("AIRLINE")');
+  const airlineIata = target
+    .parent()
+    .find('.whitespace-nowrap.text-gray-500.text-sm')
+    .text();
+
+  return airlineIata.split('/')[0].trim();
+}
+
 export function getAircraftFromHtml(content: string) {
   const $ = Cheerio.load(content);
   return {
     seatsConfiguration: getSeatConfiguration($),
+    airlineIata: getAirlineIata($),
     icao: getIcao($),
+    model: getModel($),
     description: getDescription($),
   };
 }

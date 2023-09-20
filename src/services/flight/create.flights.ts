@@ -1,19 +1,25 @@
-import { FlightStatus, FlightVendor, Prisma } from '@prisma/client';
+import * as uuid from 'uuid';
+
+import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
+import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 import { FlightQueryParam } from '@app/types/flight';
 import { Logger } from '../logger';
+import { TopicPublisher } from '@app/topics/topic.publisher';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { prisma } from '@app/prisma';
 
 export async function createFlights(params: FlightQueryParam): Promise<number> {
   const remoteFlights = await AeroDataBox.getFlights(params);
+
   if (isEmpty(remoteFlights)) {
     throw new Error('No flight(s) found');
   }
 
   const payload: Prisma.FlightCreateManyInput[] = remoteFlights.map(entry => ({
+    id: uuid.v4(),
     airlineIata: entry.airline.iata,
     flightNumber: entry.number.replace(/ /g, ''),
     aircraftTailnumber: entry.aircraft.reg,
@@ -41,6 +47,10 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
     data: payload,
     skipDuplicates: true,
   });
+
+  for (const flight of payload) {
+    TopicPublisher.broadcast(new FlightCreatedTopic(flight as Flight));
+  }
 
   Logger.warn(
     'Created %d for Flight[%s%s] on %s',

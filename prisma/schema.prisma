@@ -161,9 +161,9 @@ model FlightVendorConnection {
 
 model Aircraft {
   id          Int     @id @default(autoincrement())
-  iata        String
+  iata        String?
   icao        String?
-  name        String
+  model       String
   airlineIata String
   description String?
   tailNumber  String

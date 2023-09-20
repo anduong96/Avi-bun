@@ -7,6 +7,8 @@ describe('Flightera', () => {
     const aircraftTailNumber = 'N725AN';
     const aircraft = await Flightera.getAircraftFromCrawl(aircraftTailNumber);
 
+    expect(aircraft.airlineIata).toBe('AA');
+    expect(aircraft.model).toBe('B777-323ER (B77W)');
     expect(aircraft.icao).toBe('A9B62C');
     expect(aircraft.description).toBeString();
 

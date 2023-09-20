@@ -6,14 +6,14 @@ export class GQL_Aircraft {
   @Field(_type => Int)
   id: number;
 
-  @Field()
-  iata: string;
+  @Field({ nullable: true })
+  iata?: string;
 
   @Field({ nullable: true })
   icao?: string;
 
   @Field()
-  name: string;
+  model: string;
 
   @Field()
   airlineIata: string;

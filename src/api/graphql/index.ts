@@ -4,7 +4,7 @@ import { ApolloLogPlugin } from '@app/api/graphql/_plugins/log.plugin';
 import { AuthChecker } from './_auth/auth.checker';
 import { HealthResolver } from './health/health.resolver';
 import { buildSchema } from 'type-graphql';
-import { isDev } from '../../services/env';
+import { isDev } from '../../env';
 import path from 'path';
 
 const gqlSchema = await buildSchema({

@@ -2,7 +2,7 @@ import '@app/api/rest';
 import '@app/scheduler';
 import 'reflect-metadata';
 
-import { ENV, isDev } from './services/env';
+import { ENV, isDev } from './env';
 
 import { Elysia } from 'elysia';
 import { GraphqlMiddleware } from './api/graphql';

@@ -1,7 +1,7 @@
 import { ApolloServerPlugin, BaseContext } from '@apollo/server';
 
 import { Logger } from '@app/services/logger';
-import { isDev } from '@app/services/env';
+import { isDev } from '@app/env';
 import moment from 'moment';
 
 const logger = Logger.child({ name: 'Apollo Log' });

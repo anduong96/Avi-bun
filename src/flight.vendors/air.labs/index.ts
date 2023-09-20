@@ -1,6 +1,6 @@
 import { AirLabsFlightResponse, AirLabsResponse } from './types';
 
-import { ENV } from '@app/services/env';
+import { ENV } from '@app/env';
 import { Singleton } from '@app/lib/singleton';
 import axios from 'axios';
 

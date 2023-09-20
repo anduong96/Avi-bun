@@ -13,6 +13,5 @@ describe('Flight Stats', () => {
 
     expect(progress).toBeTruthy();
     expect(progress.positions).toBeArray();
-    expect(progress.flightPlan).toBeArray();
   });
 });

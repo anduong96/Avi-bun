@@ -120,9 +120,7 @@ model Flight {
 
   airlineIata             String
   flightNumber            String
-  vendor                  FlightVendor
   aircraftTailnumber      String?
-  vendorResourceID        String?
   status                  FlightStatus
   totalDistanceKm         Int?         @default(0)
   originIata              String
@@ -140,14 +138,25 @@ model Flight {
   actualGateArrival       DateTime?
   reconAttempt            Int?         @default(0)
 
-  UserFlight      UserFlight[]
-  FlightPositions FlightPosition[]
-  FlightPlan      FlightPlan?
+  UserFlight             UserFlight[]
+  FlightPositions        FlightPosition[]
+  FlightPlan             FlightPlan?
+  FlightVendorConnection FlightVendorConnection[]
 
-  @@unique([vendor, vendorResourceID])
   @@unique([airlineIata, flightNumber, originIata, destinationIata, departureDate])
   @@index([originIata])
   @@index([destinationIata])
+}
+
+model FlightVendorConnection {
+  id               Int          @id @default(autoincrement())
+  vendor           FlightVendor
+  vendorResourceID String
+  flightID         String
+
+  Flight Flight @relation(fields: [flightID], references: [id])
+
+  @@unique([flightID, vendor])
 }
 
 model Aircraft {

@@ -1,12 +1,11 @@
-import { compact } from 'lodash';
 import { isDev } from '../env';
 import pino from 'pino';
 
 export const Logger = pino({
   level: isDev ? 'debug' : 'info',
   transport: {
-    targets: compact([
-      isDev && {
+    targets: [
+      {
         level: 'debug',
         target: 'pino-pretty',
         options: {
@@ -15,6 +14,6 @@ export const Logger = pino({
           levelFirst: true,
         },
       },
-    ]),
+    ],
   },
 });

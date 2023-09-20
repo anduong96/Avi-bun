@@ -30,14 +30,8 @@ export class GQL_Flight {
   @Field()
   flightNumber: string;
 
-  @Field(_type => GQL_FlightVendor)
-  vendor: GQL_FlightVendor;
-
   @Field({ nullable: true })
   aircraftTailnumber?: string;
-
-  @Field({ nullable: true })
-  vendorResourceID?: string;
 
   @Field(_type => GQL_FlightStatus)
   status: GQL_FlightStatus;

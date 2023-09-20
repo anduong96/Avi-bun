@@ -109,6 +109,12 @@ class _FlightStats extends Singleton<_FlightStats>() {
       ? `/api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}/${flightID}`
       : `/api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}`;
 
+    this.logger.debug(
+      'getFlightDetails: %s%s',
+      this.client.defaults.baseURL,
+      route,
+    );
+
     const [result, error] = await tryNice(() =>
       this.client.get<FlightDetails>(route),
     );
@@ -150,10 +156,9 @@ class _FlightStats extends Singleton<_FlightStats>() {
   }
 
   async getRandomFlight() {
+    type Response = FlightStatResp<RandomFlight[]>;
     const route = '/api-next/random-flight';
-    const response =
-      await this.client.get<FlightStatResp<RandomFlight[]>>(route);
-
+    const response = await this.client.get<Response>(route);
     return response.data.data[0]._source;
   }
 }

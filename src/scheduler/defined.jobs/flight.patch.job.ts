@@ -1,7 +1,7 @@
 import CronTime from 'cron-time-generator';
 import { Job } from '../job';
-import { groupBy } from 'lodash';
 import moment from 'moment';
+import { patchFlight } from '@app/services/flight/patch.flight';
 import { prisma } from '@app/prisma';
 
 export class PatchFlightsJob extends Job {
@@ -11,7 +11,6 @@ export class PatchFlightsJob extends Job {
     const flights = await prisma.flight.findMany({
       take: 50,
       where: {
-        vendorResourceID: null,
         estimatedGateDeparture: {
           gt: moment().add(1, 'days').toDate(),
           lt: moment().add(3, 'days').toDate(),
@@ -19,19 +18,13 @@ export class PatchFlightsJob extends Job {
       },
     });
 
-    const group = groupBy(
-      flights,
-      flight => flight.airlineIata + flight.flightNumber,
+    const result = await Promise.allSettled(
+      flights.map(async flight => {
+        await patchFlight(flight);
+        return flight.id;
+      }),
     );
 
-    await Promise.allSettled(
-      Object.values(group).map(([flight]) =>
-        this.Flights.populateFlights({
-          airlineIata: flight.airlineIata,
-          flightNumber: flight.flightNumber,
-          departureDate: flight.scheduledGateDeparture,
-        }),
-      ),
-    );
+    this.logger.info('Patched flight %o', result);
   }
 }

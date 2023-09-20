@@ -34,9 +34,6 @@ export class GQL_Flight {
   vendor: GQL_FlightVendor;
 
   @Field({ nullable: true })
-  aircraftIata?: string;
-
-  @Field({ nullable: true })
   aircraftTailnumber?: string;
 
   @Field({ nullable: true })
@@ -50,9 +47,6 @@ export class GQL_Flight {
 
   @Field()
   originIata: string;
-
-  @Field()
-  originTimezone: string;
 
   @Field({ nullable: true })
   originGate?: string;
@@ -68,9 +62,6 @@ export class GQL_Flight {
 
   @Field({ nullable: true })
   destinationTerminal?: string;
-
-  @Field({ nullable: true })
-  destinationTimezone?: string;
 
   @Field({ nullable: true })
   destinationBaggageClaim?: string;

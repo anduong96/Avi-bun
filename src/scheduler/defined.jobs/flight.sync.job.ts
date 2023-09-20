@@ -1,14 +1,14 @@
 import { Flight, FlightStatus } from '@prisma/client';
 
 import CronTime from 'cron-time-generator';
-import { FlightStats } from '@app/services/flight.vendors/flight.stats';
-import { FlightStats_Status } from '@app/services/flight.vendors/flight.stats/enums';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { FlightStats_Status } from '@app/flight.vendors/flight.stats/enums';
 import { Job } from '../job';
 import { isDev } from '@app/services/env';
 import moment from 'moment-timezone';
 import { prisma } from '@app/prisma';
 import { sendFlightAlert } from '@app/services/alerts/flight.alert';
-import { toFlightStatus } from '@app/services/flight.vendors/flight.stats/utils';
+import { toFlightStatus } from '@app/flight.vendors/flight.stats/utils';
 import { tryNice } from 'try-nice';
 
 export class SyncActiveFlightsJob extends Job {

@@ -8,7 +8,7 @@ import moment from 'moment';
 /**
  * @see https://doc.aerodatabox.com
  */
-export class AeroDataBox extends Singleton<AeroDataBox>() {
+export class _AeroDataBox extends Singleton<_AeroDataBox>() {
   private readonly client = axios.create({
     baseURL: 'https://aerodatabox.p.rapidapi.com',
     headers: {
@@ -41,7 +41,7 @@ export class AeroDataBox extends Singleton<AeroDataBox>() {
     return response.data;
   }
 
-  async getFlight(args: {
+  async getFlights(args: {
     airlineIata: string;
     flightNumber: string;
     date?: Date;
@@ -61,3 +61,5 @@ export class AeroDataBox extends Singleton<AeroDataBox>() {
     return response.data;
   }
 }
+
+export const AeroDataBox = _AeroDataBox.instance;

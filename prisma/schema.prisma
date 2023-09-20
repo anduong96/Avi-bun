@@ -31,6 +31,7 @@ enum AlertChannel {
 
 enum FlightVendor {
   FLIGHT_STATS
+  AERO_DATA_BOX
 }
 
 enum ValueType {
@@ -120,19 +121,16 @@ model Flight {
   airlineIata             String
   flightNumber            String
   vendor                  FlightVendor
-  aircraftIata            String?
   aircraftTailnumber      String?
   vendorResourceID        String?
   status                  FlightStatus
   totalDistanceKm         Int?         @default(0)
   originIata              String
-  originTimezone          String
   originGate              String?
   originTerminal          String?
   destinationIata         String
   destinationGate         String?
   destinationTerminal     String?
-  destinationTimezone     String?
   destinationBaggageClaim String?
   scheduledGateDeparture  DateTime
   estimatedGateDeparture  DateTime
@@ -147,6 +145,7 @@ model Flight {
   FlightPlan      FlightPlan?
 
   @@unique([vendor, vendorResourceID])
+  @@unique([airlineIata, flightNumber, originIata, destinationIata, departureDate])
   @@index([originIata])
   @@index([destinationIata])
 }

@@ -42,7 +42,7 @@ export type AeroDataBoxAircraft = {
 export type AeroDataBoxFlight = {
   lastUpdatedUtc: string;
   number: string;
-  status: string;
+  status: 'Arrived' | 'Unknown' | 'Expected' | 'Departed';
   codeshareStatus: string;
   isCargo: boolean;
   greatCircleDistance: {
@@ -55,6 +55,11 @@ export type AeroDataBoxFlight = {
   departure: {
     quality: string[];
     terminal: string;
+    actualTimeLocal?: string;
+    runwayTimeLocal?: string;
+    scheduledTimeUtc?: string;
+    actualTimeUtc?: string;
+    runwayTimeUtc?: string;
     scheduledTimeLocal: string;
     scheduledTimeUtc: string;
     scheduledTime: {
@@ -87,6 +92,11 @@ export type AeroDataBoxFlight = {
         lon: number;
       };
     };
+    actualTimeLocal?: string;
+    runwayTimeLocal?: string;
+    scheduledTimeUtc?: string;
+    actualTimeUtc?: string;
+    runwayTimeUtc?: string;
     scheduledTimeLocal: string;
     actualTimeLocal: string;
     scheduledTimeUtc: string;
@@ -100,6 +110,7 @@ export type AeroDataBoxFlight = {
       local: string;
     };
     terminal: string;
+    baggageBelt?: string;
     quality: string[];
   };
   airline: {
@@ -108,6 +119,7 @@ export type AeroDataBoxFlight = {
     icao: string;
   };
   aircraft: {
-    model: string;
+    model?: string;
+    reg?: string;
   };
 };

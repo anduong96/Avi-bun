@@ -202,7 +202,7 @@ export abstract class Job {
     }
 
     this.logger.debug(
-      `Run in $s seconds`,
+      `Run in %s seconds`,
       moment.duration(delayTime).as('seconds'),
     );
 

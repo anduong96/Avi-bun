@@ -25,7 +25,7 @@ const schema = Yup.object({
   AIR_LABS_API_KEY: Yup.string().optional(),
 }).constantCase();
 
-export const ENV = await schema.validate(merge(process.env, remoteConfig));
+export const ENV = await schema.validate(merge(remoteConfig, process.env));
 
 export const isDev = ENV.NODE_ENV === 'development';
 export const isProd = ENV.NODE_ENV === 'production';

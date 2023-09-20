@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import '@app/api/rest';
 import '@app/scheduler';
-import 'reflect-metadata';
+import '@app/topic.listeners';
 
 import { ENV, isDev } from './env';
 

@@ -1,7 +1,9 @@
+import { Class } from '@app/types/class';
 import { Logger } from '@app/services/logger';
 import { Singleton } from '@app/lib/singleton';
 import { Topic } from './topic';
 import { TopicListener } from './types';
+import { noop } from 'lodash';
 
 export class _TopicPublisher extends Singleton<_TopicPublisher>() {
   private readonly logger = Logger;
@@ -17,18 +19,22 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
   }
 
   /**
-   * The `subscribe` function adds a listener to a specific topic and returns a function to unsubscribe
-   * the listener.
-   * @param topic - The `topic` parameter is the type of the topic that the listener wants to subscribe
-   * to. It is of type `Topic`.
-   * @param {TopicListener} onTopic - The `onTopic` parameter is a callback function that will be
-   * invoked whenever a new message is published on the specified topic.
+   * The `subscribe` function allows you to subscribe to a specific topic and receive notifications
+   * when that topic is triggered.
+   * @param {A} topic - The `topic` parameter is a generic type `A` that extends the `Class` type,
+   * representing the topic to subscribe to.
+   * @param onTopic - The `onTopic` parameter is a callback function that will be invoked when a new
+   * message is published on the specified topic. The callback function will receive the message as its
+   * argument.
    * @returns The function `unsubscribe` is being returned.
    */
-  subscribe(topic: typeof Topic, onTopic: TopicListener) {
+  subscribe<A extends Class<Topic>>(
+    topic: A,
+    onTopic: TopicListener<InstanceType<A>>,
+  ) {
     const ID = Symbol();
     const topicMap = this.getTopicMap(topic.name);
-    topicMap.set(ID, onTopic);
+    topicMap.set(ID, onTopic as TopicListener);
 
     const logger = this.logger;
     logger.debug('Added listener to topic[%s] ID[%s]', topic.name, ID);
@@ -48,7 +54,7 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
     this.logger.debug('Broadcasting topic[%s]', topic.key);
     const topicMap = this.getTopicMap(topic.key);
     for (const listener of topicMap.values()) {
-      listener(topic);
+      listener(topic)?.catch(noop);
     }
   }
 }

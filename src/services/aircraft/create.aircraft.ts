@@ -5,14 +5,13 @@ import { TopicPublisher } from '@app/topics/topic.publisher';
 import { prisma } from '@app/prisma';
 
 /**
- * The function `patchAircraft` creates a new aircraft record in the database using information
- * obtained from a remote source and broadcasts a topic indicating that a new aircraft has been
- * created.
+ * The function creates an aircraft record in a database using information obtained from a remote
+ * source and broadcasts a message about the creation of the aircraft.
  * @param {string} tailNumber - The `tailNumber` parameter is a string that represents the unique
- * identifier of an aircraft. It is used to retrieve information about the aircraft from external
- * sources and to create a new entry in the database for the aircraft.
+ * identifier of an aircraft. It is typically a combination of letters and numbers that is displayed on
+ * the tail of the aircraft.
  */
-export async function patchAircraft(tailNumber: string) {
+export async function createAircraft(tailNumber: string) {
   const remoteAircraft = await Flightera.getAircraftFromCrawl(tailNumber);
   const aircraft = await prisma.aircraft.upsert({
     where: {

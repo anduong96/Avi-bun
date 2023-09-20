@@ -201,7 +201,11 @@ export abstract class Job {
       return this.sync();
     }
 
-    this.logger.debug(`Run in ${delayTime}ms`);
+    this.logger.debug(
+      `Run in $s seconds`,
+      moment.duration(delayTime).as('seconds'),
+    );
+
     await sleep(delayTime);
     return this.sync();
   }

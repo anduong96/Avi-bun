@@ -1,6 +1,7 @@
 import CronTime from 'cron-time-generator';
 import { FlightVendor } from '@prisma/client';
 import { Job } from '../job';
+import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { patchFlight } from '@app/services/flight/patch.flight';
 import { prisma } from '@app/prisma';
@@ -23,6 +24,11 @@ export class PatchFlightsJob extends Job {
         },
       },
     });
+
+    if (isEmpty(flights)) {
+      this.logger.debug('No flight(s) to patch');
+      return;
+    }
 
     const result = await Promise.allSettled(
       flights.map(async flight => {

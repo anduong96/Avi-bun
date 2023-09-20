@@ -71,10 +71,13 @@ export abstract class Job {
     const diff = moment(nextRunTime).diff(now);
     const nextRunMs = Math.max(diff, 0);
 
-    this.logger.debug({
-      nextRun: moment.duration(diff).as('seconds') + 's',
-      lastRunAt: this._internal.lastRunAt,
-    });
+    this.logger.debug(
+      'Last run %s seconds ago',
+      -1 *
+        moment
+          .duration(moment(now).diff(this._internal.lastRunAt))
+          .as('seconds'),
+    );
 
     return nextRunMs;
   }

@@ -16,7 +16,7 @@ describe('Flight Stats', () => {
 
     expect(result).toBeTruthy();
     expect(result).toBeArray();
-    expect(result.length > 0).toBeTrue();
+    expect(result.length).toBeGreaterThan(0);
     expect(
       result.every(
         entry =>

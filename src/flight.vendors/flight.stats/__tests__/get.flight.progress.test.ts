@@ -4,11 +4,19 @@ import { FlightStats } from '..';
 
 describe('Flight Stats', () => {
   test('getFlightProgress', async () => {
-    const flight = await FlightStats.getRandomFlight();
+    const airlineIata = 'AA';
+    const flightNumber = '100';
+
+    const [flight] = await FlightStats.searchFlights({
+      flightNumber,
+      airlineIata,
+      departureDate: new Date(),
+    });
+
     const progress = await FlightStats.getFlightProgress({
       flightID: flight.flightId.toString(),
-      airlineIata: flight.carrierIata,
-      flightNumber: flight.flightNumber,
+      airlineIata: flight.carrier.iata,
+      flightNumber: flight.carrier.flightNumber,
     });
 
     expect(progress).toBeTruthy();

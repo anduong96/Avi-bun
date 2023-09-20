@@ -2,6 +2,7 @@ import { ArchiveFlightJob } from './defined.jobs/flight.archive.job';
 import { Class } from '@app/types/class';
 import { Job } from './job';
 import { Logger } from '@app/services/logger';
+import { PatchFlightsJob } from './defined.jobs/flight.patch.job';
 import { RemindCheckinFlightsJob } from './defined.jobs/flight.checkin.reminder.job';
 import { ScheduledJob } from '@prisma/client';
 import { Singleton } from '@app/lib/singleton';
@@ -11,7 +12,11 @@ import { prisma } from '@app/prisma';
 export class Scheduler extends Singleton<Scheduler>() {
   private readonly initiatedJobs: Map<ScheduledJob['id'], Job> = new Map();
   private readonly logger = Logger.child({ name: Scheduler.name });
-  private readonly jobsToInitiate = [ArchiveFlightJob, RemindCheckinFlightsJob];
+  private readonly jobsToInitiate = [
+    ArchiveFlightJob,
+    RemindCheckinFlightsJob,
+    PatchFlightsJob,
+  ];
 
   async start() {
     this.logger.debug('Starting scheduler');

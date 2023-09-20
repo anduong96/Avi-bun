@@ -13,7 +13,6 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
     throw new Error('No flight(s) found');
   }
 
-  //TODO: patch with flight stats
   const payload: Prisma.FlightCreateManyInput[] = remoteFlights.map(entry => ({
     airlineIata: entry.airline.iata,
     flightNumber: entry.number.replace(/ /g, ''),

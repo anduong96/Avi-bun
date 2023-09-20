@@ -41,41 +41,22 @@ class _FlightStats extends Singleton<_FlightStats>() {
     flightNumber: string;
     departureDate: Date;
   }) {
-    const now = moment(args.departureDate);
+    type Response = FlightStatResp<FlightStatSearchItemV2[]>;
     const route = `api-next/flight-tracker/other-days/${args.airlineIata}/${args.flightNumber}`;
-    const response =
-      await this.client.get<FlightStatResp<FlightStatSearchItemV2[]>>(route);
-
-    const mappedFlights = flatten(
+    const response = await this.client.get<Response>(route);
+    const flights = flatten(
       response.data.data.map(entry => {
         const dateStr = `${entry.date1}-${entry.year}`;
         const date = moment(dateStr, 'DD-MMM-YYYY');
         return entry.flights.map(flight => ({
           ...flight,
           flightID: parseFlightIdFromUrl(flight.url),
-          date,
+          date: date.toDate(),
         }));
       }),
     );
 
-    this.logger.debug({
-      mappedFlights,
-    });
-
-    const populated = await Promise.all(
-      mappedFlights
-        .filter(flight => now.isSameOrBefore(flight.date, 'date'))
-        .map(flight =>
-          this.getFlightDetails({
-            date: flight.date.toDate(),
-            airlineIata: args.airlineIata,
-            flightNumber: args.flightNumber,
-            flightID: flight.flightID,
-          }),
-        ),
-    );
-
-    return populated;
+    return flights;
   }
 
   async getAirportConditions(airportIata: string) {

@@ -6,6 +6,7 @@ import { GQL_FlightStatus } from '../enums/FlightStatus';
 import { GQL_UserFlight } from './UserFlight';
 import { GQL_FlightPosition } from './FlightPosition';
 import { GQL_FlightPlan } from './FlightPlan';
+import { GQL_FlightVendorConnection } from './FlightVendorConnection';
 
 @ObjectType()
 export class GQL_Flight {
@@ -89,6 +90,9 @@ export class GQL_Flight {
 
   @Field(_type => GQL_FlightPlan, { nullable: true })
   FlightPlan?: GQL_FlightPlan;
+
+  @Field(_type => [GQL_FlightVendorConnection])
+  FlightVendorConnection: GQL_FlightVendorConnection[];
 
   // skip overwrite 👇
 }

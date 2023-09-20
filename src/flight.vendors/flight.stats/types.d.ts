@@ -1,4 +1,4 @@
-import { FlightStats_Status } from "./flight.stats.enums";
+import { FlightStats_Status } from './flight.stats.enums';
 
 export type FlightStatResp<T> = {
   data: T;
@@ -229,7 +229,7 @@ export type FlightStatPromptness = {
 
 export type FlightDetails = {
   flightId: number;
-  flightState: "en-route";
+  flightState: 'en-route';
   sortTime: string;
   url: string;
   carrier: {
@@ -326,7 +326,7 @@ export type FlightDetails = {
     diverted: boolean;
     showEst: boolean;
     status: FlightStats_Status;
-    statusCode: "A";
+    statusCode: 'A';
     statusDescription: string;
     delay: {
       delayStatus: {
@@ -345,14 +345,14 @@ export type FlightDetails = {
     };
   };
 } & {
-  [key in "arrivalAirport" | "departureAirport"]: FlightStatAirport & {
+  [key in 'arrivalAirport' | 'departureAirport']: FlightStatAirport & {
     times: {
       [item in
-        | "estimatedGate"
-        | "estimatedRunway"
-        | "scheduledGate"
-        | "scheduledRunway"]: {
-        ampm: "am" | "pm";
+        | 'estimatedGate'
+        | 'estimatedRunway'
+        | 'scheduledGate'
+        | 'scheduledRunway']: {
+        ampm: 'am' | 'pm';
         time: string;
         time24: string;
         timezone: string;
@@ -376,7 +376,7 @@ export type FlightProgress = {
   statusAppendKey: number;
   statusCode: number;
   statusColor: string;
-  statusName: "DEPARTED";
+  statusName: 'DEPARTED';
   positions: Array<{
     altitudeFt: number;
     course: number;
@@ -384,7 +384,7 @@ export type FlightProgress = {
     lastObserved: string;
     lat: number;
     lon: number;
-    source: "derived";
+    source: 'derived';
     speedMph: number;
     vrateMps: number;
   }>;
@@ -404,7 +404,7 @@ export type FlightProgress = {
     localArrivalTimeString: string;
     localDepartureTime: number;
     localDepartureTimeString: string;
-    statusName: "DEPARTED";
+    statusName: 'DEPARTED';
     totalKilometers: number;
     utcActualRunwayArrivalTime?: string;
     utcActualRunwayDepartureTime: number;
@@ -475,18 +475,32 @@ export type FlightStatSearchItemV2 = {
   year: string;
   flights: Array<{
     arrivalAirport: {
+      city: string;
+      fs: string;
       iata: string;
+      name: string;
+      state: string;
+      country: string;
+    };
+    departureAirport: {
+      city: string;
+      fs: string;
+      iata: string;
+      name: string;
+      state: string;
+      country: string;
     };
     url: string;
     arrivalTime: string;
-    arrivalTimeAmPm: "AM" | "PM";
+    arrivalTimeAmPm: 'AM' | 'PM';
     arrivalTimezone: string;
     departureAirport: {
       iata: string;
     };
     departureTime: string;
-    departureTimeAmPm: "AM" | "PM";
+    departureTimeAmPm: 'AM' | 'PM';
     departureTime24: string;
     departureTimezone: string;
+    sortTime: string;
   }>;
 };

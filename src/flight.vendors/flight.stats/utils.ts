@@ -8,7 +8,7 @@ import { FlightStatus } from '@prisma/client';
  * @param {string} url - The `url` parameter is a string that represents a URL.
  * @returns the flightId value extracted from the URL.
  */
-export function parseFlightIdFromUrl(url: string) {
+export function parseFlightIdFromUrl(url: string): string {
   // /flight-tracker/AA/1328?year=2023&month=08&date=26&flightId=1207666509
 
   const queryStr = url.split('?')[1];
@@ -19,6 +19,8 @@ export function parseFlightIdFromUrl(url: string) {
       return value;
     }
   }
+
+  throw new Error('Flight ID cannot be located');
 }
 
 /**

@@ -1,4 +1,5 @@
 import CronTime from 'cron-time-generator';
+import { FlightVendor } from '@prisma/client';
 import { Job } from '../job';
 import moment from 'moment';
 import { patchFlight } from '@app/services/flight/patch.flight';
@@ -11,6 +12,11 @@ export class PatchFlightsJob extends Job {
     const flights = await prisma.flight.findMany({
       take: 50,
       where: {
+        FlightVendorConnection: {
+          none: {
+            vendor: FlightVendor.FLIGHT_STATS,
+          },
+        },
         estimatedGateDeparture: {
           gt: moment().add(1, 'days').toDate(),
           lt: moment().add(3, 'days').toDate(),

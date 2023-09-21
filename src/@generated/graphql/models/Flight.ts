@@ -1,25 +1,16 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
-import { GQL_FlightAlert } from './FlightAlert';
 import { GQL_Airport } from './Airport';
-import { GQL_FlightVendor } from '../enums/FlightVendor';
 import { GQL_FlightStatus } from '../enums/FlightStatus';
-import { GQL_UserFlight } from './UserFlight';
-import { GQL_FlightPosition } from './FlightPosition';
-import { GQL_FlightPlan } from './FlightPlan';
-import { GQL_FlightVendorConnection } from './FlightVendorConnection';
 
 @ObjectType()
 export class GQL_Flight {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
-  @Field(_type => [GQL_FlightAlert])
-  FlightAlert: GQL_FlightAlert[];
-
-  @Field(_type => GQL_Airport)
+  @Field(() => GQL_Airport)
   origin: GQL_Airport;
 
-  @Field(_type => GQL_Airport)
+  @Field(() => GQL_Airport)
   destination: GQL_Airport;
 
   @Field()
@@ -34,10 +25,10 @@ export class GQL_Flight {
   @Field({ nullable: true })
   aircraftTailnumber?: string;
 
-  @Field(_type => GQL_FlightStatus)
+  @Field(() => GQL_FlightStatus)
   status: GQL_FlightStatus;
 
-  @Field(_type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   totalDistanceKm?: number;
 
   @Field()
@@ -79,20 +70,8 @@ export class GQL_Flight {
   @Field({ nullable: true })
   actualGateArrival?: Date;
 
-  @Field(_type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   reconAttempt?: number;
-
-  @Field(_type => [GQL_UserFlight])
-  UserFlight: GQL_UserFlight[];
-
-  @Field(_type => [GQL_FlightPosition])
-  FlightPositions: GQL_FlightPosition[];
-
-  @Field(_type => GQL_FlightPlan, { nullable: true })
-  FlightPlan?: GQL_FlightPlan;
-
-  @Field(_type => [GQL_FlightVendorConnection])
-  FlightVendorConnection: GQL_FlightVendorConnection[];
 
   // skip overwrite 👇
 }

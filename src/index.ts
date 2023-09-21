@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import '@app/api/rest';
 import '@app/scheduler';
 import '@app/topic.listeners';
 
@@ -17,8 +16,8 @@ await Scheduler.instance.start();
 
 const app = new Elysia();
 
-app.use(RestMiddleware);
 app.use(GraphqlMiddleware);
+app.use(RestMiddleware);
 
 app.listen(ENV.PORT, server => {
   if (isDev) {

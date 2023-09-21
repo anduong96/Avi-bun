@@ -12,12 +12,13 @@ datasource db {
 
 // https://github.com/YassinEldeeb/prisma-tgql-types-gen
 generator PrismaTypeGraphQLTypesGenerator {
-  provider           = "bunx prisma-typegraphql-types-generator"
-  modelsOutput       = "./src/@generated/graphql/models" // Optional defaults to "./src/generated/models"
-  enumsOutput        = "./src/@generated/graphql/enums" // Optional defaults to "./src/generated/enums"
+  provider                   = "bunx prisma-typegraphql-types-generator"
+  modelsOutput               = "./src/@generated/graphql/models" // Optional defaults to "./src/generated/models"
+  enumsOutput                = "./src/@generated/graphql/enums" // Optional defaults to "./src/generated/enums"
   // useYarn            = true // Optional if you want `graphql-scalars` installation to be done via yarn defaults to "npm"
   // exportedNameSuffix = "GQL" // Optional if you want to add a suffix to the end of your exported class names and enums
-  exportedNamePrefix = "GQL_" // Optional if you want to prefix your exported class names and enums
+  exportedNamePrefix         = "GQL_" // Optional if you want to prefix your exported class names and enums
+  removeTypeInFieldDecorator = true
 }
 
 enum ImageType {
@@ -79,7 +80,9 @@ model Airport {
   latitude    Int
   longitude   Int
 
+  // @skip
   OriginFlights      Flight[] @relation("origin")
+  // @skip
   DestinationFlights Flight[] @relation("destination")
 
   @@unique([iata])
@@ -110,8 +113,7 @@ model Country {
 }
 
 model Flight {
-  id          String        @id @default(uuid())
-  FlightAlert FlightAlert[]
+  id String @id @default(uuid())
 
   origin      Airport @relation(references: [iata], fields: [originIata], name: "origin")
   destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination")
@@ -138,9 +140,13 @@ model Flight {
   actualGateArrival       DateTime?
   reconAttempt            Int?         @default(0)
 
+  // @skip
   UserFlight             UserFlight[]
+  // @skip
   FlightPositions        FlightPosition[]
+  // @skip
   FlightPlan             FlightPlan?
+  // @skip
   FlightVendorConnection FlightVendorConnection[]
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata, departureDate])
@@ -154,6 +160,7 @@ model FlightVendorConnection {
   vendorResourceID String
   flightID         String
 
+  // @skip
   Flight Flight @relation(fields: [flightID], references: [id])
 
   @@unique([flightID, vendor])
@@ -172,6 +179,7 @@ model Aircraft {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // @skip
   AircraftPosition AircraftPosition?
 
   @@unique([tailNumber])
@@ -188,6 +196,7 @@ model AircraftPosition {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  // @skip
   Aircraft Aircraft @relation(fields: [aircraftID], references: [id])
 
   @@unique([aircraftID])
@@ -237,6 +246,7 @@ model FlightPosition {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // @skip
   Flight Flight @relation(references: [id], fields: [flightID])
 
   @@index([flightID])
@@ -249,6 +259,7 @@ model FlightPlan {
   latitude  Int
   longitude Int
 
+  // @skip
   Flight Flight @relation(references: [id], fields: [flightID])
 
   @@unique([flightID])
@@ -257,7 +268,6 @@ model FlightPlan {
 model FlightAlert {
   id        String         @id @default(uuid())
   flightID  String
-  flight    Flight         @relation(fields: [flightID], references: [id])
   title     String
   body      String
   channel   AlertChannel[]
@@ -303,13 +313,16 @@ model UserSchema {
 }
 
 model UserFlight {
-  id          String   @id @default(uuid())
-  userID      String
-  flightID    String
-  flight      Flight   @relation(fields: [flightID], references: [id])
+  id       String @id @default(uuid())
+  userID   String
+  flightID String
+
   shouldAlert Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // @skip
+  flight Flight @relation(fields: [flightID], references: [id])
 
   @@unique([flightID, userID])
 }

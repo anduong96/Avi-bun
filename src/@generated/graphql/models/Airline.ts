@@ -3,7 +3,7 @@ import { GQL_ImageType } from '../enums/ImageType';
 
 @ObjectType()
 export class GQL_Airline {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
@@ -15,13 +15,13 @@ export class GQL_Airline {
   @Field()
   logoFullImageURL: string;
 
-  @Field(_type => GQL_ImageType)
+  @Field(() => GQL_ImageType)
   logoFullImageType: GQL_ImageType;
 
   @Field()
   logoCompactImageURL: string;
 
-  @Field(_type => GQL_ImageType)
+  @Field(() => GQL_ImageType)
   logoCompactImageType: GQL_ImageType;
 
   @Field()

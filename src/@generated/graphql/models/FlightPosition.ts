@@ -1,33 +1,32 @@
 import { Field, ObjectType, Int } from 'type-graphql';
-import { GQL_Flight } from './Flight';
 
 @ObjectType()
 export class GQL_FlightPosition {
-  @Field(_type => Int)
+  @Field(() => Int)
   id: number;
 
   @Field()
   flightID: string;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   index: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   latitude: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   longitude: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   course: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   speedMph: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   vrateMps: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   altitudeFt: number;
 
   @Field()
@@ -35,9 +34,6 @@ export class GQL_FlightPosition {
 
   @Field()
   updatedAt: Date;
-
-  @Field(_type => GQL_Flight)
-  Flight: GQL_Flight;
 
   // skip overwrite 👇
 }

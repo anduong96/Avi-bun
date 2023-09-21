@@ -2,13 +2,13 @@ import { Field, ObjectType, ID, Int } from 'type-graphql';
 
 @ObjectType()
 export class GQL_ScheduledJob {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
   name: string;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   lockDuration: number;
 
   @Field()

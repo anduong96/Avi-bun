@@ -2,7 +2,7 @@ import { Field, ObjectType, ID } from 'type-graphql';
 
 @ObjectType()
 export class GQL_UserSchema {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   // skip overwrite 👇

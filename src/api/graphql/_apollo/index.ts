@@ -1,26 +1,26 @@
-//TODO: Fix shitty code pulled from https://github.com/elysiajs/elysia-apollo/blob/main/src/index.ts
 import type { Context, Elysia } from 'elysia';
 import { t } from 'elysia';
 
 import {
   ApolloServer,
   BaseContext,
+  GraphQLServerContext,
+  HeaderMap,
   type ApolloServerOptions,
 } from '@apollo/server';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
 } from '@apollo/server/plugin/landingPage/default';
 import { type StartStandaloneServerOptions } from '@apollo/server/standalone';
+import { isDev } from '@app/env';
+import assert from 'assert';
 
 export interface ServerRegistration<Path extends string = '/graphql'>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  extends Omit<StartStandaloneServerOptions<any>, 'context'> {
+  extends Omit<StartStandaloneServerOptions<BaseContext>, 'context'> {
   path?: Path;
   enablePlayground: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  context?: (context: Context) => Promise<any>;
+  context?: (context: Context) => Promise<unknown>;
 }
 
 export type ElysiaApolloConfig<
@@ -35,37 +35,36 @@ const getQueryString = (url: string) => url.slice(url.indexOf('?', 11) + 1);
 export class ElysiaApolloServer<
   Context extends BaseContext = BaseContext,
 > extends ApolloServer<Context> {
-  public async createHandler<Path extends string = '/graphql'>({
+  public async createHandler<Path extends string>({
     path = '/graphql' as Path,
-    enablePlayground,
-    context = async () => {},
+    enablePlayground = isDev,
+    context = () => Promise.resolve(),
   }: ServerRegistration<Path>) {
     const landing = enablePlayground
-      ? ApolloServerPluginLandingPageGraphQLPlayground({
-          endpoint: path,
-        })
-      : process.env.ENV === 'production'
-      ? ApolloServerPluginLandingPageProductionDefault({
-          footer: false,
-        })
-      : ApolloServerPluginLandingPageLocalDefault({
-          footer: false,
-        });
+      ? ApolloServerPluginLandingPageLocalDefault({ footer: false })
+      : ApolloServerPluginLandingPageProductionDefault({ footer: false });
 
     await this.start();
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const landingPage = await landing.serverWillStart!({}).then(r =>
-      r?.renderLandingPage ? r.renderLandingPage().then(r => r.html) : null,
+    assert(typeof landing.serverWillStart === 'function', 'No serverWillStart');
+    const listenerCtx = {} as GraphQLServerContext;
+    const listener = await landing.serverWillStart(listenerCtx);
+    assert(typeof listener === 'object', 'No listener');
+    assert(
+      typeof listener.renderLandingPage === 'function',
+      'No renderLandingPage',
     );
 
+    const landingPage = await listener.renderLandingPage();
+    const html =
+      typeof landingPage.html === 'string'
+        ? landingPage.html
+        : await landingPage.html();
+
     return (app: Elysia) => {
-      if (landingPage)
+      if (html)
         app.get(path, () => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          return new Response(landingPage, {
+          return new Response(html, {
             headers: {
               'Content-Type': 'text/html',
             },
@@ -76,36 +75,32 @@ export class ElysiaApolloServer<
         path,
         c =>
           this.executeHTTPGraphQLRequest({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            context: () => context(c),
             httpGraphQLRequest: {
               method: c.request.method,
               body: c.body,
               search: getQueryString(c.request.url),
-              request: c.request,
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              headers: c.request.headers,
+              request: c.request,
+              headers: c.request.headers as unknown as HeaderMap,
             },
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            context: () => context(c),
           })
             .then(res => {
               if (res.body.kind === 'complete')
                 return new Response(res.body.string, {
                   status: res.status ?? 200,
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  headers: res.headers,
+                  headers: res.headers as unknown as HeadersInit,
                 });
 
               return new Response('');
             })
             .catch(error => {
-              if (error instanceof Error) throw error;
-
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-              return new Response(error.message, { status: error.statusCode });
+              if (error instanceof Error) {
+                throw error;
+              }
             }),
         {
           body: t.Object(

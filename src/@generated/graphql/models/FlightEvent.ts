@@ -5,13 +5,13 @@ import GraphQLScalars from 'graphql-scalars';
 
 @ObjectType()
 export class GQL_FlightEvent {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
   flightTimelineID: string;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   index: number;
 
   @Field()
@@ -23,16 +23,16 @@ export class GQL_FlightEvent {
   @Field()
   requireAlert: boolean;
 
-  @Field(_type => GQL_ValueType, { nullable: true })
+  @Field(() => GQL_ValueType, { nullable: true })
   changedValueType?: GQL_ValueType;
 
-  @Field(_type => GQL_ValueType, { nullable: true })
+  @Field(() => GQL_ValueType, { nullable: true })
   prevValueType?: GQL_ValueType;
 
-  @Field(_type => GraphQLScalars.JSONResolver, { nullable: true })
+  @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
   changedValue?: Prisma.JsonValue;
 
-  @Field(_type => GraphQLScalars.JSONResolver, { nullable: true })
+  @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
   prevValue?: Prisma.JsonValue;
 
   @Field()

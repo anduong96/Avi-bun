@@ -3,7 +3,7 @@ import { GQL_AircraftPosition } from './AircraftPosition';
 
 @ObjectType()
 export class GQL_Aircraft {
-  @Field(_type => Int)
+  @Field(() => Int)
   id: number;
 
   @Field({ nullable: true })
@@ -33,7 +33,7 @@ export class GQL_Aircraft {
   @Field()
   updatedAt: Date;
 
-  @Field(_type => GQL_AircraftPosition, { nullable: true })
+  @Field(() => GQL_AircraftPosition, { nullable: true })
   AircraftPosition?: GQL_AircraftPosition;
 
   // skip overwrite 👇

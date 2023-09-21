@@ -2,7 +2,7 @@ import * as uuid from 'uuid';
 
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
-import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
+import { AeroDataBox } from '@app/lib/flight.vendors/aero.data.box';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 import { FlightQueryParam } from '@app/types/flight';
 import { Logger } from '../logger';

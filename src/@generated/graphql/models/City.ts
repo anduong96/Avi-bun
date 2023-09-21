@@ -2,7 +2,7 @@ import { Field, ObjectType, ID, Int } from 'type-graphql';
 
 @ObjectType()
 export class GQL_City {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
@@ -17,10 +17,10 @@ export class GQL_City {
   @Field()
   timezone: string;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   latitude: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   longitude: number;
 
   // skip overwrite 👇

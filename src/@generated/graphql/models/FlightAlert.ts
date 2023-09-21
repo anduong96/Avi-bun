@@ -1,17 +1,13 @@
 import { Field, ObjectType, ID } from 'type-graphql';
-import { GQL_Flight } from './Flight';
 import { GQL_AlertChannel } from '../enums/AlertChannel';
 
 @ObjectType()
 export class GQL_FlightAlert {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
   flightID: string;
-
-  @Field(_type => GQL_Flight)
-  flight: GQL_Flight;
 
   @Field()
   title: string;
@@ -19,7 +15,7 @@ export class GQL_FlightAlert {
   @Field()
   body: string;
 
-  @Field(_type => [GQL_AlertChannel])
+  @Field(() => [GQL_AlertChannel])
   channel: GQL_AlertChannel[];
 
   @Field()

@@ -3,7 +3,7 @@ import { GQL_FlightVendor } from '../enums/FlightVendor';
 
 @ObjectType()
 export class GQL_FlightPromptness {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
@@ -18,40 +18,40 @@ export class GQL_FlightPromptness {
   @Field()
   destinationIata: string;
 
-  @Field(_type => GQL_FlightVendor)
+  @Field(() => GQL_FlightVendor)
   vendor: GQL_FlightVendor;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   rating: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   onTimePercent: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   averageDelayTimeMs: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   daysObserved: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   flightsObservered: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   onTimeCount: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   lateCount: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   veryLateCount: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   excessiveCount: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   cancelledCount: number;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   divertedCount: number;
 
   @Field()

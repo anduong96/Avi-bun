@@ -3,7 +3,7 @@ import { GQL_ImageType } from '../enums/ImageType';
 
 @ObjectType()
 export class GQL_Country {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
@@ -18,7 +18,7 @@ export class GQL_Country {
   @Field()
   flagImageURL: string;
 
-  @Field(_type => GQL_ImageType)
+  @Field(() => GQL_ImageType)
   flagImageType: GQL_ImageType;
 
   // skip overwrite 👇

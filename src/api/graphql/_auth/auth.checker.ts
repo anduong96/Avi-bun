@@ -1,5 +1,5 @@
-import { AuthCheckerInterface } from 'type-graphql';
 import { isDev } from '@app/env';
+import { AuthCheckerInterface } from 'type-graphql';
 
 export class AuthChecker implements AuthCheckerInterface {
   check() // resolverData: ResolverData<object>,

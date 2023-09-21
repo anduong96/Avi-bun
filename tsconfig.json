@@ -15,6 +15,9 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
+    "noImplicitAny": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "allowJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -24,5 +27,6 @@
     "paths": {
       "@app/*": ["./src/*"]
     }
-  }
+  },
+  "include": ["./src/**/*", "__tests__/**/*"]
 }

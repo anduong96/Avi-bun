@@ -2,7 +2,7 @@ import { Field, ObjectType, ID, Int } from 'type-graphql';
 
 @ObjectType()
 export class GQL_FlightTimeline {
-  @Field(_type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
@@ -11,7 +11,7 @@ export class GQL_FlightTimeline {
   @Field()
   title: string;
 
-  @Field(_type => Int)
+  @Field(() => Int)
   index: number;
 
   @Field()

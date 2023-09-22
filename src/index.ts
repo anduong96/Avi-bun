@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import '@app/scheduler';
 import '@app/topic.listeners';
+import '@app/firebase';
 
 import { ENV, isDev } from './env';
 

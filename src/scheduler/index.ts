@@ -18,6 +18,11 @@ export class Scheduler extends Singleton<Scheduler>() {
     PatchFlightsJob,
   ];
 
+  constructor() {
+    super();
+    this.logger.debug('Initialized');
+  }
+
   async start() {
     this.logger.debug('Starting scheduler');
     for await (const job of this.jobsToInitiate) {

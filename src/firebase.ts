@@ -15,4 +15,4 @@ export const firebase = admin.initializeApp({
   credential,
 });
 
-Logger.debug('Firebase initialized', firebase.name);
+Logger.getSubLogger({ name: 'Firebase' }).debug('initialized');

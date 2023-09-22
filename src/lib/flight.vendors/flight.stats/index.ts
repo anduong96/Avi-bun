@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios';
 import {
   FlightDetails,
   FlightProgress,
@@ -7,19 +8,15 @@ import {
   FlightStatSearchItemV2,
   RandomFlight,
 } from './types';
-import axios, { AxiosError } from 'axios';
 
-import { Logger } from '@app/lib/logger';
 import { Singleton } from '@app/lib/singleton';
-import { flatten } from 'lodash';
 import generateUniqueId from 'generate-unique-id';
+import { flatten } from 'lodash';
 import moment from 'moment-timezone';
-import { parseFlightIdFromUrl } from './utils';
 import { tryNice } from 'try-nice';
+import { parseFlightIdFromUrl } from './utils';
 
 class _FlightStats extends Singleton<_FlightStats>() {
-  private logger = Logger.child({ name: 'FlightStats' });
-
   private readonly client = axios.create({
     baseURL: 'https://www.flightstats.com/v2',
     params: {

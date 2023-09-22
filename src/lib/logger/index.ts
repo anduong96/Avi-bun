@@ -1,3 +1,7 @@
-import { WinstonLogger } from './_winston';
+import * as TsLog from 'tslog';
 
-export const Logger = WinstonLogger;
+export const Logger = new TsLog.Logger({
+  type: 'pretty',
+  prettyLogTemplate:
+    '\n{{rawIsoStr}} {{logLevelName}} {{nameWithDelimiterPrefix}} {{filePathWithLine}}\n',
+});

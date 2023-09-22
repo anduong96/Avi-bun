@@ -22,6 +22,8 @@ app.use(RestMiddleware);
 
 app.listen(ENV.PORT, server => {
   if (isDev) {
-    Logger.info(`Server listening on http://localhost:${server.port}/graphql`);
+    Logger.getSubLogger({ name: 'App' }).info(
+      `Server listening on http://localhost:${server.port}/graphql`,
+    );
   }
 });

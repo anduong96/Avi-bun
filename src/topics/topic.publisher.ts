@@ -1,12 +1,10 @@
-import { Class } from '@app/types/class';
-import { Logger } from '@app/lib/logger';
 import { Singleton } from '@app/lib/singleton';
+import { Class } from '@app/types/class';
+import { noop } from 'lodash';
 import { Topic } from './topic';
 import { TopicListener } from './types';
-import { noop } from 'lodash';
 
 export class _TopicPublisher extends Singleton<_TopicPublisher>() {
-  private readonly logger = Logger;
   private readonly listeners: Map<string, Map<Symbol, TopicListener>> =
     new Map();
 
@@ -37,11 +35,11 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
     topicMap.set(ID, onTopic as TopicListener);
 
     const logger = this.logger;
-    logger.debug('Added listener to topic', topic.name, ID);
+    logger.debug('Added listener to topic', topic.name);
 
     return function unsubscribe() {
       topicMap.delete(ID);
-      logger.debug('Removed listener to topic', topic.name, ID);
+      logger.debug('Removed listener to topic', topic.name);
     };
   }
 

@@ -4,7 +4,7 @@ import { Logger } from '@app/lib/logger';
 import { isDev } from '@app/env';
 import moment from 'moment';
 
-const logger = Logger.child({ name: 'Apollo Log' });
+const logger = Logger.getSubLogger({ name: 'Apollo Log' });
 
 export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
   async requestDidStart(requestContext) {

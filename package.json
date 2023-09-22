@@ -52,9 +52,9 @@
     "prisma": "5.3.1",
     "reflect-metadata": "^0.1.13",
     "try-nice": "^4.0.4",
+    "tslog": "^4.9.2",
     "type-graphql": "2.0.0-beta.3",
     "uuid": "^9.0.1",
-    "winston": "^3.10.0",
     "yup": "^1.2.0"
   }
 }

@@ -28,7 +28,7 @@ export abstract class Job {
   }
 
   get logger() {
-    return Logger.child({ module: `JOB[${this.name}]` });
+    return Logger.getSubLogger({ name: `JOB[${this.name}]` });
   }
 
   setDef(jobDef: ScheduledJob) {

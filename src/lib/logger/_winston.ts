@@ -14,7 +14,7 @@ export const WinstonLogger = winston.createLogger({
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.splat(),
-        winston.format.prettyPrint(),
+        winston.format.prettyPrint({ colorize: true }),
         winston.format.timestamp(),
         winston.format.colorize(),
         customFormat,

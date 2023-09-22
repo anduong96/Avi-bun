@@ -104,9 +104,9 @@ class _FlightStats extends Singleton<_FlightStats>() {
       const axiosError = error as AxiosError;
 
       this.logger.error(
-        'Failed to fetch flight',
+        'Failed to fetch flight \n%o',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        axiosError.request?.res?.responseUrl,
+        axiosError.request?._redirectable?._currentUrl,
       );
 
       throw error;

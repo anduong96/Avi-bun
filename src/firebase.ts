@@ -1,7 +1,7 @@
 import * as firebaseAdmin from 'firebase-admin';
 
 import { ENV } from '@app/env';
-import { Logger } from './services/logger';
+import { Logger } from './lib/logger';
 import { get } from 'lodash';
 
 const credential = firebaseAdmin.credential.cert({

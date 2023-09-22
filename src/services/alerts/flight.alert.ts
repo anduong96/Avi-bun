@@ -2,7 +2,7 @@ import { AlertChannel, Flight } from '@prisma/client';
 
 import { BasicObject } from '@app/types/common';
 import FirebaseAdmin from 'firebase-admin';
-import { Logger } from '../logger';
+import { Logger } from '../../lib/logger';
 import { buildFlightLinkData } from '../links/flight.link';
 import { merge } from 'lodash';
 import { prisma } from '@app/prisma';

@@ -1,5 +1,5 @@
 import { Class } from '@app/types/class';
-import { Logger } from '@app/services/logger';
+import { Logger } from '@app/lib/logger';
 import { Singleton } from '@app/lib/singleton';
 import { Topic } from './topic';
 import { TopicListener } from './types';
@@ -37,11 +37,11 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
     topicMap.set(ID, onTopic as TopicListener);
 
     const logger = this.logger;
-    logger.debug('Added listener to topic[%s]', topic.name, ID);
+    logger.debug('Added listener to topic', topic.name, ID);
 
     return function unsubscribe() {
       topicMap.delete(ID);
-      logger.debug('Removed listener to topic[%s]', topic.name, ID);
+      logger.debug('Removed listener to topic', topic.name, ID);
     };
   }
 
@@ -51,7 +51,7 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
    * @param {Topic} topic - The parameter "topic" is an object of type "Topic".
    */
   broadcast(topic: Topic) {
-    this.logger.debug('Broadcasting topic[%s]', topic.key);
+    this.logger.debug(`Broadcasting topic[${topic.key}]`);
     const topicMap = this.getTopicMap(topic.key);
     for (const listener of topicMap.values()) {
       listener(topic)?.catch(noop);

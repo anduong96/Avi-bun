@@ -1,6 +1,6 @@
 import { ApolloServerPlugin, BaseContext } from '@apollo/server';
 
-import { Logger } from '@app/services/logger';
+import { Logger } from '@app/lib/logger';
 import { isDev } from '@app/env';
 import moment from 'moment';
 

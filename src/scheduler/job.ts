@@ -1,6 +1,6 @@
 import { isNil, noop } from 'lodash';
 
-import { Logger } from '@app/services/logger';
+import { Logger } from '@app/lib/logger';
 import { ScheduledJob } from '@prisma/client';
 import moment from 'moment';
 import parser from 'cron-parser';
@@ -28,7 +28,7 @@ export abstract class Job {
   }
 
   get logger() {
-    return Logger.child({ name: `JOB[${this.name}]` });
+    return Logger.child({ module: `JOB[${this.name}]` });
   }
 
   setDef(jobDef: ScheduledJob) {
@@ -42,7 +42,7 @@ export abstract class Job {
   protected abstract onProcess(job: ScheduledJob): void | Promise<void>;
 
   protected onError(error: Error, job: ScheduledJob): void | Promise<void> {
-    this.logger.error(error, `onError: ${job.id}`);
+    this.logger.error(`onError: ${job.id}`, error);
   }
 
   protected onSuccess(job: ScheduledJob): void | Promise<void> {

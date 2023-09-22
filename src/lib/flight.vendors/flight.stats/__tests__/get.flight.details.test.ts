@@ -7,6 +7,7 @@ describe('Flight Stats', () => {
   test('getFlightDetails', async () => {
     const airlineIata = 'AA';
     const flightNumber = '100';
+    const date = new Date();
 
     const [target] = await FlightStats.searchFlights({
       airlineIata,
@@ -15,14 +16,14 @@ describe('Flight Stats', () => {
     });
 
     const flight = await FlightStats.getFlightDetails({
-      flightID: target.flightId.toString(),
+      date,
+      flightID: target.flightID.toString(),
       airlineIata,
       flightNumber,
-      date: moment().toDate(),
     });
 
     expect(flight).toBeTruthy();
-    expect(target.flightId).toBe(flight.flightId);
+    expect(target.flightID).toBe(flight.flightId);
     expect(airlineIata).toBe(flight.carrier.iata);
     expect(flightNumber).toBe(flight.carrier.flightNumber);
   });

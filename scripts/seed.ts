@@ -1,5 +1,5 @@
 import { ImageType } from '@prisma/client';
-import { Logger } from '@app/services/logger';
+import { Logger } from '@app/lib/logger';
 import axios from 'axios';
 import { prisma } from '@app/prisma';
 
@@ -84,7 +84,7 @@ async function populateCities() {
       location: { coordinates: number[] };
     }>
   >('/cities.json');
-  prisma.$transaction([
+  await prisma.$transaction([
     prisma.city.deleteMany({}),
     prisma.city.createMany({
       data: response.data.map(item => ({
@@ -110,7 +110,7 @@ async function populateCountries() {
     }>
   >('/countries.json');
 
-  prisma.$transaction([
+  await prisma.$transaction([
     prisma.country.deleteMany({}),
     prisma.country.createMany({
       data: response.data.map(item => ({

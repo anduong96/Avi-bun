@@ -1,4 +1,4 @@
-import { Flight, FlightStatus } from '@prisma/client';
+import { Flight, FlightStatus, FlightVendor } from '@prisma/client';
 
 import CronTime from 'cron-time-generator';
 import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
@@ -14,12 +14,12 @@ import { tryNice } from 'try-nice';
 export class SyncActiveFlightsJob extends Job {
   cronTime: string = CronTime.every(5).minutes();
 
-  private async checkRemote(flight: Flight) {
+  private async checkRemote(flight: Flight, flightStatsID: string) {
     this.logger.info(`Starting Flight: ${flight.id}`);
 
     const [result, error] = await tryNice(() =>
       FlightStats.getFlightDetails({
-        flightID: flight.vendorResourceID!,
+        flightID: flightStatsID,
         date: flight.departureDate,
         airlineIata: flight.airlineIata,
         flightNumber: flight.flightNumber,
@@ -63,7 +63,6 @@ export class SyncActiveFlightsJob extends Job {
       },
       data: {
         status,
-        vendorResourceID: result.flightId.toString(),
         estimatedGateDeparture: estimatedDeparture.toDate(),
         estimatedGateArrival: estimatedArrival.toDate(),
         reconAttempt: {
@@ -154,8 +153,10 @@ export class SyncActiveFlightsJob extends Job {
             shouldAlert: true,
           },
         },
-        vendorResourceID: {
-          not: null,
+        FlightVendorConnection: {
+          every: {
+            vendor: FlightVendor.FLIGHT_STATS,
+          },
         },
         status: {
           not: FlightStatus.ARRIVED,
@@ -165,9 +166,21 @@ export class SyncActiveFlightsJob extends Job {
           lt: moment().endOf('day').add(10, 'hours').toDate(),
         },
       },
+      include: {
+        FlightVendorConnection: true,
+      },
     });
 
     this.logger.info('Flights to sync', flights.length);
-    await Promise.allSettled(flights.map(flight => this.checkRemote(flight)));
+    await Promise.allSettled(
+      flights.map(flight =>
+        this.checkRemote(
+          flight,
+          flight.FlightVendorConnection.find(
+            entry => entry.vendor === FlightVendor.FLIGHT_STATS,
+          )!.flightID,
+        ),
+      ),
+    );
   }
 }

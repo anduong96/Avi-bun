@@ -9,7 +9,7 @@ import {
 } from './types';
 import axios, { AxiosError } from 'axios';
 
-import { Logger } from '@app/services/logger';
+import { Logger } from '@app/lib/logger';
 import { Singleton } from '@app/lib/singleton';
 import { flatten } from 'lodash';
 import generateUniqueId from 'generate-unique-id';

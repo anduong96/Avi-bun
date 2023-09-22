@@ -5,7 +5,7 @@ import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 import { AeroDataBox } from '@app/lib/flight.vendors/aero.data.box';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 import { FlightQueryParam } from '@app/types/flight';
-import { Logger } from '../logger';
+import { Logger } from '../../lib/logger';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { isEmpty } from 'lodash';
 import moment from 'moment';

@@ -1,7 +1,7 @@
 import { ArchiveFlightJob } from './defined.jobs/flight.archive.job';
 import { Class } from '@app/types/class';
 import { Job } from './job';
-import { Logger } from '@app/services/logger';
+import { Logger } from '@app/lib/logger';
 import { PatchFlightsJob } from './defined.jobs/flight.patch.job';
 import { RemindCheckinFlightsJob } from './defined.jobs/flight.checkin.reminder.job';
 import { ScheduledJob } from '@prisma/client';

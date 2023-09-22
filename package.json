@@ -26,7 +26,6 @@
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "pino-pretty": "^10.2.0",
     "prettier": "^3.0.3",
     "prisma-typegraphql-types-generator": "^1.5.14",
     "typegraphql-prisma": "^0.27.0",
@@ -50,12 +49,12 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
-    "pino": "^8.15.1",
     "prisma": "5.3.1",
     "reflect-metadata": "^0.1.13",
     "try-nice": "^4.0.4",
     "type-graphql": "2.0.0-beta.3",
     "uuid": "^9.0.1",
+    "winston": "^3.10.0",
     "yup": "^1.2.0"
   }
 }

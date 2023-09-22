@@ -14,9 +14,9 @@ describe('Flight Stats', () => {
     });
 
     const progress = await FlightStats.getFlightProgress({
-      flightID: flight.flightId.toString(),
-      airlineIata: flight.carrier.iata,
-      flightNumber: flight.carrier.flightNumber,
+      flightID: flight.flightID.toString(),
+      airlineIata,
+      flightNumber,
     });
 
     expect(progress).toBeTruthy();

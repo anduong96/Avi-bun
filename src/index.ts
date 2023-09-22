@@ -7,7 +7,7 @@ import { ENV, isDev } from './env';
 
 import { Elysia } from 'elysia';
 import { GraphqlMiddleware } from './api/graphql';
-import { Logger } from './services/logger';
+import { Logger } from './lib/logger';
 import { RestMiddleware } from '@app/api/rest';
 import { Scheduler } from '@app/scheduler';
 import { prisma } from './prisma';

@@ -28,7 +28,7 @@ export abstract class Job {
   }
 
   get logger() {
-    return Logger.getSubLogger({ name: `JOB[${this.name}]` });
+    return Logger.getSubLogger({ name: `Scheduled Job[${this.name}]` });
   }
 
   setDef(jobDef: ScheduledJob) {
@@ -36,21 +36,21 @@ export abstract class Job {
   }
 
   protected onPreprocess(job: ScheduledJob): void | Promise<void> {
-    this.logger.debug(`onProcess: ${job.id}`);
+    this.logger.debug(`onProcess job[%s`, job.name);
   }
 
   protected abstract onProcess(job: ScheduledJob): void | Promise<void>;
 
   protected onError(error: Error, job: ScheduledJob): void | Promise<void> {
-    this.logger.error(`onError: ${job.id}`, error);
+    this.logger.error(`onError job[%s]`, job.name, error);
   }
 
   protected onSuccess(job: ScheduledJob): void | Promise<void> {
-    this.logger.info(`onSuccess: ${job.id}`);
+    this.logger.info(`onSuccess job[%s]`, job.name);
   }
 
   protected onFinish(job: ScheduledJob): void | Promise<void> {
-    this.logger.debug(`onFinish: ${job.id}`);
+    this.logger.debug(`onFinish job[%s]`, job.name);
   }
 
   /**
@@ -72,8 +72,9 @@ export abstract class Job {
     const nextRunMs = Math.max(diff, 0);
 
     this.logger.debug(
-      'Last run %s seconds ago',
+      'Last run %s seconds ago, next run in %s seconds',
       moment.duration(moment(now).diff(this._internal.lastRunAt)).as('seconds'),
+      moment.duration(moment(nextRunTime).diff(now)).as('seconds'),
     );
 
     return nextRunMs;
@@ -118,7 +119,7 @@ export abstract class Job {
       },
     });
 
-    this.logger.debug(`Job def updated: ${this.id}`);
+    this.logger.debug(`Job[%s] def updated`, this.name);
   }
 
   /**
@@ -200,11 +201,6 @@ export abstract class Job {
       await this.run();
       return this.sync();
     }
-
-    this.logger.debug(
-      `Run in %s seconds`,
-      moment.duration(delayTime).as('seconds'),
-    );
 
     await sleep(delayTime);
     return this.sync();

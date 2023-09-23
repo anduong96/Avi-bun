@@ -24,5 +24,5 @@ export class GQL_UserFlight {
   // skip overwrite 👇
 
   @Field(() => GQL_Flight)
-  flight?: GQL_Flight
+  flight?: GQL_Flight;
 }

@@ -28,5 +28,11 @@
       "@app/*": ["./src/*"]
     }
   },
-  "include": ["./src/**/*", "__tests__/**/*", "./scripts/**/*", "global.d.ts"]
+  "include": [
+    "./src/**/*",
+    "__tests__/**/*",
+    "./scripts/**/*",
+    "global.d.ts",
+    "./build.ts"
+  ]
 }

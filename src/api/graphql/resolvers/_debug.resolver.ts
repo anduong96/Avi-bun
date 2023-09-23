@@ -1,5 +1,5 @@
 import { sendFlightAlert } from '@app/services/alerts/flight.alert';
-import JsonScalar from 'graphql-type-json';
+import { JSONResolver } from 'graphql-scalars';
 import { Arg, Mutation, Resolver } from 'type-graphql';
 
 @Resolver()
@@ -9,7 +9,7 @@ export class DebugResolver {
     @Arg('flightID') flightID: string,
     @Arg('title') title: string,
     @Arg('body') body: string,
-    @Arg('data', () => JsonScalar) data: object,
+    @Arg('data', () => JSONResolver) data: object,
   ): Promise<number> {
     const result = await sendFlightAlert(flightID, {
       title,

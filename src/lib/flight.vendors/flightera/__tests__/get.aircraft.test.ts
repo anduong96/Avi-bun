@@ -1,14 +1,11 @@
 import { describe, expect, test } from 'bun:test';
 
 import { Flightera } from '..';
-import { Logger } from '@app/lib/logger';
 
-describe('Flightera', () => {
+describe.only('Flightera', () => {
   test('getAircraftFromHtml', async () => {
     const aircraftTailNumber = 'N725AN';
     const aircraft = await Flightera.getAircraftFromCrawl(aircraftTailNumber);
-
-    Logger.info({ aircraft });
 
     expect(aircraft.airlineIata).toBe('AA');
     expect(aircraft.model).toBe('B777-323ER (B77W)');

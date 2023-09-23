@@ -73,7 +73,7 @@ CREATE TABLE "Country" (
 -- CreateTable
 CREATE TABLE "Flight" (
     "id" TEXT NOT NULL,
-    "departureDate" DATE NOT NULL,
+    "originDepartureDate" TEXT NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "flightNumber" TEXT NOT NULL,
     "aircraftTailnumber" TEXT,
@@ -291,7 +291,7 @@ CREATE INDEX "Flight_originIata_idx" ON "Flight"("originIata");
 CREATE INDEX "Flight_destinationIata_idx" ON "Flight"("destinationIata");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Flight_airlineIata_flightNumber_originIata_destinationIata__key" ON "Flight"("airlineIata", "flightNumber", "originIata", "destinationIata", "departureDate");
+CREATE UNIQUE INDEX "Flight_airlineIata_flightNumber_originIata_destinationIata__key" ON "Flight"("airlineIata", "flightNumber", "originIata", "destinationIata", "originDepartureDate");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FlightVendorConnection_flightID_vendor_key" ON "FlightVendorConnection"("flightID", "vendor");
@@ -324,7 +324,7 @@ CREATE UNIQUE INDEX "FlightTimeline_flightID_index_key" ON "FlightTimeline"("fli
 CREATE INDEX "FlightPosition_flightID_idx" ON "FlightPosition"("flightID");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "FlightPlan_flightID_key" ON "FlightPlan"("flightID");
+CREATE INDEX "FlightPlan_flightID_idx" ON "FlightPlan"("flightID");
 
 -- CreateIndex
 CREATE INDEX "FlightAlert_flightID_idx" ON "FlightAlert"("flightID");

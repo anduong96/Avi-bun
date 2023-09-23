@@ -2,7 +2,7 @@ import { prisma } from '@app/prisma';
 import { patchFlight } from '@app/services/flight/patch.flight';
 import { FlightVendor } from '@prisma/client';
 import CronTime from 'cron-time-generator';
-import { isEmpty, noop } from 'lodash';
+import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { Job } from '../job';
 
@@ -33,12 +33,6 @@ export class PatchFlightsJob extends Job {
           },
         },
       },
-      // select: {
-      //   id: true,
-      //   flightNumber: true,
-      //   airlineIata: true,
-      //   FlightVendorConnection: true,
-      // },
     });
 
     if (isEmpty(flights)) {
@@ -55,5 +49,3 @@ export class PatchFlightsJob extends Job {
     this.logger.info('Patched flight\n', result);
   }
 }
-
-new PatchFlightsJob().onProcess().catch(noop);

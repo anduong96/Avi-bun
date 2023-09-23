@@ -45,16 +45,26 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
   }
 
   /**
-   * The function broadcasts a topic to all listeners by iterating through the topic map and invoking
-   * each listener with the topic.
-   * @param {Topic} topic - The parameter "topic" is an object of type "Topic".
+   * The `broadcastAsync` function broadcasts a given topic to all listeners asynchronously.
+   * @param {Topic} topic - The `topic` parameter is an object representing a topic. It likely has a
+   * `key` property that identifies the topic.
    */
-  broadcast(topic: Topic) {
+  async broadcastAsync(topic: Topic) {
     this.logger.debug(`Broadcasting topic[${topic.key}]`);
     const listeners = this.getTopicListeners(topic.key);
     for (const listener of listeners) {
-      listener(topic)?.catch(noop);
+      await listener(topic)?.catch(noop);
     }
+  }
+
+  /**
+   * The function broadcasts a topic asynchronously and catches any errors.
+   * @param {Topic} topic - The "topic" parameter is an object representing the topic of the broadcast.
+   * It could contain information such as the title, description, or any other relevant details about the
+   * topic being broadcasted.
+   */
+  broadcast(topic: Topic) {
+    this.broadcastAsync(topic).catch(noop);
   }
 }
 

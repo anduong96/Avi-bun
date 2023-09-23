@@ -1,13 +1,13 @@
-import { AirportResolver } from './resolvers/airport.resolver';
 import { ApolloLogPlugin } from '@app/api/graphql/_plugins/log.plugin';
-import { AuthChecker } from './_auth/auth.checker';
-import { FlightResolver } from './resolvers/flight.resolver';
-import { HealthResolver } from './health/health.resolver';
-import { UserFlightResolver } from './resolvers/user.flights.resolver';
-import { apollo } from './_apollo';
+import Elysia from 'elysia';
+import path from 'path';
 import { buildSchema } from 'type-graphql';
 import { isDev } from '../../env';
-import path from 'path';
+import { apollo } from './_apollo';
+import { AuthChecker, AuthCheckerContext } from './_auth/auth.checker';
+import { AirportResolver } from './resolvers/airport.resolver';
+import { FlightResolver } from './resolvers/flight.resolver';
+import { UserFlightResolver } from './resolvers/user.flights.resolver';
 
 const emitSchemaFile = isDev
   ? path.resolve(import.meta.dir, '../../../', 'schema.graphql')
@@ -16,15 +16,21 @@ const emitSchemaFile = isDev
 const gqlSchema = await buildSchema({
   authChecker: AuthChecker,
   emitSchemaFile,
-  resolvers: [
-    HealthResolver,
-    FlightResolver,
-    AirportResolver,
-    UserFlightResolver,
-  ],
+  resolvers: [FlightResolver, AirportResolver, UserFlightResolver],
 });
 
-export const GraphqlMiddleware = apollo({
-  schema: gqlSchema,
-  plugins: [ApolloLogPlugin],
-});
+export const GraphqlMiddleware = new Elysia();
+
+GraphqlMiddleware.use(
+  apollo({
+    path: '/graphql',
+    schema: gqlSchema,
+    plugins: [ApolloLogPlugin],
+    context: ({ request }): AuthCheckerContext => {
+      const authorization = request.headers.get('Authorization');
+      return {
+        authorization,
+      };
+    },
+  }),
+);

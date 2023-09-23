@@ -1,20 +1,31 @@
-import { AuthCheckerInterface, ResolverData } from 'type-graphql';
-
 import { isDev } from '@app/env';
+import { firebase } from '@app/firebase';
+import { DecodedIdToken } from 'firebase-admin/auth';
+import { isNil } from 'lodash';
+import { tryNice } from 'try-nice';
+import * as TypeGql from 'type-graphql';
+import { getDevUser } from './get.dev.user';
 
-export class AuthChecker implements AuthCheckerInterface {
-  check({
-    root,
-    args,
-    context,
-    info,
-  }: ResolverData<{}>): boolean | Promise<boolean> {
-    console.info({ root, args, context, info });
+export type AuthCheckerContext = {
+  authorization: string | null;
+  user?: DecodedIdToken | null;
+};
 
-    if (isDev) {
-      return true;
-    }
+export const AuthChecker: TypeGql.AuthChecker<AuthCheckerContext> = async ({
+  context,
+}) => {
+  const authorization = context.authorization || '';
+  const token = authorization.replace('Bearer', '').trim();
 
-    return false;
+  let [user] = await tryNice(() =>
+    token ? firebase.auth().verifyIdToken(token, true) : Promise.resolve(null),
+  );
+
+  if (!user && isDev) {
+    user = getDevUser();
   }
-}
+
+  context.user = user;
+
+  return !isNil(user);
+};

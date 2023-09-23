@@ -20,7 +20,7 @@ export interface ServerRegistration<Path extends string = '/graphql'>
   extends Omit<StartStandaloneServerOptions<BaseContext>, 'context'> {
   path?: Path;
   enablePlayground: boolean;
-  context?: (context: Context) => Promise<unknown>;
+  context?: (context: Context) => Promise<object> | object;
 }
 
 export type ElysiaApolloConfig<
@@ -38,7 +38,7 @@ export class ElysiaApolloServer<
   public async createHandler<Path extends string>({
     path = '/graphql' as Path,
     enablePlayground = isDev,
-    context = () => Promise.resolve(),
+    context = () => Promise.resolve({}),
   }: ServerRegistration<Path>) {
     const landing = enablePlayground
       ? ApolloServerPluginLandingPageLocalDefault({ footer: false })
@@ -73,8 +73,8 @@ export class ElysiaApolloServer<
 
       return app.post(
         path,
-        c =>
-          this.executeHTTPGraphQLRequest({
+        c => {
+          return this.executeHTTPGraphQLRequest({
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             context: () => context(c),
@@ -101,7 +101,8 @@ export class ElysiaApolloServer<
               if (error instanceof Error) {
                 throw error;
               }
-            }),
+            });
+        },
         {
           body: t.Object(
             {

@@ -71,6 +71,7 @@ type GQL_UserFlight {
 type Query {
   airport(iata: String!): GQL_Airport!
   flights(airlineIata: String!, departureDate: DateTimeISO!, flightNumber: String!): [GQL_Flight!]!
-  health: String!
+  userActiveFlights: [GQL_UserFlight!]!
   userFlights: [GQL_UserFlight!]!
+  userHasFlights: [Float!]!
 }

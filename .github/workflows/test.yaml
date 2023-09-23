@@ -1,4 +1,4 @@
-name: Lint
+name: Tests
 
 on:
   push:
@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 jobs:
-  run-linter:
-    name: Run linters
+  run-tests:
+    name: Run Tests
     runs-on: ubuntu-latest
     env:
       DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}

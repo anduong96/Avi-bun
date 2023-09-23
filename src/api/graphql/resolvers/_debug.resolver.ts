@@ -9,7 +9,7 @@ export class DebugResolver {
     @Arg('flightID') flightID: string,
     @Arg('title') title: string,
     @Arg('body') body: string,
-    @Arg('data', () => JSONResolver) data: object,
+    @Arg('data', () => JSONResolver, { nullable: true }) data: object,
   ): Promise<number> {
     const result = await sendFlightAlert(flightID, {
       title,

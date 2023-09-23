@@ -21,7 +21,11 @@ const schema = Yup.object({
     .default('development')
     .required(),
 
-  DATABASE_URL: Yup.string().required(),
+  DATABASE_URL: Yup.string().when('NODE_ENV', {
+    is: 'test',
+    otherwise: schema => schema.required(),
+  }),
+
   AERO_DATABOX_API_KEY: Yup.string().required(),
   AIR_LABS_API_KEY: Yup.string().optional(),
 

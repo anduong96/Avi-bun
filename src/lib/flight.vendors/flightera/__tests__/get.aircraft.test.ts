@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { Flightera } from '..';
 
-describe.only('Flightera', () => {
+describe('Flightera', () => {
   test('getAircraftFromHtml', async () => {
     const aircraftTailNumber = 'N725AN';
     const aircraft = await Flightera.getAircraftFromCrawl(aircraftTailNumber);

@@ -1,16 +1,15 @@
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
 import { getAircraftFromHtml } from './plane.crawl';
 
 class _Flightera extends Singleton<_Flightera>() {
-  private readonly client = axios.create({
-    baseURL: 'https://www.flightera.net',
-    timeout: 5 * 1000,
-    headers: {
-      'Content-Type': 'application/json',
-      // Authorization: 'oABrVZsnrsSuzytYgxIwkRLWprgkIHSSi',
-    },
-  });
+  // private readonly client = axios.create({
+  //   baseURL: 'https://www.flightera.net',
+  //   timeout: 5 * 1000,
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     // Authorization: 'oABrVZsnrsSuzytYgxIwkRLWprgkIHSSi',
+  //   },
+  // });
 
   /**
    * The function `getAircraftFromCrawl` retrieves aircraft information from a website using a tail
@@ -23,7 +22,13 @@ class _Flightera extends Singleton<_Flightera>() {
    */
   async getAircraftFromCrawl(tailNumber: string) {
     const route = `https://www.flightera.net/en/planes/${tailNumber}`;
-    const response = await fetch(route);
+    const response = await fetch(route, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+      },
+    });
+
     const data = await response.text();
     return getAircraftFromHtml(data);
   }

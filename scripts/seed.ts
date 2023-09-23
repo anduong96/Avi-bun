@@ -1,14 +1,18 @@
-import { ImageType } from '@prisma/client';
 import { Logger } from '@app/lib/logger';
-import axios from 'axios';
 import { prisma } from '@app/prisma';
+import { ImageType } from '@prisma/client';
+import { tryNice } from 'try-nice';
 
-const client = axios.create({
-  baseURL: 'https://raw.githubusercontent.com/anduong96/airlines-logos/main',
-});
+const baseURL =
+  'https://raw.githubusercontent.com/anduong96/airlines-logos/main';
+
+async function getData<T>(route: string) {
+  return fetch(baseURL + route).then(res => res.json<T>());
+}
 
 async function populateAirlines() {
-  const response = await client.get<
+  Logger.info('Getting airlines');
+  const response = await getData<
     Array<{
       name: string;
       iata: string;
@@ -19,10 +23,11 @@ async function populateAirlines() {
       logoCompactImageURL: string;
     }>
   >('/airlines.json');
+  Logger.warn('Creating airlines count[%s]', response.length);
   await prisma.$transaction([
     prisma.airline.deleteMany({}),
     prisma.airline.createMany({
-      data: response.data.map(item => ({
+      data: response.map(item => ({
         name: item.name,
         iata: item.iata,
         isLowCost: item.isLowCost,
@@ -33,29 +38,32 @@ async function populateAirlines() {
       })),
     }),
   ]);
+  Logger.info('Created airlines');
 }
 
 async function populateAirports() {
-  const response = await client.get<
-    Array<{
-      name: string;
-      iata: string;
-      timezone: string;
-      cityName: string;
-      cityCode: string;
-      countryCode: string;
-      elevation: number;
-      icaoCode: string;
-      state: string;
-      countyName: string;
-      location: { coordinates: number[] };
-    }>
-  >('/airports.json');
+  Logger.info('Getting airports');
+  type Entry = {
+    name: string;
+    iata: string;
+    timezone: string;
+    cityName: string;
+    cityCode: string;
+    countryCode: string;
+    elevation: number;
+    icaoCode: string;
+    state: string;
+    countyName: string;
+    location: { coordinates: number[] };
+  };
 
+  const response = await getData<Array<Entry>>('/airports.json');
+
+  Logger.warn('Creating airports count[%s]', response.length);
   await prisma.$transaction([
     prisma.airport.deleteMany({}),
     prisma.airport.createMany({
-      data: response.data
+      data: response
         .filter(item => !item.cityCode.includes('Raiway Stn'))
         .map(item => ({
           iata: item.iata,
@@ -72,10 +80,12 @@ async function populateAirports() {
         })),
     }),
   ]);
+  Logger.info('Created airports');
 }
 
 async function populateCities() {
-  const response = await client.get<
+  Logger.info('Getting cities');
+  const response = await getData<
     Array<{
       name: string;
       iata: string;
@@ -84,10 +94,11 @@ async function populateCities() {
       location: { coordinates: number[] };
     }>
   >('/cities.json');
+  Logger.warn('Creating cities count[%s]', response.length);
   await prisma.$transaction([
     prisma.city.deleteMany({}),
     prisma.city.createMany({
-      data: response.data.map(item => ({
+      data: response.map(item => ({
         name: item.name,
         code: item.iata,
         latitude: item.location?.coordinates[1] ?? -1,
@@ -97,10 +108,12 @@ async function populateCities() {
       })),
     }),
   ]);
+  Logger.info('Created cities');
 }
 
 async function populateCountries() {
-  const response = await client.get<
+  Logger.info('Getting countries');
+  const response = await getData<
     Array<{
       name: string;
       isoCode: string;
@@ -109,11 +122,11 @@ async function populateCountries() {
       flagImageUri: string;
     }>
   >('/countries.json');
-
+  Logger.warn('Creating countries count[%s]', response.length);
   await prisma.$transaction([
     prisma.country.deleteMany({}),
     prisma.country.createMany({
-      data: response.data.map(item => ({
+      data: response.map(item => ({
         isoCode: item.isoCode,
         name: item.name,
         dialCode: item.dialCode,
@@ -122,14 +135,21 @@ async function populateCountries() {
       })),
     }),
   ]);
+  Logger.info('Created countries');
 }
 
 Logger.warn('Upserting database');
-const r = await Promise.allSettled([
-  populateAirlines(),
-  populateCountries(),
-  populateCities(),
-  populateAirports(),
-]);
+const [r, error] = await tryNice(() =>
+  Promise.allSettled([
+    populateAirlines(),
+    populateCountries(),
+    populateCities(),
+    populateAirports(),
+  ]),
+);
 
-Logger.warn('seed result', r);
+if (!r) {
+  Logger.error(error);
+} else {
+  Logger.warn('seed result', r);
+}

@@ -140,9 +140,8 @@ model Flight {
   actualGateArrival       DateTime?
   reconAttempt            Int?         @default(0)
 
-  Origin Airport @relation(references: [iata], fields: [originIata], name: "origin")
-
-  Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination")
+  Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: Restrict)
+  Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination", onDelete: Restrict)
 
   Airline                Airline                  @relation(fields: [airlineIata], references: [iata])
   // @skip
@@ -154,7 +153,7 @@ model Flight {
   // @skip
   FlightVendorConnection FlightVendorConnection[]
 
-  Promptness FlightPromptness? @relation(fields: [flightNumber, airlineIata, originIata, destinationIata], references: [flightNumber, airlineIata, originIata, destinationIata])
+  Promptness FlightPromptness? @relation(fields: [flightNumber, airlineIata, originIata, destinationIata], references: [flightNumber, airlineIata, originIata, destinationIata], onDelete: Restrict)
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata, departureDate])
   @@index([originIata])

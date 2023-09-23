@@ -1,6 +1,4 @@
-import * as uuid from 'uuid';
-
-import { Flight, FlightStatus, Prisma } from '@prisma/client';
+import { FlightStatus, Prisma } from '@prisma/client';
 
 import { AeroDataBox } from '@app/lib/flight.vendors/aero.data.box';
 import { prisma } from '@app/prisma';
@@ -10,6 +8,7 @@ import { FlightQueryParam } from '@app/types/flight';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { Logger } from '../../lib/logger';
+import { tryNice } from 'try-nice';
 
 export async function createFlights(params: FlightQueryParam): Promise<number> {
   const remoteFlights = await AeroDataBox.getFlights(params);
@@ -18,9 +17,8 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
     throw new Error('No flight(s) found');
   }
 
-  const payload = remoteFlights.map(
-    (entry): NullOptional<Prisma.FlightCreateManyInput> => ({
-      id: uuid.v4(),
+  const payload: Prisma.FlightUncheckedCreateInput[] = remoteFlights.map(
+    entry => ({
       airlineIata: entry.airline.iata,
       flightNumber: entry.number.replace(/ /g, ''),
       aircraftTailnumber: entry.aircraft.reg,
@@ -44,22 +42,34 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
     }),
   );
 
-  const result = await prisma.flight.createMany({
-    data: payload,
-    skipDuplicates: true,
-  });
+  Logger.debug({ payload });
 
-  for (const flight of payload) {
-    TopicPublisher.broadcast(new FlightCreatedTopic(flight as Flight));
+  const [result, error] = await tryNice(() =>
+    prisma.$transaction(
+      payload.map(data =>
+        prisma.flight.create({
+          data,
+        }),
+      ),
+    ),
+  );
+
+  if (!result) {
+    Logger.error('Unable to create flights', error);
+    throw new Error('Unable to create flights');
+  }
+
+  for (const flight of result) {
+    TopicPublisher.broadcast(new FlightCreatedTopic(flight));
   }
 
   Logger.warn(
     'Created %d for Flight[%s%s] on %s',
-    result.count,
+    result.length,
     params.airlineIata,
     params.airlineIata,
     params.departureDate.toISOString(),
   );
 
-  return result.count;
+  return result.length;
 }

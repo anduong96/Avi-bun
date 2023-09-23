@@ -14,7 +14,7 @@
     "prisma:generate": "bunx prisma generate",
     "prisma:deploy": "bunx prisma migrate deploy",
     "prisma:dev": "bunx prisma migrate dev",
-    "prisma:seed": "npm run run-bin ./bin/seed.database"
+    "prisma:seed": "bun ./scripts/seed.ts"
   },
   "devDependencies": {
     "@prisma/generator-helper": "^5.3.1",

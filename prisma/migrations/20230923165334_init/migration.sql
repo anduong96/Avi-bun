@@ -5,7 +5,7 @@ CREATE TYPE "ImageType" AS ENUM ('SVG', 'PNG');
 CREATE TYPE "AlertChannel" AS ENUM ('PUSH');
 
 -- CreateEnum
-CREATE TYPE "FlightVendor" AS ENUM ('FLIGHT_STATS');
+CREATE TYPE "FlightVendor" AS ENUM ('FLIGHT_STATS', 'AERO_DATA_BOX');
 
 -- CreateEnum
 CREATE TYPE "ValueType" AS ENUM ('NUMBER', 'STRING', 'DATE', 'BOOLEAN');
@@ -76,20 +76,15 @@ CREATE TABLE "Flight" (
     "departureDate" DATE NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "flightNumber" TEXT NOT NULL,
-    "vendor" "FlightVendor" NOT NULL,
-    "aircraftIata" TEXT,
     "aircraftTailnumber" TEXT,
-    "vendorResourceID" TEXT,
     "status" "FlightStatus" NOT NULL,
     "totalDistanceKm" INTEGER DEFAULT 0,
     "originIata" TEXT NOT NULL,
-    "originTimezone" TEXT NOT NULL,
     "originGate" TEXT,
     "originTerminal" TEXT,
     "destinationIata" TEXT NOT NULL,
     "destinationGate" TEXT,
     "destinationTerminal" TEXT,
-    "destinationTimezone" TEXT,
     "destinationBaggageClaim" TEXT,
     "scheduledGateDeparture" TIMESTAMP(3) NOT NULL,
     "estimatedGateDeparture" TIMESTAMP(3) NOT NULL,
@@ -103,11 +98,21 @@ CREATE TABLE "Flight" (
 );
 
 -- CreateTable
+CREATE TABLE "FlightVendorConnection" (
+    "id" SERIAL NOT NULL,
+    "vendor" "FlightVendor" NOT NULL,
+    "vendorResourceID" TEXT NOT NULL,
+    "flightID" TEXT NOT NULL,
+
+    CONSTRAINT "FlightVendorConnection_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Aircraft" (
     "id" SERIAL NOT NULL,
-    "iata" TEXT NOT NULL,
+    "iata" TEXT,
     "icao" TEXT,
-    "name" TEXT NOT NULL,
+    "model" TEXT NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "description" TEXT,
     "tailNumber" TEXT NOT NULL,
@@ -286,7 +291,10 @@ CREATE INDEX "Flight_originIata_idx" ON "Flight"("originIata");
 CREATE INDEX "Flight_destinationIata_idx" ON "Flight"("destinationIata");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Flight_vendor_vendorResourceID_key" ON "Flight"("vendor", "vendorResourceID");
+CREATE UNIQUE INDEX "Flight_airlineIata_flightNumber_originIata_destinationIata__key" ON "Flight"("airlineIata", "flightNumber", "originIata", "destinationIata", "departureDate");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "FlightVendorConnection_flightID_vendor_key" ON "FlightVendorConnection"("flightID", "vendor");
 
 -- CreateIndex
 CREATE INDEX "Aircraft_icao_idx" ON "Aircraft"("icao");
@@ -343,6 +351,15 @@ ALTER TABLE "Flight" ADD CONSTRAINT "Flight_originIata_fkey" FOREIGN KEY ("origi
 ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationIata_fkey" FOREIGN KEY ("destinationIata") REFERENCES "Airport"("iata") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_fkey" FOREIGN KEY ("airlineIata") REFERENCES "Airline"("iata") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_flightNumber_airlineIata_originIata_destinationIata_fkey" FOREIGN KEY ("flightNumber", "airlineIata", "originIata", "destinationIata") REFERENCES "FlightPromptness"("flightNumber", "airlineIata", "originIata", "destinationIata") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FlightVendorConnection" ADD CONSTRAINT "FlightVendorConnection_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "AircraftPosition" ADD CONSTRAINT "AircraftPosition_aircraftID_fkey" FOREIGN KEY ("aircraftID") REFERENCES "Aircraft"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -350,9 +367,6 @@ ALTER TABLE "FlightPosition" ADD CONSTRAINT "FlightPosition_flightID_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "FlightPlan" ADD CONSTRAINT "FlightPlan_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FlightAlert" ADD CONSTRAINT "FlightAlert_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserFlight" ADD CONSTRAINT "UserFlight_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

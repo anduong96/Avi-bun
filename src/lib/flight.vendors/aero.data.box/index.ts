@@ -2,8 +2,11 @@ import { AeroDataBoxAircraft, AeroDataBoxFlight } from './types';
 
 import { ENV } from '@app/env';
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
+import { PartialBy } from '@app/types/common';
+import { FlightQueryParam } from '@app/types/flight';
+import axios, { AxiosError } from 'axios';
 import moment from 'moment';
+import { tryNice } from 'try-nice';
 
 /**
  * @see https://doc.aerodatabox.com
@@ -41,22 +44,33 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
     return response.data;
   }
 
-  async getFlights(args: {
-    airlineIata: string;
-    flightNumber: string;
-    date?: Date;
-  }) {
+  async getFlights(args: PartialBy<FlightQueryParam, 'departureDate'>) {
     const flightNum = `${args.airlineIata}${args.flightNumber}`;
-    const route = args.date
-      ? `/flights/%7BsearchBy%7D/${flightNum}/${this.getDateStr(args.date)}`
-      : `/flights/number/${flightNum}`;
+    const route = !args.departureDate
+      ? `/flights/number/${flightNum}`
+      : `/flights/number/${flightNum}/${this.getDateStr(args.departureDate)}`;
 
-    const response = await this.client.get<AeroDataBoxFlight[]>(route, {
-      params: {
-        withLocation: false,
-        withAircraftImage: false,
-      },
-    });
+    this.logger.debug(
+      'Getting flights from route[%s%s] args[%o]',
+      this.client.defaults.baseURL,
+      route,
+      args,
+    );
+
+    const [response, error] = await tryNice(() =>
+      this.client.get<AeroDataBoxFlight[]>(route, {
+        params: {
+          // withLocation: false,
+          // withAircraftImage: false,
+        },
+      }),
+    );
+
+    if (!response) {
+      const axiosError = error as AxiosError;
+      this.logger.error(route, axiosError.message);
+      return [];
+    }
 
     return response.data;
   }

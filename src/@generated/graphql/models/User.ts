@@ -1,7 +1,7 @@
 import { Field, ObjectType, ID } from 'type-graphql';
 
-@ObjectType('UserSchema')
-export class GQL_UserSchema {
+@ObjectType('User')
+export class GQL_User {
   @Field(() => ID)
   id: string;
 

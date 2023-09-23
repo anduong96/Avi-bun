@@ -233,10 +233,10 @@ CREATE TABLE "FlightPromptness" (
 );
 
 -- CreateTable
-CREATE TABLE "UserSchema" (
+CREATE TABLE "User" (
     "id" TEXT NOT NULL,
 
-    CONSTRAINT "UserSchema_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

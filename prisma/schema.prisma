@@ -312,7 +312,7 @@ model FlightPromptness {
   @@index([vendor])
 }
 
-model UserSchema {
+model User {
   id String @id
 }
 

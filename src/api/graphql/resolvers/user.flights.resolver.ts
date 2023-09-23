@@ -89,6 +89,7 @@ export class UserFlightResolver {
     return flight;
   }
 
+  @Authorized()
   @Mutation(() => String)
   async deleteUserFlight(
     @CurrentUserID() userID: string,
@@ -104,6 +105,29 @@ export class UserFlightResolver {
     });
 
     return flightID;
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async addUserFlight(
+    @CurrentUserID() userID: string,
+    @Arg('flightID') flightID: string,
+  ): Promise<string> {
+    const record = await prisma.userFlight.upsert({
+      where: {
+        flightID_userID: {
+          userID,
+          flightID,
+        },
+      },
+      create: {
+        userID,
+        flightID,
+      },
+      update: {},
+    });
+
+    return record.id;
   }
 
   @FieldResolver(() => GQL_Flight)

@@ -112,6 +112,7 @@ scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/fi
 
 type Mutation {
   _sendFlightNotification(body: String!, data: JSON, flightID: String!, title: String!): Float!
+  addUserFlight(flightID: String!): String!
   deleteUserFlight(flightID: String!): String!
 }
 

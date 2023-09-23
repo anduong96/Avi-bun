@@ -49,7 +49,10 @@ export async function sendFlightAlert(
       responseID: response.messageId,
       recordID: entry.id,
     });
-  } catch (e) {
-    Logger.error(e, 'Failed to send flight alert');
+
+    return response.messageId;
+  } catch (error) {
+    Logger.error(error, 'Failed to send flight alert');
+    throw error;
   }
 }

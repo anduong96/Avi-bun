@@ -18,6 +18,17 @@ enum FlightStatus {
   SCHEDULED
 }
 
+type GQL_Airline {
+  iata: String!
+  id: ID!
+  isLowCost: Boolean!
+  logoCompactImageType: ImageType!
+  logoCompactImageURL: String!
+  logoFullImageType: ImageType!
+  logoFullImageURL: String!
+  name: String!
+}
+
 type GQL_Airport {
   cityCode: String!
   cityName: String!
@@ -69,11 +80,24 @@ type GQL_UserFlight {
   userID: String!
 }
 
+enum ImageType {
+  PNG
+  SVG
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
 type Mutation {
+  _sendFlightNotification(body: String!, data: JSON!, flightID: String!, title: String!): Float!
   deleteUserFlight(flightID: String!): String!
 }
 
 type Query {
+  airline(iata: String!): GQL_Airline!
+  airlines: [GQL_Airline!]!
   airport(iata: String!): GQL_Airport!
   flights(airlineIata: String!, departureDate: DateTimeISO!, flightNumber: String!): [GQL_Flight!]!
   userActiveFlights: [GQL_UserFlight!]!

@@ -3,6 +3,7 @@ import { FlightQueryParam } from '@app/types/flight';
 import { createFlights } from './create.flights';
 import { isEmpty } from 'lodash';
 import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
 
 export async function getFlights(
   param: FlightQueryParam,
@@ -17,8 +18,10 @@ export async function getFlights(
   });
 
   if (isEmpty(flights) && throwsIfEmpty) {
+    Logger.warn('No flights found from args', param);
     throw new Error('Flight(s) not found');
   } else if (isEmpty(flights)) {
+    Logger.warn('Flights not found, attempting creating flights', param);
     await createFlights(param);
     return getFlights(param, true);
   }

@@ -10,17 +10,19 @@ import moment from 'moment';
 import { Logger } from '../../lib/logger';
 import { tryNice } from 'try-nice';
 
-export async function createFlights(params: FlightQueryParam): Promise<number> {
+export async function createFlights(params: FlightQueryParam) {
   const remoteFlights = await AeroDataBox.getFlights(params);
 
   if (isEmpty(remoteFlights)) {
     throw new Error('No flight(s) found');
   }
 
+  Logger.debug('AeroDataBox.getFlights', remoteFlights);
+
   const payload: Prisma.FlightUncheckedCreateInput[] = remoteFlights.map(
     entry => ({
       airlineIata: entry.airline.iata,
-      flightNumber: entry.number.replace(/ /g, ''),
+      flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
       aircraftTailnumber: entry.aircraft.reg,
       originIata: entry.departure.airport.iata,
       originTerminal: entry.departure.terminal,
@@ -28,7 +30,7 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
       destinationBaggageClaim: entry.arrival.baggageBelt,
       destinationTerminal: entry.arrival.terminal,
       totalDistanceKm: entry.greatCircleDistance.km,
-      departureDate: moment(entry.departure.scheduledTimeUtc).toDate(),
+      departureDate: moment(entry.departure.scheduledTimeLocal).toDate(),
       scheduledGateDeparture: moment(entry.departure.scheduledTimeUtc).toDate(),
       estimatedGateDeparture: moment(entry.departure.scheduledTimeUtc).toDate(),
       scheduledGateArrival: moment(entry.arrival.scheduledTimeUtc).toDate(),
@@ -41,8 +43,6 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
           : FlightStatus.SCHEDULED,
     }),
   );
-
-  Logger.debug({ payload });
 
   const [result, error] = await tryNice(() =>
     prisma.$transaction(
@@ -71,5 +71,5 @@ export async function createFlights(params: FlightQueryParam): Promise<number> {
     params.departureDate.toISOString(),
   );
 
-  return result.length;
+  return result;
 }

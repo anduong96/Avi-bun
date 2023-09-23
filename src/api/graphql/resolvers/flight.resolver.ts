@@ -16,16 +16,18 @@ import {
 export class FlightResolver {
   @Authorized()
   @Query(() => [GQL_Flight])
-  flights(
+  async flights(
     @Arg('flightNumber') flightNumber: string,
     @Arg('airlineIata') airlineIata: string,
     @Arg('departureDate') departureDate: Date,
   ) {
-    return getFlights({
+    const result = await getFlights({
       airlineIata,
       flightNumber,
       departureDate,
     });
+
+    return result;
   }
 
   @Authorized()

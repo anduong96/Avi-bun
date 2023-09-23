@@ -38,7 +38,6 @@ type Flight {
   Airline: Airline!
   Destination: Airport!
   Origin: Airport!
-  Promptness: FlightPromptness
   actualGateArrival: DateTimeISO
   actualGateDeparture: DateTimeISO
   aircraftTailnumber: String

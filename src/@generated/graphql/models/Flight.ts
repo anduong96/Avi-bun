@@ -1,8 +1,7 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { Field, ID, Int, ObjectType } from 'type-graphql';
 import { GQL_FlightStatus } from '../enums/FlightStatus';
-import { GQL_Airport } from './Airport';
 import { GQL_Airline } from './Airline';
-import { GQL_FlightPromptness } from './FlightPromptness';
+import { GQL_Airport } from './Airport';
 
 @ObjectType('Flight')
 export class GQL_Flight {
@@ -77,9 +76,6 @@ export class GQL_Flight {
 
   @Field(() => GQL_Airline)
   Airline: GQL_Airline;
-
-  @Field(() => GQL_FlightPromptness, { nullable: true })
-  Promptness?: GQL_FlightPromptness;
 
   // skip overwrite 👇
 }

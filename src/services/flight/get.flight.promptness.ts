@@ -87,10 +87,16 @@ export async function getFlightPromptness(
     where: {
       id: flightID,
     },
-    include: {
-      Promptness: true,
+  });
+
+  const promptness = await prisma.flightPromptness.findFirst({
+    where: {
+      airlineIata: flight.airlineIata,
+      flightNumber: flight.flightNumber,
+      originIata: flight.originIata,
+      destinationIata: flight.destinationIata,
     },
   });
 
-  return flight.Promptness ?? upsertFlightPromptness(flight);
+  return promptness ?? upsertFlightPromptness(flight);
 }

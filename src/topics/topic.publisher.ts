@@ -5,12 +5,11 @@ import { Topic } from './topic';
 import { TopicListener } from './types';
 
 export class _TopicPublisher extends Singleton<_TopicPublisher>() {
-  private readonly listeners: Map<string, Map<Symbol, TopicListener>> =
-    new Map();
+  private readonly listeners: Map<string, TopicListener[]> = new Map();
 
-  private getTopicMap(topicKey: string) {
+  private getTopicListeners(topicKey: string) {
     if (!this.listeners.has(topicKey)) {
-      this.listeners.set(topicKey, new Map());
+      this.listeners.set(topicKey, []);
     }
 
     return this.listeners.get(topicKey)!;
@@ -30,16 +29,18 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
     topic: A,
     onTopic: TopicListener<InstanceType<A>>,
   ) {
-    const ID = Symbol();
-    const topicMap = this.getTopicMap(topic.name);
-    topicMap.set(ID, onTopic as TopicListener);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const listeners = this.getTopicListeners(topic.name);
+    const listener = onTopic as TopicListener;
+    listeners.push(listener);
 
-    const logger = this.logger;
-    logger.debug('Added listener to topic', topic.name);
+    this.logger.debug('Added listener to topic', topic.name);
 
     return function unsubscribe() {
-      topicMap.delete(ID);
-      logger.debug('Removed listener to topic', topic.name);
+      const index = self.getTopicListeners(topic.name).indexOf(listener);
+      listeners.splice(index, 1);
+      self.logger.debug('Removed listener to topic', topic.name);
     };
   }
 
@@ -50,8 +51,8 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
    */
   broadcast(topic: Topic) {
     this.logger.debug(`Broadcasting topic[${topic.key}]`);
-    const topicMap = this.getTopicMap(topic.key);
-    for (const listener of topicMap.values()) {
+    const listeners = this.getTopicListeners(topic.key);
+    for (const listener of listeners) {
       listener(topic)?.catch(noop);
     }
   }

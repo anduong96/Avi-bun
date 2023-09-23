@@ -26,11 +26,7 @@ export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
         }
 
         const duration = moment.duration(moment().diff(start)).asMilliseconds();
-
-        logger.debug({
-          duration: `${duration} ms`,
-          query,
-        });
+        logger.debug('Duration %s ms %s', duration, query);
 
         return Promise.resolve();
       },

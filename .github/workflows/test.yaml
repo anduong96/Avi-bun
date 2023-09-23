@@ -14,6 +14,9 @@ jobs:
   run-linter:
     name: Run linters
     runs-on: ubuntu-latest
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      ENV: test
 
     steps:
       - name: Check out Git repository

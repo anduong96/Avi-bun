@@ -34,7 +34,7 @@
   },
   "include": [
     "./src/**/*",
-    "__tests__/**/*",
+    "./__tests__/**/*",
     "./scripts/**/*",
     "global.d.ts",
     "./build.ts"

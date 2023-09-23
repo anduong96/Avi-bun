@@ -11,7 +11,7 @@ import { UserFlightResolver } from './resolvers/user.flights.resolver';
 
 const emitSchemaFile = isDev
   ? path.resolve(import.meta.dir, '../../../', 'schema.graphql')
-  : undefined;
+  : false;
 
 const gqlSchema = await buildSchema({
   authChecker: AuthChecker,

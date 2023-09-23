@@ -118,7 +118,7 @@ model Country {
 model Flight {
   id String @id @default(uuid())
 
-  departureDate DateTime @db.Date
+  originDepartureDate String
 
   airlineIata             String
   flightNumber            String
@@ -153,7 +153,7 @@ model Flight {
   // @skip
   FlightVendorConnection FlightVendorConnection[]
 
-  @@unique([airlineIata, flightNumber, originIata, destinationIata, departureDate])
+  @@unique([airlineIata, flightNumber, originIata, destinationIata, originDepartureDate])
   @@index([originIata])
   @@index([destinationIata])
 }

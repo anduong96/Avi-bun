@@ -6,16 +6,14 @@ describe('Flight Stats', () => {
   test('getFlightDetails', async () => {
     const airlineIata = 'AA';
     const flightNumber = '100';
-    const date = new Date();
 
     const [target] = await FlightStats.searchFlights({
       airlineIata,
       flightNumber,
-      departureDate: date,
     });
 
     const flight = await FlightStats.getFlightDetails({
-      departureDate: target.date,
+      departureDate: target.departureDate,
       flightID: target.flightID.toString(),
       airlineIata,
       flightNumber,

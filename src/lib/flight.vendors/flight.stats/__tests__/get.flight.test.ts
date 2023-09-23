@@ -38,9 +38,13 @@ describe('Flight Stats', () => {
   for (const item of flightsToTest) {
     test(`getFlightDetails: ${item.airlineIata}${item.flightNumber}`, async () => {
       const flight = await FlightStats.getFlightDetails({
-        departureDate: item.date,
         airlineIata: item.airlineIata,
         flightNumber: item.flightNumber,
+        departureDate: {
+          year: item.date.getFullYear(),
+          month: item.date.getMonth(),
+          date: item.date.getDate(),
+        },
       });
 
       const isSameDepartureDate = moment(item.date).isSame(

@@ -10,7 +10,6 @@ describe('Flight Stats', () => {
     const [flight] = await FlightStats.searchFlights({
       flightNumber,
       airlineIata,
-      departureDate: new Date(),
     });
 
     const progress = await FlightStats.getFlightProgress({

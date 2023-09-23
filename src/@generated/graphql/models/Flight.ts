@@ -10,7 +10,7 @@ export class GQL_Flight {
   id: string;
 
   @Field()
-  departureDate: Date;
+  originDepartureDate: string;
 
   @Field()
   airlineIata: string;

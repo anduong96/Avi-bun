@@ -46,11 +46,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
    * @returns The function `searchFlightsV2` is returning a Promise that resolves to the data of type
    * `FlightStatResp<FlightStatSearchItemV2[]>`.
    */
-  async searchFlights(args: {
-    airlineIata: string;
-    flightNumber: string;
-    departureDate: Date;
-  }) {
+  async searchFlights(args: { airlineIata: string; flightNumber: string }) {
     type Response = FlightStatResp<FlightStatSearchItemV2[]>;
     const route = `api-next/flight-tracker/other-days/${args.airlineIata}/${args.flightNumber}`;
     const request = await this.client.get(route);
@@ -60,10 +56,17 @@ class _FlightStats extends Singleton<_FlightStats>() {
       response.data.map(entry => {
         const dateStr = `${entry.date1}-${entry.year}`;
         const date = moment(dateStr, 'DD-MMM-YYYY');
+        const departureDate = {
+          year: date.year(),
+          month: date.month(),
+          date: date.date(),
+        };
+
         return entry.flights.map(flight => ({
           ...flight,
           flightID: parseFlightIdFromUrl(flight.url),
           date: date.toDate(),
+          departureDate,
         }));
       }),
     );
@@ -113,8 +116,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
   async getFlightDetails(args: FlightQueryParam & { flightID?: string }) {
     // https://www.flightstats.com/v2/api/extendedDetails/DL/3/2023/08/29/1208166292?rqid=80y713n5xnl
     const { airlineIata, flightID, flightNumber } = args;
-    const dateObj = moment(args.departureDate).utc();
-    const dateStr = dateObj.format('YYYY/M/D');
+    const dateStr = moment(args.departureDate).format('YYYY/M/D');
     const route = flightID
       ? `api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}/${flightID}`
       : `api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}`;

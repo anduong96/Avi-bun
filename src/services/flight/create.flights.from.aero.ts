@@ -7,8 +7,12 @@ import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightQueryParam } from '@app/types/flight';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
-import { Logger } from '../../lib/logger';
 import { tryNice } from 'try-nice';
+import { Logger } from '../../lib/logger';
+import {
+  toOriginDepartureDAteFromObj,
+  toOriginDepartureDate,
+} from './origin.departure.date';
 
 export async function createFlightsFromAeroDataBox(params: FlightQueryParam) {
   const remoteFlights = await AeroDataBox.getFlights(params);
@@ -19,29 +23,38 @@ export async function createFlightsFromAeroDataBox(params: FlightQueryParam) {
 
   Logger.debug('AeroDataBox.getFlights', remoteFlights);
 
-  const payload: Prisma.FlightUncheckedCreateInput[] = remoteFlights.map(
-    entry => ({
-      airlineIata: entry.airline.iata,
-      flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
-      aircraftTailnumber: entry.aircraft.reg,
-      originIata: entry.departure.airport.iata,
-      originTerminal: entry.departure.terminal,
-      destinationIata: entry.arrival.airport.iata,
-      destinationBaggageClaim: entry.arrival.baggageBelt,
-      destinationTerminal: entry.arrival.terminal,
-      totalDistanceKm: entry.greatCircleDistance.km,
-      departureDate: moment(entry.departure.scheduledTimeLocal).toDate(),
-      scheduledGateDeparture: moment(entry.departure.scheduledTimeUtc).toDate(),
-      estimatedGateDeparture: moment(entry.departure.scheduledTimeUtc).toDate(),
-      scheduledGateArrival: moment(entry.arrival.scheduledTimeUtc).toDate(),
-      estimatedGateArrival: moment(entry.arrival.scheduledTimeUtc).toDate(),
-      status:
-        entry.status === 'Arrived'
-          ? FlightStatus.ARRIVED
-          : entry.status === 'Departed'
-          ? FlightStatus.DEPARTED
-          : FlightStatus.SCHEDULED,
-    }),
+  const payload = await Promise.all(
+    remoteFlights.map(
+      async (entry): Promise<Prisma.FlightUncheckedCreateInput> => ({
+        airlineIata: entry.airline.iata,
+        flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
+        aircraftTailnumber: entry.aircraft.reg,
+        originIata: entry.departure.airport.iata,
+        originTerminal: entry.departure.terminal,
+        destinationIata: entry.arrival.airport.iata,
+        destinationBaggageClaim: entry.arrival.baggageBelt,
+        destinationTerminal: entry.arrival.terminal,
+        totalDistanceKm: entry.greatCircleDistance.km,
+        originDepartureDate: await toOriginDepartureDate(
+          entry.departure.scheduledTimeUtc,
+          entry.departure.airport.iata,
+        ),
+        scheduledGateDeparture: moment(
+          entry.departure.scheduledTimeUtc,
+        ).toDate(),
+        estimatedGateDeparture: moment(
+          entry.departure.scheduledTimeUtc,
+        ).toDate(),
+        scheduledGateArrival: moment(entry.arrival.scheduledTimeUtc).toDate(),
+        estimatedGateArrival: moment(entry.arrival.scheduledTimeUtc).toDate(),
+        status:
+          entry.status === 'Arrived'
+            ? FlightStatus.ARRIVED
+            : entry.status === 'Departed'
+            ? FlightStatus.DEPARTED
+            : FlightStatus.SCHEDULED,
+      }),
+    ),
   );
 
   const [result, error] = await tryNice(() =>
@@ -67,8 +80,8 @@ export async function createFlightsFromAeroDataBox(params: FlightQueryParam) {
     'Created %d for Flight[%s%s] on %s',
     result.length,
     params.airlineIata,
-    params.airlineIata,
-    params.departureDate.toISOString(),
+    params.flightNumber,
+    toOriginDepartureDAteFromObj(params.departureDate),
   );
 
   return result;

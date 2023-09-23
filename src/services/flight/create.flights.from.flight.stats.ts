@@ -5,6 +5,7 @@ import { prisma } from '@app/prisma';
 import { FlightQueryParam } from '@app/types/flight';
 import { Flight, FlightVendor } from '@prisma/client';
 import { isEmpty } from 'lodash';
+import { toOriginDepartureDAteFromObj } from './origin.departure.date';
 
 /**
  * The function `createFlightFromFlightStats` creates flights from flight data obtained from
@@ -20,7 +21,6 @@ export async function createFlightFromFlightStats(
   const remoteFlights = await FlightStats.searchFlights({
     airlineIata: param.airlineIata,
     flightNumber: param.flightNumber,
-    departureDate: param.departureDate,
   });
 
   if (isEmpty(remoteFlights)) {
@@ -31,7 +31,7 @@ export async function createFlightFromFlightStats(
     Promise.all(
       remoteFlights.map(async entry => {
         const details = await FlightStats.getFlightDetails({
-          departureDate: entry.date,
+          departureDate: entry.departureDate,
           flightID: entry.flightID,
           flightNumber: param.flightNumber,
           airlineIata: param.airlineIata,
@@ -61,18 +61,21 @@ export async function createFlightFromFlightStats(
         const estimatedGateDeparture = toDateOrNull(
           estimatedGateDepartureUTC || scheduledGateDepartureUTC,
         );
+        const originDepartureDate = toOriginDepartureDAteFromObj(
+          entry.departureDate,
+        );
 
         return await txn.flight.create({
           data: {
             FlightVendorConnection: {
               create: {
-                vendor: FlightVendor.AERO_DATA_BOX,
+                vendor: FlightVendor.FLIGHT_STATS,
                 vendorResourceID: entry.flightID,
               },
             },
             flightNumber: param.flightNumber,
             airlineIata: param.airlineIata,
-            departureDate: entry.date,
+            originDepartureDate: originDepartureDate,
             aircraftTailnumber: aircraftTailnumber,
             originIata: details.departureAirport.iata,
             originTerminal: details.departureAirport.terminal,

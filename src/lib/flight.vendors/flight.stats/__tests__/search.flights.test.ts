@@ -12,7 +12,6 @@ describe('Flight Stats', () => {
     const result = await FlightStats.searchFlights({
       airlineIata,
       flightNumber,
-      departureDate,
     });
 
     expect(result).toBeArray();
@@ -37,7 +36,6 @@ describe('Flight Stats', () => {
     const flightNumber = '2477';
 
     const result = await FlightStats.searchFlights({
-      departureDate,
       airlineIata,
       flightNumber,
     });

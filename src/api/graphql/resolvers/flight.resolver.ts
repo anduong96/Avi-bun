@@ -19,12 +19,18 @@ export class FlightResolver {
   async flights(
     @Arg('flightNumber') flightNumber: string,
     @Arg('airlineIata') airlineIata: string,
-    @Arg('departureDate') departureDate: Date,
+    @Arg('year') year: number,
+    @Arg('month') month: number,
+    @Arg('date') date: number,
   ) {
     const result = await getFlights({
       airlineIata,
       flightNumber,
-      departureDate,
+      departureDate: {
+        year,
+        month,
+        date,
+      },
     });
 
     return result;

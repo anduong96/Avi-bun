@@ -24,6 +24,19 @@ class _FlightStats extends Singleton<_FlightStats>() {
         length: 'lsew2g2m343'.length,
       }),
     },
+    headers: {
+      accept: '*/*',
+      'accept-language': 'en-US,en;q=0.9',
+      'csrf-token': '',
+      'sec-ch-ua':
+        '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"macOS"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+      'Referrer-Policy': 'no-referrer-when-downgrade',
+    },
   });
 
   /**

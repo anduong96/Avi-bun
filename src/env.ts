@@ -23,6 +23,7 @@ const schema = Yup.object({
 
   DATABASE_URL: Yup.string().when('NODE_ENV', {
     is: 'test',
+    then: schema => schema.optional(),
     otherwise: schema => schema.required(),
   }),
 

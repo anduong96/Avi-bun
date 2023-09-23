@@ -65,5 +65,6 @@ export function getAircraftFromHtml(content: string) {
     icao: getIcao($),
     model: getModel($),
     description: getDescription($),
+    html: content,
   };
 }

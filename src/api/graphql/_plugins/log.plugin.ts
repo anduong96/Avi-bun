@@ -26,8 +26,12 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
           return Promise.resolve();
         }
 
-        const duration = moment.duration(moment().diff(start)).asMilliseconds();
-        logger.debug('Duration %s ms %s', duration, query);
+        logger.debug(
+          'GQL Reqest => User[%s] Op[%s] Duration[%s ms]',
+          requestContext.contextValue.user?.uid ?? 'UNKNOWN',
+          op,
+          moment.duration(moment().diff(start)).asMilliseconds(),
+        );
 
         return Promise.resolve();
       },

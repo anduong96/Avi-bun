@@ -1,17 +1,13 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { GQL_Airport } from './Airport';
 import { GQL_FlightStatus } from '../enums/FlightStatus';
+import { GQL_Airline } from './Airline';
+import { GQL_FlightPromptness } from './FlightPromptness';
 
 @ObjectType()
 export class GQL_Flight {
   @Field(() => ID)
   id: string;
-
-  @Field(() => GQL_Airport)
-  origin: GQL_Airport;
-
-  @Field(() => GQL_Airport)
-  destination: GQL_Airport;
 
   @Field()
   departureDate: Date;
@@ -72,6 +68,18 @@ export class GQL_Flight {
 
   @Field(() => Int, { nullable: true })
   reconAttempt?: number;
+
+  @Field(() => GQL_Airport)
+  Origin: GQL_Airport;
+
+  @Field(() => GQL_Airport)
+  Destination: GQL_Airport;
+
+  @Field(() => GQL_Airline)
+  Airline: GQL_Airline;
+
+  @Field(() => GQL_FlightPromptness, { nullable: true })
+  Promptness?: GQL_FlightPromptness;
 
   // skip overwrite 👇
 }

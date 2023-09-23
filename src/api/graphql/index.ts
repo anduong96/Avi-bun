@@ -11,6 +11,7 @@ import { UserFlightResolver } from './resolvers/user.flights.resolver';
 import { AirlineResolver } from './resolvers/airline.resolver';
 import { DebugResolver } from './resolvers/_debug.resolver';
 import { NoopResolver } from './resolvers/_noop.resolver';
+import { FlightPromptnessResolver } from './resolvers/flight.promptness.resolver';
 
 const emitSchemaFile = isDev
   ? path.resolve(import.meta.dir, '../../../', 'schema.graphql')
@@ -22,6 +23,7 @@ const gqlSchema = await buildSchema({
   resolvers: [
     isDev ? DebugResolver : NoopResolver,
     FlightResolver,
+    FlightPromptnessResolver,
     AirportResolver,
     AirlineResolver,
     UserFlightResolver,

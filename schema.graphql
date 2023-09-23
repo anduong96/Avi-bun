@@ -18,6 +18,11 @@ enum FlightStatus {
   SCHEDULED
 }
 
+enum FlightVendor {
+  AERO_DATA_BOX
+  FLIGHT_STATS
+}
+
 type GQL_Airline {
   iata: String!
   id: ID!
@@ -45,12 +50,15 @@ type GQL_Airport {
 }
 
 type GQL_Flight {
+  Airline: GQL_Airline!
+  Destination: GQL_Airport!
+  Origin: GQL_Airport!
+  Promptness: GQL_FlightPromptness
   actualGateArrival: DateTimeISO
   actualGateDeparture: DateTimeISO
   aircraftTailnumber: String
   airlineIata: String!
   departureDate: DateTimeISO!
-  destination: GQL_Airport!
   destinationBaggageClaim: String
   destinationGate: String
   destinationIata: String!
@@ -59,7 +67,6 @@ type GQL_Flight {
   estimatedGateDeparture: DateTimeISO!
   flightNumber: String!
   id: ID!
-  origin: GQL_Airport!
   originGate: String
   originIata: String!
   originTerminal: String
@@ -68,6 +75,29 @@ type GQL_Flight {
   scheduledGateDeparture: DateTimeISO!
   status: FlightStatus!
   totalDistanceKm: Int
+}
+
+type GQL_FlightPromptness {
+  airlineIata: String!
+  averageDelayTimeMs: Int!
+  cancelledCount: Int!
+  createdAt: DateTimeISO!
+  daysObserved: Int!
+  destinationIata: String!
+  divertedCount: Int!
+  excessiveCount: Int!
+  expiresAt: DateTimeISO!
+  flightNumber: String!
+  flightsObservered: Int!
+  id: ID!
+  lateCount: Int!
+  onTimeCount: Int!
+  onTimePercent: Int!
+  originIata: String!
+  rating: Int!
+  updatedAt: DateTimeISO!
+  vendor: FlightVendor!
+  veryLateCount: Int!
 }
 
 type GQL_UserFlight {
@@ -99,6 +129,8 @@ type Query {
   airline(iata: String!): GQL_Airline!
   airlines: [GQL_Airline!]!
   airport(iata: String!): GQL_Airport!
+  flight(flightID: String!): GQL_Flight!
+  flightPromptness(flightID: String!): GQL_FlightPromptness!
   flights(airlineIata: String!, departureDate: DateTimeISO!, flightNumber: String!): [GQL_Flight!]!
   userActiveFlights: [GQL_UserFlight!]!
   userArchivedFlights: [GQL_UserFlight!]!

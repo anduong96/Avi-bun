@@ -63,6 +63,9 @@ model Airline {
   logoCompactImageType ImageType
   isLowCost            Boolean
 
+  // @skip
+  Flight Flight[]
+
   @@unique([iata])
 }
 
@@ -115,9 +118,6 @@ model Country {
 model Flight {
   id String @id @default(uuid())
 
-  origin      Airport @relation(references: [iata], fields: [originIata], name: "origin")
-  destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination")
-
   departureDate DateTime @db.Date
 
   airlineIata             String
@@ -140,6 +140,11 @@ model Flight {
   actualGateArrival       DateTime?
   reconAttempt            Int?         @default(0)
 
+  Origin Airport @relation(references: [iata], fields: [originIata], name: "origin")
+
+  Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination")
+
+  Airline                Airline                  @relation(fields: [airlineIata], references: [iata])
   // @skip
   UserFlight             UserFlight[]
   // @skip
@@ -148,6 +153,8 @@ model Flight {
   FlightPlan             FlightPlan?
   // @skip
   FlightVendorConnection FlightVendorConnection[]
+
+  Promptness FlightPromptness? @relation(fields: [flightNumber, airlineIata, originIata, destinationIata], references: [flightNumber, airlineIata, originIata, destinationIata])
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata, departureDate])
   @@index([originIata])
@@ -302,6 +309,9 @@ model FlightPromptness {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresAt DateTime
+
+  // @skip
+  Flight Flight[]
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata])
   @@index([expiresAt])

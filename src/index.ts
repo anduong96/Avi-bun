@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import '@app/lib/sentry';
 import '@app/scheduler';
 import '@app/topic.listeners';
 import '@app/firebase';
@@ -26,4 +27,8 @@ app.listen(ENV.PORT, server => {
       `Server listening on http://localhost:${server.port}/graphql`,
     );
   }
+});
+
+app.on('stop', async () => {
+  await prisma.$disconnect();
 });

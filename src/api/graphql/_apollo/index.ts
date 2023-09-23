@@ -15,6 +15,7 @@ import {
 import { type StartStandaloneServerOptions } from '@apollo/server/standalone';
 import { isDev } from '@app/env';
 import assert from 'assert';
+import { ApolloServerContext } from '../_context/types';
 
 export interface ServerRegistration<Path extends string = '/graphql'>
   extends Omit<StartStandaloneServerOptions<BaseContext>, 'context'> {
@@ -132,7 +133,7 @@ export const apollo = async <Path extends string = '/graphql'>({
   enablePlayground = process.env.ENV !== 'production',
   context,
   ...config
-}: ElysiaApolloConfig<Path>) =>
+}: ElysiaApolloConfig<Path, ApolloServerContext>) =>
   new ElysiaApolloServer(config).createHandler<Path>({
     context,
     path,

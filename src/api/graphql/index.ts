@@ -4,22 +4,24 @@ import path from 'path';
 import { buildSchema } from 'type-graphql';
 import { isDev } from '../../env';
 import { apollo } from './_apollo';
-import { AuthChecker, AuthCheckerContext } from './_auth/auth.checker';
-import { AirportResolver } from './resolvers/airport.resolver';
-import { FlightResolver } from './resolvers/flight.resolver';
-import { UserFlightResolver } from './resolvers/user.flights.resolver';
-import { AirlineResolver } from './resolvers/airline.resolver';
+import { validateApolloAuth } from './_auth/validate.auth';
+import { createApolloContext } from './_context/create.context';
+import { ApolloSentryPlugin } from './_plugins/sentry.plugin';
 import { DebugResolver } from './resolvers/_debug.resolver';
 import { NoopResolver } from './resolvers/_noop.resolver';
+import { AirlineResolver } from './resolvers/airline.resolver';
+import { AirportResolver } from './resolvers/airport.resolver';
 import { FlightPromptnessResolver } from './resolvers/flight.promptness.resolver';
+import { FlightResolver } from './resolvers/flight.resolver';
+import { UserFlightResolver } from './resolvers/user.flights.resolver';
 
 const emitSchemaFile = isDev
   ? path.resolve(import.meta.dir, '../../../', 'schema.graphql')
   : false;
 
 const gqlSchema = await buildSchema({
-  authChecker: AuthChecker,
   emitSchemaFile,
+  authChecker: validateApolloAuth,
   resolvers: [
     isDev ? DebugResolver : NoopResolver,
     FlightResolver,
@@ -30,18 +32,11 @@ const gqlSchema = await buildSchema({
   ],
 });
 
-export const GraphqlMiddleware = new Elysia();
-
-GraphqlMiddleware.use(
+export const GraphqlMiddleware = new Elysia().use(
   apollo({
     path: '/graphql',
     schema: gqlSchema,
-    plugins: [ApolloLogPlugin],
-    context: ({ request }): AuthCheckerContext => {
-      const authorization = request.headers.get('Authorization');
-      return {
-        authorization,
-      };
-    },
+    plugins: [ApolloLogPlugin, ApolloSentryPlugin],
+    context: createApolloContext,
   }),
 );

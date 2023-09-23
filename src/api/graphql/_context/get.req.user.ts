@@ -1,20 +1,15 @@
 import { isDev } from '@app/env';
 import { firebase } from '@app/firebase';
+import { Context } from 'elysia';
 import { DecodedIdToken } from 'firebase-admin/auth';
-import { isNil } from 'lodash';
 import { tryNice } from 'try-nice';
-import * as TypeGql from 'type-graphql';
 import { getDevUser } from './get.dev.user';
 
-export type AuthCheckerContext = {
-  authorization: string | null;
-  user?: DecodedIdToken | null;
-};
-
-export const AuthChecker: TypeGql.AuthChecker<AuthCheckerContext> = async ({
-  context,
-}) => {
-  const authorization = context.authorization || '';
+export async function getRequestUser(
+  request: Context['request'],
+): Promise<DecodedIdToken | null | undefined> {
+  const headers = request.headers;
+  const authorization = headers.get('Authorization') || '';
   const token = authorization.replace('Bearer', '').trim();
 
   let [user] = await tryNice(() =>
@@ -25,7 +20,5 @@ export const AuthChecker: TypeGql.AuthChecker<AuthCheckerContext> = async ({
     user = getDevUser();
   }
 
-  context.user = user;
-
-  return !isNil(user);
-};
+  return user;
+}

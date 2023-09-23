@@ -30,6 +30,8 @@ const schema = Yup.object({
   FIREBASE_PRIVATE_KEY: Yup.string()
     .transform((value: string) => value.replace(/\\n/g, '\n'))
     .required(),
+
+  SENTRY_DSN: Yup.string().optional(),
 });
 
 export const ENV = await schema

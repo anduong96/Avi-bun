@@ -1,12 +1,13 @@
-import { ApolloServerPlugin, BaseContext } from '@apollo/server';
+import { ApolloServerPlugin } from '@apollo/server';
 
-import { Logger } from '@app/lib/logger';
 import { isDev } from '@app/env';
+import { Logger } from '@app/lib/logger';
 import moment from 'moment';
+import { ApolloServerContext } from '../_context/types';
 
 const logger = Logger.getSubLogger({ name: 'Apollo Log' });
 
-export const ApolloLogPlugin: ApolloServerPlugin<BaseContext> = {
+export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
   async requestDidStart(requestContext) {
     const start = new Date();
     const request = requestContext.request;

@@ -1,5 +1,5 @@
 import { createParamDecorator } from 'type-graphql';
-import { AuthCheckerContext } from '../_auth/auth.checker';
+import { ApolloServerContext } from '../_context/types';
 
 /**
  * The function `CurrentUserID` is a TypeScript decorator that extracts the current user's ID from the
@@ -7,7 +7,7 @@ import { AuthCheckerContext } from '../_auth/auth.checker';
  * @returns a decorator that extracts the current user ID from the context object.
  */
 export function CurrentUserID() {
-  return createParamDecorator<AuthCheckerContext>(
+  return createParamDecorator<ApolloServerContext>(
     ({ context }) => context.user!.uid,
   );
 }

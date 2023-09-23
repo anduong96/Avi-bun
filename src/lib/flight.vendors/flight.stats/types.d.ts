@@ -242,7 +242,7 @@ export type FlightDetails = {
     name: string;
   };
   additionalFlightInfo: {
-    equipment: {
+    equipment?: {
       iata: string;
       name: string;
       tailNumber: string;

@@ -149,7 +149,7 @@ model Flight {
   // @skip
   FlightPositions        FlightPosition[]
   // @skip
-  FlightPlan             FlightPlan?
+  FlightPlan             FlightPlan[]
   // @skip
   FlightVendorConnection FlightVendorConnection[]
 
@@ -263,10 +263,9 @@ model FlightPlan {
   latitude  Int
   longitude Int
 
-  // @skip
-  Flight Flight @relation(references: [id], fields: [flightID])
+  Flight Flight? @relation(fields: [flightID], references: [id])
 
-  @@unique([flightID])
+  @@index([flightID])
 }
 
 model FlightAlert {

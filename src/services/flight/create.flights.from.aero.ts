@@ -10,7 +10,7 @@ import moment from 'moment';
 import { Logger } from '../../lib/logger';
 import { tryNice } from 'try-nice';
 
-export async function createFlights(params: FlightQueryParam) {
+export async function createFlightsFromAeroDataBox(params: FlightQueryParam) {
   const remoteFlights = await AeroDataBox.getFlights(params);
 
   if (isEmpty(remoteFlights)) {

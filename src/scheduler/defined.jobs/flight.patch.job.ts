@@ -1,26 +1,34 @@
-import CronTime from 'cron-time-generator';
+import { prisma } from '@app/prisma';
+import { patchFlight } from '@app/services/flight/patch.flight';
 import { FlightVendor } from '@prisma/client';
-import { Job } from '../job';
+import CronTime from 'cron-time-generator';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
-import { patchFlight } from '@app/services/flight/patch.flight';
-import { prisma } from '@app/prisma';
+import { Job } from '../job';
 
 export class PatchFlightsJob extends Job {
   cronTime: string = CronTime.every(5).minutes();
 
   async onProcess() {
+    const ceil = moment().add(3, 'days').toDate();
+    const floor = moment().subtract(2, 'days').toDate();
+
+    this.logger.debug('Patch flights between\n', {
+      floor,
+      ceil,
+    });
+
     const flights = await prisma.flight.findMany({
       take: 50,
       where: {
+        estimatedGateDeparture: {
+          gt: floor,
+          lt: ceil,
+        },
         FlightVendorConnection: {
           none: {
             vendor: FlightVendor.FLIGHT_STATS,
           },
-        },
-        estimatedGateDeparture: {
-          gt: moment().add(1, 'days').toDate(),
-          lt: moment().add(3, 'days').toDate(),
         },
       },
     });
@@ -30,13 +38,12 @@ export class PatchFlightsJob extends Job {
       return;
     }
 
+    this.logger.debug('Flights to patch', flights.length);
+
     const result = await Promise.allSettled(
-      flights.map(async flight => {
-        await patchFlight(flight);
-        return flight.id;
-      }),
+      flights.map(flight => patchFlight(flight).then(() => flight.id)),
     );
 
-    this.logger.info('Patched flight %o', result);
+    this.logger.info('Patched flight\n', result);
   }
 }

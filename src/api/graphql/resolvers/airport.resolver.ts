@@ -6,7 +6,7 @@ import { Arg, Query, Resolver } from 'type-graphql';
 export class AirportResolver {
   @Query(() => GQL_Airport)
   airport(@Arg('iata') iata: string) {
-    return prisma.airport.findFirst({
+    return prisma.airport.findFirstOrThrow({
       where: {
         iata,
       },

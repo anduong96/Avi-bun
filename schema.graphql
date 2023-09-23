@@ -61,6 +61,7 @@ type GQL_Flight {
 
 type GQL_UserFlight {
   createdAt: DateTimeISO!
+  flight: GQL_Flight!
   flightID: String!
   id: ID!
   shouldAlert: Boolean!
@@ -68,10 +69,15 @@ type GQL_UserFlight {
   userID: String!
 }
 
+type Mutation {
+  deleteUserFlight(flightID: String!): String!
+}
+
 type Query {
   airport(iata: String!): GQL_Airport!
   flights(airlineIata: String!, departureDate: DateTimeISO!, flightNumber: String!): [GQL_Flight!]!
   userActiveFlights: [GQL_UserFlight!]!
-  userFlights: [GQL_UserFlight!]!
-  userHasFlights: [Float!]!
+  userArchivedFlights: [GQL_UserFlight!]!
+  userFlight(flightID: String!): GQL_UserFlight
+  userHasFlights: Boolean!
 }

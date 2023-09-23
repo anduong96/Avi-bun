@@ -1,12 +1,12 @@
 import { OpenSky_Aircraft, OpenSky_AircraftPosition } from './types';
 
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
+import ky from 'ky';
 import moment from 'moment';
 
 export class OpenSky extends Singleton<OpenSky>() {
-  private readonly client = axios.create({
-    baseURL: 'https://opensky-network.org',
+  private readonly client = ky.create({
+    prefixUrl: 'https://opensky-network.org',
   });
 
   /**
@@ -20,9 +20,10 @@ export class OpenSky extends Singleton<OpenSky>() {
    * @returns the data of type `OpenSky_Aircraft` from the API response.
    */
   async getAircraft(aircraftIcao: string) {
-    const route = `/api/metadata/aircraft/icao/${aircraftIcao}`;
-    const response = await this.client.get<OpenSky_Aircraft>(route);
-    return response.data;
+    const route = `api/metadata/aircraft/icao/${aircraftIcao}`;
+    const request = await this.client.get(route);
+    const response = await request.json<OpenSky_Aircraft>();
+    return response;
   }
 
   /**
@@ -41,17 +42,18 @@ export class OpenSky extends Singleton<OpenSky>() {
    * - `timestamp`: a Date object
    */
   async getAircraftRecentPositions(aircraftIcao: string) {
-    const route = `/tracks`;
-    const response = await this.client.get<OpenSky_AircraftPosition>(route, {
-      params: {
+    const route = `tracks`;
+    const request = await this.client.get(route, {
+      searchParams: {
         icao24: aircraftIcao,
         time: new Date().valueOf(),
       },
     });
 
-    const data = response.data;
+    const response = await request.json<OpenSky_AircraftPosition>();
+
     return {
-      positions: data.path.map(position => {
+      positions: response.path.map(position => {
         const [ts, latitude, longitude, altitude, , isGrounded] = position;
         return {
           latitude,

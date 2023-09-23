@@ -38,7 +38,7 @@ describe('Flight Stats', () => {
   for (const item of flightsToTest) {
     test(`getFlightDetails: ${item.airlineIata}${item.flightNumber}`, async () => {
       const flight = await FlightStats.getFlightDetails({
-        date: item.date,
+        departureDate: item.date,
         airlineIata: item.airlineIata,
         flightNumber: item.flightNumber,
       });

@@ -1,8 +1,8 @@
-import { ADSB_AircraftTrace } from './types';
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
-import moment from 'moment';
+import ky from 'ky';
 import { toLower } from 'lodash';
+import moment from 'moment';
+import { ADSB_AircraftTrace } from './types';
 
 /**
  * Does not work right now because missing `/traces/{plane_id?}`
@@ -10,8 +10,8 @@ import { toLower } from 'lodash';
  */
 export class AdsbExchange extends Singleton<AdsbExchange>() {
   private getClient(aircraftIcao: string) {
-    return axios.create({
-      baseURL: 'https://globe.adsbexchange.com',
+    return ky.create({
+      prefixUrl: 'https://globe.adsbexchange.com',
       headers: {
         Referer: `https://globe.adsbexchange.com/?icao=${aircraftIcao}`,
       },
@@ -53,17 +53,15 @@ export class AdsbExchange extends Singleton<AdsbExchange>() {
 
   async getAircraftRecentPositions(aircraftIcao: string) {
     const route = `/data/traces/42/trace_recent_${toLower(aircraftIcao)}.json`;
-    const response =
-      await this.getClient(aircraftIcao).get<ADSB_AircraftTrace>(route);
-
-    return this.formatTraceResult(response.data);
+    const request = await this.getClient(aircraftIcao).get(route);
+    const response = await request.json<ADSB_AircraftTrace>();
+    return this.formatTraceResult(response);
   }
 
   async getAircraftFullPositions(aircraftIcao: string) {
     const route = `/data/traces/42/trace_full_${toLower(aircraftIcao)}.json`;
-    const response =
-      await this.getClient(aircraftIcao).get<ADSB_AircraftTrace>(route);
-
-    return this.formatTraceResult(response.data);
+    const request = await this.getClient(aircraftIcao).get(route);
+    const response = await request.json<ADSB_AircraftTrace>();
+    return this.formatTraceResult(response);
   }
 }

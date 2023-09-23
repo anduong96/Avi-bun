@@ -20,7 +20,7 @@ export class SyncActiveFlightsJob extends Job {
     const [result, error] = await tryNice(() =>
       FlightStats.getFlightDetails({
         flightID: flightStatsID,
-        date: flight.departureDate,
+        departureDate: flight.departureDate,
         airlineIata: flight.airlineIata,
         flightNumber: flight.flightNumber,
       }),

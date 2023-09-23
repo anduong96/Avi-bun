@@ -1,13 +1,14 @@
 import { Logger } from '@app/lib/logger';
 import { prisma } from '@app/prisma';
 import { ImageType } from '@prisma/client';
+import ky from 'ky';
 import { tryNice } from 'try-nice';
 
 const baseURL =
   'https://raw.githubusercontent.com/anduong96/airlines-logos/main';
 
 async function getData<T>(route: string) {
-  return fetch(baseURL + route).then(res => res.json<T>());
+  return ky.get(baseURL + route).then(res => res.json<T>());
 }
 
 async function populateAirlines() {

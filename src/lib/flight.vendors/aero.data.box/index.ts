@@ -4,16 +4,15 @@ import { ENV } from '@app/env';
 import { Singleton } from '@app/lib/singleton';
 import { PartialBy } from '@app/types/common';
 import { FlightQueryParam } from '@app/types/flight';
-import axios, { AxiosError } from 'axios';
+import ky from 'ky';
 import moment from 'moment';
-import { tryNice } from 'try-nice';
 
 /**
  * @see https://doc.aerodatabox.com
  */
 export class _AeroDataBox extends Singleton<_AeroDataBox>() {
-  private readonly client = axios.create({
-    baseURL: 'https://aerodatabox.p.rapidapi.com',
+  private readonly client = ky.create({
+    prefixUrl: 'https://aerodatabox.p.rapidapi.com',
     headers: {
       'X-RapidAPI-Key': ENV.AERO_DATABOX_API_KEY,
       'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com',
@@ -33,46 +32,28 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
    * API response.
    */
   async getAircraft(tailNumber: string) {
-    const route = `/aircrafts/reg/${tailNumber}`;
-    const response = await this.client.get<AeroDataBoxAircraft>(route, {
-      params: {
+    const route = `aircrafts/reg/${tailNumber}`;
+    const request = await this.client.get(route, {
+      searchParams: {
         withRegistrations: true,
         withImage: true,
       },
     });
-
-    return response.data;
+    const response = await request.json<AeroDataBoxAircraft>();
+    return response;
   }
 
   async getFlights(args: PartialBy<FlightQueryParam, 'departureDate'>) {
     const flightNum = `${args.airlineIata}${args.flightNumber}`;
     const route = !args.departureDate
-      ? `/flights/number/${flightNum}`
-      : `/flights/number/${flightNum}/${this.getDateStr(args.departureDate)}`;
+      ? `flights/number/${flightNum}`
+      : `flights/number/${flightNum}/${this.getDateStr(args.departureDate)}`;
 
-    this.logger.debug(
-      'Getting flights from route[%s%s] args[%o]',
-      this.client.defaults.baseURL,
-      route,
-      args,
-    );
+    this.logger.debug('Getting flights from route[%s] args[%o]', route, args);
 
-    const [response, error] = await tryNice(() =>
-      this.client.get<AeroDataBoxFlight[]>(route, {
-        params: {
-          // withLocation: false,
-          // withAircraftImage: false,
-        },
-      }),
-    );
-
-    if (!response) {
-      const axiosError = error as AxiosError;
-      this.logger.error(route, axiosError.message);
-      return [];
-    }
-
-    return response.data;
+    const request = await this.client.get(route);
+    const response = await request.json<AeroDataBoxFlight[]>();
+    return response;
   }
 }
 

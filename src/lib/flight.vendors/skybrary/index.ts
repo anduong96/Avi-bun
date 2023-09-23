@@ -1,14 +1,7 @@
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
 
 export class _Skybrary extends Singleton<_Skybrary>() {
-  private readonly client = axios.create({
-    baseURL: 'https://skybrary.aero',
-  });
-
-  private get baseURL(): string {
-    return this.client.defaults.baseURL!;
-  }
+  baseURL: string = 'https://skybrary.aero';
 
   /**
    * @see {@link https://skybrary.aero/sites/default/files/A319_3D.jpg}

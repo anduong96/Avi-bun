@@ -1,15 +1,15 @@
 import { AirLabsFlightResponse, AirLabsResponse } from './types';
 
 import { ENV } from '@app/env';
-import { FlightQueryParam } from '@app/types/flight';
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
+import { FlightQueryParam } from '@app/types/flight';
+import ky from 'ky';
 
 export class AirLabs extends Singleton<AirLabs>() {
-  private readonly client = axios.create({
-    baseURL: 'https://airlabs.co/api/v9',
-    params: {
-      api_key: ENV.AIR_LABS_API_KEY,
+  private readonly client = ky.create({
+    prefixUrl: 'https://airlabs.co/api/v9',
+    searchParams: {
+      api_key: ENV.AIR_LABS_API_KEY!,
     },
   });
 
@@ -24,14 +24,15 @@ export class AirLabs extends Singleton<AirLabs>() {
   ) {
     type Response = AirLabsResponse<AirLabsFlightResponse>;
 
-    const route = `/flight`;
+    const route = `flight`;
     const flightIata = args.airlineIata + args.flightNumber;
-    const response = await this.client.get<Response>(route, {
-      params: {
+    const request = await this.client.get(route, {
+      searchParams: {
         flight_iata: flightIata,
       },
     });
 
-    return response.data;
+    const response = await request.json<Response>();
+    return response;
   }
 }

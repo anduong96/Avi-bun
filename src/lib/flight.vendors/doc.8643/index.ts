@@ -1,14 +1,7 @@
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
 
 export class Doc8643 extends Singleton<Doc8643>() {
-  private readonly client = axios.create({
-    baseURL: 'https://doc8643.com',
-  });
-
-  private get baseURL(): string {
-    return this.client.defaults.baseURL as string;
-  }
+  baseURL: string = 'https://doc8643.com';
 
   /**
    * The function `get3dPhotoURL` returns a URL for a 3D photo of an aircraft based on its ICAO code.

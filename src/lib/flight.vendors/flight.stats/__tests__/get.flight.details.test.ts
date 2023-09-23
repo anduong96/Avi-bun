@@ -15,7 +15,7 @@ describe('Flight Stats', () => {
     });
 
     const flight = await FlightStats.getFlightDetails({
-      date: target.date,
+      departureDate: target.date,
       flightID: target.flightID.toString(),
       airlineIata,
       flightNumber,

@@ -1,10 +1,10 @@
-import { IataByIpResp } from './types';
 import { Singleton } from '@app/lib/singleton';
-import axios from 'axios';
+import ky from 'ky';
+import { IataByIpResp } from './types';
 
 export class TravelerPayout extends Singleton<TravelerPayout>() {
-  private readonly client = axios.create({
-    baseURL: 'https://www.travelpayouts.com',
+  private readonly client = ky.create({
+    prefixUrl: 'https://www.travelpayouts.com',
   });
 
   /**
@@ -15,12 +15,13 @@ export class TravelerPayout extends Singleton<TravelerPayout>() {
    * address.
    */
   async getIataByIP(ipAddress: string) {
-    const resp = await this.client.get<IataByIpResp>('/whereami', {
-      params: {
+    const request = await this.client.get('whereami', {
+      searchParams: {
         ip: ipAddress,
       },
     });
 
-    return resp.data.iata;
+    const response = await request.json<IataByIpResp>();
+    return response.iata;
   }
 }

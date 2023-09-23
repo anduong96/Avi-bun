@@ -1,7 +1,7 @@
 import { Field, ObjectType, ID } from 'type-graphql';
 import { GQL_ImageType } from '../enums/ImageType';
 
-@ObjectType()
+@ObjectType('Country')
 export class GQL_Country {
   @Field(() => ID)
   id: string;

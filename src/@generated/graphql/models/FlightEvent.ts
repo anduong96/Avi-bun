@@ -3,7 +3,7 @@ import { GQL_ValueType } from '../enums/ValueType';
 import { Prisma } from '@prisma/client';
 import GraphQLScalars from 'graphql-scalars';
 
-@ObjectType()
+@ObjectType('FlightEvent')
 export class GQL_FlightEvent {
   @Field(() => ID)
   id: string;

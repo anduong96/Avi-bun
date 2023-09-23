@@ -35,14 +35,14 @@ export class UserFlightResolver {
     const result = await prisma.userFlight.findMany({
       where: {
         userID,
-        flight: {
+        Flight: {
           status: {
             notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
           },
         },
       },
       orderBy: {
-        flight: {
+        Flight: {
           estimatedGateDeparture: 'asc',
         },
       },
@@ -53,20 +53,18 @@ export class UserFlightResolver {
 
   @Authorized()
   @Query(() => [GQL_UserFlight])
-  async userArchivedFlights(
-    @CurrentUserID() userID: string,
-  ): Promise<GQL_UserFlight[]> {
+  async userArchivedFlights(@CurrentUserID() userID: string) {
     const result = await prisma.userFlight.findMany({
       where: {
         userID,
-        flight: {
+        Flight: {
           status: {
             in: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
           },
         },
       },
       orderBy: {
-        flight: {
+        Flight: {
           estimatedGateDeparture: 'desc',
         },
       },
@@ -109,10 +107,14 @@ export class UserFlightResolver {
   }
 
   @FieldResolver(() => GQL_Flight)
-  flight(@Root() parent: GQL_UserFlight) {
+  Flight(@Root() root: GQL_UserFlight) {
+    if (root.Flight) {
+      return root.Flight;
+    }
+
     return prisma.flight.findFirst({
       where: {
-        id: parent.flightID,
+        id: root.flightID,
       },
     });
   }

@@ -1,8 +1,7 @@
-import { Field, ID, ObjectType } from 'type-graphql';
-import { GQL_ImageType } from '../enums/ImageType';
 import { Field, ObjectType, ID } from 'type-graphql';
+import { GQL_ImageType } from '../enums/ImageType';
 
-@ObjectType()
+@ObjectType('Airline')
 export class GQL_Airline {
   @Field(() => ID)
   id: string;

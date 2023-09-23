@@ -1,7 +1,7 @@
 import { Field, ObjectType, ID } from 'type-graphql';
 import { GQL_Flight } from './Flight';
 
-@ObjectType()
+@ObjectType('UserFlight')
 export class GQL_UserFlight {
   @Field(() => ID)
   id: string;
@@ -21,8 +21,8 @@ export class GQL_UserFlight {
   @Field()
   updatedAt: Date;
 
-  // skip overwrite 👇
-
   @Field(() => GQL_Flight)
-  flight?: GQL_Flight;
+  Flight: GQL_Flight;
+
+  // skip overwrite 👇
 }

@@ -1,10 +1,10 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
-import { GQL_Airport } from './Airport';
 import { GQL_FlightStatus } from '../enums/FlightStatus';
+import { GQL_Airport } from './Airport';
 import { GQL_Airline } from './Airline';
 import { GQL_FlightPromptness } from './FlightPromptness';
 
-@ObjectType()
+@ObjectType('Flight')
 export class GQL_Flight {
   @Field(() => ID)
   id: string;

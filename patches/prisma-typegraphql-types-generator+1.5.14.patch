@@ -1,5 +1,5 @@
 diff --git a/node_modules/prisma-typegraphql-types-generator/dist/generator.js b/node_modules/prisma-typegraphql-types-generator/dist/generator.js
-index 796d0f0..761646e 100644
+index 796d0f0..7635fc4 100644
 --- a/node_modules/prisma-typegraphql-types-generator/dist/generator.js
 +++ b/node_modules/prisma-typegraphql-types-generator/dist/generator.js
 @@ -49,6 +49,10 @@ const { version } = require('../package.json');
@@ -13,3 +13,25 @@ index 796d0f0..761646e 100644
          const extractedData = (0, extractFieldsModifications_1.ExtractFieldsModifications)(options.datamodel);
          const splitScalars = !!options.generator.config.splitScalarAndObjectTypeFields;
          const exportedNameSuffix = options.generator.config.exportedNameSuffix || '';
+@@ -227,7 +231,7 @@ const { version } = require('../package.json');
+             const classChanges = (0, restoreClassChanges_1.restoreClassChanges)(writeLocation);
+             const importsChanges = (0, restoreImportsSection_1.restoreImportsChanges)(writeLocation, modelName);
+             if (!importsChanges) {
+-                imports.push(`\n@ObjectType()`);
++                imports.push(`\n@ObjectType("${modelName.replace('GQL_', '')}")\n`);
+             }
+             const actualImportsThatChanged = importsChanges
+                 ? (await (0, format_1.format)(importsChanges
+diff --git a/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js b/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js
+index 10a3ecb..3e04f1c 100644
+--- a/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js
++++ b/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js
+@@ -2,7 +2,7 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.MODEL_TEMPLATE = void 0;
+ const MODEL_TEMPLATE = (CLASSNAME, FIELDS, CUSTOMFIELDS = '  // skip overwrite 👇\n}', EXTENDS = '') => {
+-    return `${EXTENDS.length > 0 ? '@ObjectType()\n' : ''}export class ${CLASSNAME}${EXTENDS} {
++    return `${EXTENDS.length > 0 ? `@ObjectType("${CLASSNAME.replace('GQL_', '')}")\n` : ''}export class ${CLASSNAME}${EXTENDS} {
+ ${FIELDS}
+ ${CUSTOMFIELDS}`;
+ };

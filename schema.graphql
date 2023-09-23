@@ -3,27 +3,7 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""
-A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
-"""
-scalar DateTimeISO
-
-enum FlightStatus {
-  ARCHIVED
-  ARRIVED
-  CANCELED
-  DELAYED
-  DEPARTED
-  LANDED
-  SCHEDULED
-}
-
-enum FlightVendor {
-  AERO_DATA_BOX
-  FLIGHT_STATS
-}
-
-type GQL_Airline {
+type Airline {
   iata: String!
   id: ID!
   isLowCost: Boolean!
@@ -34,7 +14,7 @@ type GQL_Airline {
   name: String!
 }
 
-type GQL_Airport {
+type Airport {
   cityCode: String!
   cityName: String!
   countryCode: String!
@@ -49,11 +29,16 @@ type GQL_Airport {
   timezone: String!
 }
 
-type GQL_Flight {
-  Airline: GQL_Airline!
-  Destination: GQL_Airport!
-  Origin: GQL_Airport!
-  Promptness: GQL_FlightPromptness
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+type Flight {
+  Airline: Airline!
+  Destination: Airport!
+  Origin: Airport!
+  Promptness: FlightPromptness
   actualGateArrival: DateTimeISO
   actualGateDeparture: DateTimeISO
   aircraftTailnumber: String
@@ -77,7 +62,7 @@ type GQL_Flight {
   totalDistanceKm: Int
 }
 
-type GQL_FlightPromptness {
+type FlightPromptness {
   airlineIata: String!
   averageDelayTimeMs: Int!
   cancelledCount: Int!
@@ -100,14 +85,19 @@ type GQL_FlightPromptness {
   veryLateCount: Int!
 }
 
-type GQL_UserFlight {
-  createdAt: DateTimeISO!
-  flight: GQL_Flight!
-  flightID: String!
-  id: ID!
-  shouldAlert: Boolean!
-  updatedAt: DateTimeISO!
-  userID: String!
+enum FlightStatus {
+  ARCHIVED
+  ARRIVED
+  CANCELED
+  DELAYED
+  DEPARTED
+  LANDED
+  SCHEDULED
+}
+
+enum FlightVendor {
+  AERO_DATA_BOX
+  FLIGHT_STATS
 }
 
 enum ImageType {
@@ -126,14 +116,25 @@ type Mutation {
 }
 
 type Query {
-  airline(iata: String!): GQL_Airline!
-  airlines: [GQL_Airline!]!
-  airport(iata: String!): GQL_Airport!
-  flight(flightID: String!): GQL_Flight!
-  flightPromptness(flightID: String!): GQL_FlightPromptness!
-  flights(airlineIata: String!, departureDate: DateTimeISO!, flightNumber: String!): [GQL_Flight!]!
-  userActiveFlights: [GQL_UserFlight!]!
-  userArchivedFlights: [GQL_UserFlight!]!
-  userFlight(flightID: String!): GQL_UserFlight
+  airline(iata: String!): Airline!
+  airlines: [Airline!]!
+  airport(iata: String!): Airport!
+  flight(flightID: String!): Flight!
+  flightPromptness(flightID: String!): FlightPromptness!
+  flights(airlineIata: String!, departureDate: DateTimeISO!, flightNumber: String!): [Flight!]!
+  userActiveFlights: [UserFlight!]!
+  userArchivedFlights: [UserFlight!]!
+  userFlight(flightID: String!): UserFlight
   userHasFlights: Boolean!
+}
+
+type UserFlight {
+  Flight: Flight!
+  createdAt: DateTimeISO!
+  flight: Flight!
+  flightID: String!
+  id: ID!
+  shouldAlert: Boolean!
+  updatedAt: DateTimeISO!
+  userID: String!
 }

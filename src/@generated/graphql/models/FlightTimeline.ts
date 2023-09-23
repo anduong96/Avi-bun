@@ -1,6 +1,6 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
 
-@ObjectType()
+@ObjectType('FlightTimeline')
 export class GQL_FlightTimeline {
   @Field(() => ID)
   id: string;

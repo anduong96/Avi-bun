@@ -1,7 +1,7 @@
 import { Field, ObjectType, Int } from 'type-graphql';
 import { GQL_AircraftPosition } from './AircraftPosition';
 
-@ObjectType()
+@ObjectType('Aircraft')
 export class GQL_Aircraft {
   @Field(() => Int)
   id: number;

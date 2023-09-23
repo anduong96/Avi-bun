@@ -1,6 +1,6 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
 
-@ObjectType()
+@ObjectType('ScheduledJob')
 export class GQL_ScheduledJob {
   @Field(() => ID)
   id: string;

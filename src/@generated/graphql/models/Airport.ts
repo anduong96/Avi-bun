@@ -1,6 +1,6 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
 
-@ObjectType()
+@ObjectType('Airport')
 export class GQL_Airport {
   @Field(() => ID)
   id: string;

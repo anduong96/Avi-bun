@@ -2,7 +2,6 @@ import { AeroDataBoxAircraft, AeroDataBoxFlight } from './types';
 
 import { ENV } from '@app/env';
 import { Singleton } from '@app/lib/singleton';
-import { PartialBy } from '@app/types/common';
 import { FlightQueryParam } from '@app/types/flight';
 import ky from 'ky';
 import moment from 'moment';
@@ -11,6 +10,7 @@ import moment from 'moment';
  * @see https://doc.aerodatabox.com
  */
 export class _AeroDataBox extends Singleton<_AeroDataBox>() {
+  private readonly DATE_FORMAT = 'YYYY-MM-DD';
   private readonly client = ky.create({
     prefixUrl: 'https://aerodatabox.p.rapidapi.com',
     headers: {
@@ -18,10 +18,6 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
       'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com',
     },
   });
-
-  private getDateStr(date: Date) {
-    return moment(date).format('YYYY-MM-DD');
-  }
 
   /**
    * The function `getAircraft` retrieves aircraft data based on a given tail number.
@@ -43,15 +39,22 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
     return response;
   }
 
-  async getFlights(args: PartialBy<FlightQueryParam, 'departureDate'>) {
+  async getFlights(args: FlightQueryParam) {
     const flightNum = `${args.airlineIata}${args.flightNumber}`;
-    const route = !args.departureDate
-      ? `flights/number/${flightNum}`
-      : `flights/number/${flightNum}/${this.getDateStr(args.departureDate)}`;
-
-    this.logger.debug('Getting flights from route[%s] args[%o]', route, args);
-
+    const { flightYear, flightMonth, flightDate } = args;
+    const departureDate = moment({
+      year: flightYear,
+      month: flightMonth,
+      date: flightDate,
+    });
+    const dateStr = departureDate.format(this.DATE_FORMAT);
+    const route = `flights/number/${flightNum}/${dateStr}`;
     const request = await this.client.get(route);
+    this.logger.debug(
+      'Getting flights from route[%s] status[%s]',
+      request.url,
+      request.status,
+    );
     const response = await request.json<AeroDataBoxFlight[]>();
     return response;
   }

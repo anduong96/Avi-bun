@@ -11,7 +11,9 @@ export async function patchFlight(
     | 'id'
     | 'airlineIata'
     | 'flightNumber'
-    | 'originDepartureDate'
+    | 'flightDate'
+    | 'flightYear'
+    | 'flightMonth'
     | 'originIata'
     | 'destinationIata'
   >,
@@ -42,34 +44,34 @@ export async function patchFlight(
       ]),
     );
 
-    const storedFlight = await prisma.flight.update({
+    const dbFlight = await prisma.flight.findFirst({
       where: {
-        airlineIata_flightNumber_originIata_destinationIata_originDepartureDate:
-          {
-            originDepartureDate: flight.originDepartureDate,
-            airlineIata: flight.airlineIata,
-            flightNumber: flight.flightNumber,
-            originIata: flight.originIata,
-            destinationIata: flight.destinationIata,
-          },
+        flightYear: flight.flightYear,
+        flightMonth: flight.flightMonth,
+        flightDate: flight.flightDate,
+        airlineIata: flight.airlineIata,
+        flightNumber: flight.flightNumber,
+        originIata: flight.originIata,
+        destinationIata: flight.destinationIata,
       },
+    });
+
+    if (!dbFlight) {
+      continue;
+    }
+
+    const vendorConn = await prisma.flightVendorConnection.create({
       data: {
-        FlightVendorConnection: {
-          create: {
-            vendor: FlightVendor.FLIGHT_STATS,
-            vendorResourceID: entry.flightID,
-          },
-        },
-      },
-      select: {
-        id: true,
+        flightID: dbFlight.id,
+        vendor: FlightVendor.FLIGHT_STATS,
+        vendorResourceID: entry.flightID,
       },
     });
 
     Logger.info(
       'Added Flight Stats ID[%s] for Flight[%s]',
       entry.flightID,
-      storedFlight.id,
+      vendorConn.id,
     );
   }
 }

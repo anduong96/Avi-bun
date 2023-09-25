@@ -73,7 +73,9 @@ CREATE TABLE "Country" (
 -- CreateTable
 CREATE TABLE "Flight" (
     "id" TEXT NOT NULL,
-    "originDepartureDate" TEXT NOT NULL,
+    "flightYear" INTEGER NOT NULL,
+    "flightMonth" INTEGER NOT NULL,
+    "flightDate" INTEGER NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "flightNumber" TEXT NOT NULL,
     "aircraftTailnumber" TEXT,
@@ -291,7 +293,7 @@ CREATE INDEX "Flight_originIata_idx" ON "Flight"("originIata");
 CREATE INDEX "Flight_destinationIata_idx" ON "Flight"("destinationIata");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Flight_airlineIata_flightNumber_originIata_destinationIata__key" ON "Flight"("airlineIata", "flightNumber", "originIata", "destinationIata", "originDepartureDate");
+CREATE UNIQUE INDEX "Flight_airlineIata_flightNumber_originIata_destinationIata__key" ON "Flight"("airlineIata", "flightNumber", "originIata", "destinationIata", "flightYear", "flightMonth", "flightDate");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FlightVendorConnection_flightID_vendor_key" ON "FlightVendorConnection"("flightID", "vendor");

@@ -7,26 +7,44 @@ import { createFlightsFromAeroDataBox } from './create.flights.from.aero';
 import moment from 'moment';
 import { createFlightFromFlightStats } from './create.flights.from.flight.stats';
 
-export async function getFlights(param: FlightQueryParam): Promise<Flight[]> {
+export async function getFlights(
+  param: FlightQueryParam,
+  throwIfNotFound = false,
+): Promise<Flight[]> {
   const flights = await prisma.flight.findMany({
     where: {
       airlineIata: param.airlineIata,
       flightNumber: param.flightNumber,
-      departureDate: param.departureDate,
+      flightYear: param.flightYear,
+      flightMonth: param.flightMonth,
+      flightDate: param.flightDate,
+    },
+    orderBy: {
+      scheduledGateDeparture: 'asc',
     },
   });
 
-  const isRequestingToday = moment().isSame(param.departureDate, 'day');
-
   if (!isEmpty(flights)) {
+    Logger.debug('%s Flights found for param[%o]', flights.length, param);
     return flights;
+  } else if (isEmpty(flights) && throwIfNotFound) {
+    throw new Error('Flight(s) not found!');
   }
 
   Logger.warn('Flights not found, attempting creating flights', param);
 
-  if (isRequestingToday) {
-    return createFlightFromFlightStats(param);
+  const today = moment();
+  const searchDate = moment({
+    year: param.flightYear,
+    month: param.flightMonth,
+    date: param.flightDate,
+  });
+
+  if (searchDate.isSame(today, 'day')) {
+    await createFlightFromFlightStats(param);
+  } else {
+    await createFlightsFromAeroDataBox(param);
   }
 
-  return createFlightsFromAeroDataBox(param);
+  return getFlights(param, true);
 }

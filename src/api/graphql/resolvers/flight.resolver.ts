@@ -26,11 +26,9 @@ export class FlightResolver {
     const result = await getFlights({
       airlineIata,
       flightNumber,
-      departureDate: {
-        year,
-        month,
-        date,
-      },
+      flightYear: year,
+      flightMonth: month,
+      flightDate: date,
     });
 
     return result;

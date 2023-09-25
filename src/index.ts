@@ -23,12 +23,14 @@ app.use(RestMiddleware);
 
 app.listen(ENV.PORT, server => {
   if (isDev) {
-    Logger.getSubLogger({ name: 'App' }).info(
-      `Server listening on http://localhost:${server.port}/graphql`,
-    );
+    Logger.info(`Server listening on http://localhost:${server.port}/graphql`);
   }
 });
 
 app.on('stop', async () => {
   await prisma.$disconnect();
+});
+
+app.on('error', event => {
+  Logger.error('Encountered an error %s \n', event.code, event.error);
 });

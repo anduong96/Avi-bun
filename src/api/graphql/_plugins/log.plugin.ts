@@ -36,7 +36,14 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
         return Promise.resolve();
       },
       didEncounterErrors(requestContext) {
-        logger.error(requestContext.errors[0], query);
+        logger.error(
+          'GQL Error => User[%s] Op[%s]',
+          requestContext.contextValue.user?.uid ?? 'UNKNOWN',
+          op,
+          requestContext.errors[0],
+          query,
+        );
+
         return Promise.resolve();
       },
     });

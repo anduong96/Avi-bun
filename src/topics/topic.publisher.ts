@@ -66,6 +66,17 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
   broadcast(topic: Topic) {
     this.broadcastAsync(topic).catch(noop);
   }
+
+  /**
+   * The function `broadcastAll` broadcasts messages for multiple topics.
+   * @param {T[]} topic - The `topic` parameter is an array of elements of type `T`, where `T` extends
+   * the `Topic` type.
+   */
+  broadcastAll<T extends Topic>(topic: T[]) {
+    for (const t of topic) {
+      this.broadcast(t);
+    }
+  }
 }
 
 export const TopicPublisher = _TopicPublisher.instance;

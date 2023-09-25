@@ -35,6 +35,8 @@ export class PatchFlightsJob extends Job {
       },
     });
 
+    this.logger.debug({ flights });
+
     if (isEmpty(flights)) {
       this.logger.debug('No flight(s) to patch');
       return;
@@ -49,3 +51,5 @@ export class PatchFlightsJob extends Job {
     this.logger.info('Patched flight\n', result);
   }
 }
+
+// new PatchFlightsJob().onProcess().catch(noop);

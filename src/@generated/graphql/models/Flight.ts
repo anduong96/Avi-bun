@@ -1,16 +1,21 @@
-import { Field, ID, Int, ObjectType } from 'type-graphql';
-import { GQL_FlightStatus } from '../enums/FlightStatus';
-import { GQL_Airline } from './Airline';
-import { GQL_Airport } from './Airport';
 import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { GQL_FlightStatus } from '../enums/FlightStatus';
+import { GQL_Airport } from './Airport';
+import { GQL_Airline } from './Airline';
 
 @ObjectType('Flight')
 export class GQL_Flight {
   @Field(() => ID)
   id: string;
 
-  @Field()
-  originDepartureDate: string;
+  @Field(() => Int)
+  flightYear: number;
+
+  @Field(() => Int)
+  flightMonth: number;
+
+  @Field(() => Int)
+  flightDate: number;
 
   @Field()
   airlineIata: string;

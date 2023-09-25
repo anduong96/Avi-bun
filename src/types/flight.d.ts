@@ -1,9 +1,6 @@
 import { Flight } from '@prisma/client';
 
-export type FlightQueryParam = Pick<Flight, 'airlineIata' | 'flightNumber'> & {
-  departureDate: {
-    year: number;
-    month: number;
-    date: number;
-  };
-};
+export type FlightQueryParam = Pick<
+  Flight,
+  'airlineIata' | 'flightNumber' | 'flightDate' | 'flightMonth' | 'flightYear'
+>;

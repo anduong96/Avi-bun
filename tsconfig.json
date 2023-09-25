@@ -37,6 +37,6 @@
     "./__tests__/**/*",
     "./scripts/**/*",
     "global.d.ts",
-    "./build.ts"
+    "./.playground/**/*"
   ]
 }

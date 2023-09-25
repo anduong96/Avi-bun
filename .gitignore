@@ -132,4 +132,5 @@ dist
 .db-*
 
 .app
+.playground
 /.DS_Store

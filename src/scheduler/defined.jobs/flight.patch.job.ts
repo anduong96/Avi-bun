@@ -45,11 +45,9 @@ export class PatchFlightsJob extends Job {
     this.logger.debug('Flights to patch', flights.length);
 
     const result = await Promise.allSettled(
-      flights.map(flight => patchFlight(flight).then(() => flight.id)),
+      flights.map(flight => patchFlight(flight).finally(() => flight.id)),
     );
 
     this.logger.info('Patched flight\n', result);
   }
 }
-
-// new PatchFlightsJob().onProcess().catch(noop);

@@ -52,6 +52,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
     type Response = FlightStatResp<FlightStatSearchItemV2[]>;
     const route = `api-next/flight-tracker/other-days/${args.airlineIata}/${args.flightNumber}`;
     const request = await this.client.get(route);
+    this.logger.debug('Search flights param[%s] url[%s]', args, request.url);
     const response = await request.json<Response>();
 
     const flights = flatten(

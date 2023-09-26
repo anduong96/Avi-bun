@@ -2,7 +2,7 @@ import { GQL_Airline } from '@app/@generated/graphql/models/Airline';
 import { GQL_Airport } from '@app/@generated/graphql/models/Airport';
 import { GQL_Flight } from '@app/@generated/graphql/models/Flight';
 import { prisma } from '@app/prisma';
-import { getFlights } from '@app/services/flight/get.flight';
+import { getFlights } from '@app/services/flight/get.flights';
 import {
   Arg,
   Authorized,

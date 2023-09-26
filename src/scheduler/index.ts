@@ -7,6 +7,7 @@ import { ArchiveFlightJob } from './defined.jobs/flight.archive.job';
 import { RemindCheckinFlightsJob } from './defined.jobs/flight.checkin.reminder.job';
 import { PatchFlightsJob } from './defined.jobs/flight.patch.job';
 import { Job } from './job';
+import { SyncActiveFlightsJob } from './defined.jobs/flight.sync.job';
 
 export class Scheduler extends Singleton<Scheduler>() {
   private readonly initiatedJobs: Map<ScheduledJob['id'], Job> = new Map();
@@ -14,6 +15,7 @@ export class Scheduler extends Singleton<Scheduler>() {
     ArchiveFlightJob,
     RemindCheckinFlightsJob,
     PatchFlightsJob,
+    SyncActiveFlightsJob,
   ];
 
   constructor() {

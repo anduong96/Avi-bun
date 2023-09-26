@@ -1,18 +1,21 @@
 import { Flight, FlightStatus, FlightVendor } from '@prisma/client';
 
-import CronTime from 'cron-time-generator';
 import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
 import { FlightStats_Status } from '@app/lib/flight.vendors/flight.stats/enums';
-import { Job } from '../job';
-import { isDev } from '@app/env';
-import moment from 'moment-timezone';
 import { prisma } from '@app/prisma';
 import { sendFlightAlert } from '@app/services/alerts/flight.alert';
-import { toFlightStatus } from '@app/lib/flight.vendors/flight.stats/utils';
+import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';
+import CronTime from 'cron-time-generator';
+import moment from 'moment-timezone';
 import { tryNice } from 'try-nice';
+import { Job } from '../job';
 
 export class SyncActiveFlightsJob extends Job {
   cronTime: string = CronTime.every(5).minutes();
+  constructor() {
+    super();
+    // this.onProcess().catch(() => {}));
+  }
 
   private async checkRemote(flight: Flight, flightStatsID: string) {
     this.logger.info(`Starting Flight: ${flight.id}`);
@@ -49,13 +52,7 @@ export class SyncActiveFlightsJob extends Job {
       return;
     }
 
-    const flightStatus = result.status.status;
-    const schedule = result.schedule;
-    const status = toFlightStatus(result);
-    const flightTitle = flight.airlineIata + flight.flightNumber;
-    const estimatedDeparture = moment(schedule.estimatedGateDepartureUTC);
-    const estimatedArrival = moment(schedule.estimatedGateArrivalUTC);
-
+    const payload = flightStatFlightToFlightPayload(result);
     const writeResult = await prisma.flight.update({
       select: {
         id: true,
@@ -64,9 +61,11 @@ export class SyncActiveFlightsJob extends Job {
         id: flight.id,
       },
       data: {
-        status,
-        estimatedGateDeparture: estimatedDeparture.toDate(),
-        estimatedGateArrival: estimatedArrival.toDate(),
+        status: payload.status,
+        estimatedGateDeparture: payload.estimatedGateDeparture,
+        estimatedGateArrival: payload.estimatedGateArrival,
+        actualGateArrival: payload.actualGateArrival,
+        actualGateDeparture: payload.actualGateDeparture,
         reconAttempt: {
           increment: 1,
         },
@@ -88,10 +87,11 @@ export class SyncActiveFlightsJob extends Job {
     });
 
     const destinationName = destination.cityName || destination.cityCode;
+    const flightTitle = payload.airlineIata + payload.flightNumber;
     //TODO: build logic engine
 
     if (
-      flightStatus === FlightStats_Status.CANCELED &&
+      result.status.status === FlightStats_Status.CANCELED &&
       flight.status !== FlightStatus.CANCELED
     ) {
       await this.notifyFlightGroup({
@@ -101,23 +101,25 @@ export class SyncActiveFlightsJob extends Job {
       });
     }
 
-    const delayDiff = estimatedDeparture.diff(flight.estimatedGateDeparture);
+    const delayDiff = moment(payload.scheduledGateDeparture).diff(
+      flight.estimatedGateDeparture,
+    );
     const delayDiffDur = moment.duration(delayDiff);
 
     this.logger.info(`Flight: ${flight.id}`, {
       delayDiff,
-      estimatedDeparture,
-      estimatedArrival,
       flight,
     });
 
     if (delayDiffDur.minutes() > 0) {
+      const title = `${flightTitle}: Delayed`;
+      const delayedTimeAt = moment(payload.estimatedGateDeparture).format('L');
+      const body = `Your flight to ${destinationName} is delayed. Expected departure at ${delayedTimeAt}`;
+
       await this.notifyFlightGroup({
         flight,
-        title: `${flightTitle}: Delayed`,
-        body: `Your flight to ${destinationName} is delayed. Expected departure at ${estimatedDeparture.format(
-          'L',
-        )}`,
+        title,
+        body,
       });
     }
   }
@@ -144,45 +146,44 @@ export class SyncActiveFlightsJob extends Job {
   }
 
   async onProcess() {
-    if (isDev) {
-      return;
-    }
+    const ceil = moment().endOf('day').add(10, 'hours').toDate();
+    const floor = moment().startOf('day').subtract(12, 'hours').toDate();
+    this.logger.debug(
+      'Syncing flights from [%s] to [%s]',
+      floor.toISOString(),
+      ceil.toISOString(),
+    );
 
-    const flights = await prisma.flight.findMany({
-      where: {
-        UserFlight: {
-          some: {
-            shouldAlert: true,
-          },
-        },
-        FlightVendorConnection: {
-          every: {
-            vendor: FlightVendor.FLIGHT_STATS,
-          },
-        },
-        status: {
-          not: FlightStatus.ARRIVED,
-        },
-        scheduledGateDeparture: {
-          gt: moment().startOf('day').subtract(12, 'hours').toDate(),
-          lt: moment().endOf('day').add(10, 'hours').toDate(),
-        },
-      },
+    const candidates = await prisma.flightVendorConnection.findMany({
       include: {
-        FlightVendorConnection: true,
+        Flight: true,
+      },
+      where: {
+        vendor: FlightVendor.FLIGHT_STATS,
+        Flight: {
+          status: {
+            notIn: [
+              FlightStatus.ARRIVED,
+              FlightStatus.CANCELED,
+              FlightStatus.ARCHIVED,
+            ],
+          },
+          scheduledGateDeparture: {
+            gt: floor,
+            lt: ceil,
+          },
+        },
       },
     });
 
-    this.logger.info('Flights to sync', flights.length);
-    await Promise.allSettled(
-      flights.map(flight =>
-        this.checkRemote(
-          flight,
-          flight.FlightVendorConnection.find(
-            entry => entry.vendor === FlightVendor.FLIGHT_STATS,
-          )!.flightID,
+    this.logger.info('Flights to sync', candidates.length);
+    const result = await Promise.allSettled(
+      candidates.map(entry =>
+        this.checkRemote(entry.Flight, entry.flightID).then(
+          () => entry.Flight.id,
         ),
       ),
     );
+    this.logger.debug('Flights synced', result);
   }
 }

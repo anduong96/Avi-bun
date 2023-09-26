@@ -163,6 +163,7 @@ export abstract class Job {
 
     if (!hasLock) {
       this._internal = next;
+      this._internal.lastRunAt = new Date();
       return;
     }
 

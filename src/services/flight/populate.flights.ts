@@ -21,9 +21,10 @@ export async function populateFlights(params: FlightQueryParam) {
     date: params.flightDate,
   });
 
-  const flights = searchDate.isSame(today, 'day')
-    ? await getFlightsPayloadFromFlightStats(params)
-    : await getFlightsPayloadFromAeroDataBox(params);
+  const flights =
+    searchDate.diff(today, 'days') > 2
+      ? await getFlightsPayloadFromFlightStats(params)
+      : await getFlightsPayloadFromAeroDataBox(params);
 
   if (isEmpty(flights)) {
     throw new Error('Flight(s) not found!');

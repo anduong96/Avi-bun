@@ -14,6 +14,9 @@ export class GQL_AircraftPosition {
   @Field(() => Int)
   longitude: number;
 
+  @Field(() => Int)
+  altitude: number;
+
   @Field()
   createdAt: Date;
 

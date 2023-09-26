@@ -4,7 +4,7 @@ import { Singleton } from '@app/lib/singleton';
 import ky from 'ky';
 import moment from 'moment';
 
-export class OpenSky extends Singleton<OpenSky>() {
+class _OpenSky extends Singleton<_OpenSky>() {
   private readonly client = ky.create({
     prefixUrl: 'https://opensky-network.org',
   });
@@ -66,3 +66,5 @@ export class OpenSky extends Singleton<OpenSky>() {
     };
   }
 }
+
+export const OpenSky = _OpenSky.instance;

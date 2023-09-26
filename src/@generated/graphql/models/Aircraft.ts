@@ -9,8 +9,8 @@ export class GQL_Aircraft {
   @Field({ nullable: true })
   iata?: string;
 
-  @Field({ nullable: true })
-  icao?: string;
+  @Field()
+  icao: string;
 
   @Field()
   model: string;

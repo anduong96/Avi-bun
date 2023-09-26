@@ -33,25 +33,16 @@ export class SyncActiveFlightsJob extends Job {
 
     if (error || !result) {
       await prisma.flight.update({
-        where: {
-          id: flight.id,
-        },
-        data: {
-          reconAttempt: {
-            increment: 1,
-          },
-        },
+        where: { id: flight.id },
+        data: { reconAttempt: { increment: 1 } },
       });
 
-      if (!result) {
-        this.logger.warn(
-          `Failed to find flight[%s] flightStatsID[%s]`,
-          flight.id,
-          flightStatsID,
-        );
-      } else if (error) {
-        this.logger.error(error);
-      }
+      this.logger.warn(
+        `Failed to find flight[%s] flightStatsID[%s]`,
+        flight.id,
+        flightStatsID,
+        error,
+      );
 
       return;
     }
@@ -76,12 +67,8 @@ export class SyncActiveFlightsJob extends Job {
     this.logger.debug('Flight[%s] updateData[%o]', flight.id, updateData);
 
     const writeResult = await prisma.flight.update({
-      select: {
-        id: true,
-      },
-      where: {
-        id: flight.id,
-      },
+      where: { id: flight.id },
+      select: { id: true },
       data: updateData,
     });
 
@@ -94,13 +81,8 @@ export class SyncActiveFlightsJob extends Job {
     }
 
     const destination = await prisma.airport.findFirstOrThrow({
-      where: {
-        iata: flight.destinationIata,
-      },
-      select: {
-        cityCode: true,
-        cityName: true,
-      },
+      where: { iata: flight.destinationIata },
+      select: { cityCode: true, cityName: true },
     });
 
     const destinationName = destination.cityName || destination.cityCode;
@@ -138,6 +120,41 @@ export class SyncActiveFlightsJob extends Job {
     }
   }
 
+  private async getFlights() {
+    const ceil = moment().endOf('day').add(10, 'hours').toDate();
+    const floor = moment().startOf('day').subtract(12, 'hours').toDate();
+    this.logger.debug(
+      'Syncing flights from [%s] to [%s]',
+      floor.toISOString(),
+      ceil.toISOString(),
+    );
+
+    const candidates = await prisma.flightVendorConnection.findMany({
+      select: {
+        Flight: true,
+        vendorResourceID: true,
+      },
+      where: {
+        vendor: FlightVendor.FLIGHT_STATS,
+        Flight: {
+          status: {
+            notIn: [
+              FlightStatus.ARRIVED,
+              FlightStatus.CANCELED,
+              FlightStatus.ARCHIVED,
+            ],
+          },
+          scheduledGateDeparture: {
+            gt: floor,
+            lt: ceil,
+          },
+        },
+      },
+    });
+
+    return candidates;
+  }
+
   /**
    * The function `notifyFlightGroup` sends a notification to a group of devices subscribed to a
    * specific flight.
@@ -159,40 +176,11 @@ export class SyncActiveFlightsJob extends Job {
     );
   }
 
-  async onProcess() {
-    const ceil = moment().endOf('day').add(10, 'hours').toDate();
-    const floor = moment().startOf('day').subtract(12, 'hours').toDate();
-    this.logger.debug(
-      'Syncing flights from [%s] to [%s]',
-      floor.toISOString(),
-      ceil.toISOString(),
-    );
-
-    const candidates = await prisma.flightVendorConnection.findMany({
-      include: {
-        Flight: true,
-      },
-      where: {
-        vendor: FlightVendor.FLIGHT_STATS,
-        Flight: {
-          status: {
-            notIn: [
-              FlightStatus.ARRIVED,
-              FlightStatus.CANCELED,
-              FlightStatus.ARCHIVED,
-            ],
-          },
-          scheduledGateDeparture: {
-            gt: floor,
-            lt: ceil,
-          },
-        },
-      },
-    });
-
-    this.logger.info('Flights to sync', candidates.length);
+  override async onProcess() {
+    const flights = await this.getFlights();
+    this.logger.info('Flights to sync', flights.length);
     const result = await Promise.allSettled(
-      candidates.map(entry =>
+      flights.map(entry =>
         this.checkRemote(entry.Flight, entry.vendorResourceID).then(
           () => entry.Flight.id,
         ),

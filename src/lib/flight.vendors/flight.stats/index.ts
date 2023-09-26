@@ -12,7 +12,7 @@ import { Singleton } from '@app/lib/singleton';
 import { FlightQueryParam } from '@app/types/flight';
 import generateUniqueId from 'generate-unique-id';
 import ky from 'ky';
-import { flatten } from 'lodash';
+import { flatten, uniqBy } from 'lodash';
 import moment from 'moment-timezone';
 import { parseFlightIdFromUrl } from './utils';
 
@@ -60,12 +60,15 @@ class _FlightStats extends Singleton<_FlightStats>() {
     }
 
     const response = await request.json<Response>();
-    this.logger.debug('Result\n%o', response);
+
     const flights = flatten(
       response.data.map(entry => {
         const dateStr = `${entry.date1}-${entry.year}`;
         const date = moment(dateStr, 'DD-MMM-YYYY');
-        return entry.flights.map(flight => ({
+        return uniqBy(
+          entry.flights,
+          flight => flight.departureAirport.iata + flight.arrivalAirport.iata,
+        ).map(flight => ({
           ...flight,
           year: date.year(),
           month: date.month(),
@@ -74,6 +77,8 @@ class _FlightStats extends Singleton<_FlightStats>() {
         }));
       }),
     );
+
+    this.logger.debug('mapped', flights);
 
     return flights;
   }
@@ -145,8 +150,6 @@ class _FlightStats extends Singleton<_FlightStats>() {
     }
 
     const response = await request.json<FlightDetails>();
-
-    this.logger.debug('Result\n%o', response);
 
     return {
       ...response,

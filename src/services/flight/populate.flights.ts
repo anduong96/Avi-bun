@@ -31,6 +31,7 @@ export async function populateFlights(params: FlightQueryParam) {
 
   try {
     Logger.debug('Creating flights for param[%o]', params);
+
     const result = await prisma.$transaction(
       flights.map(entry =>
         prisma.flight.create({

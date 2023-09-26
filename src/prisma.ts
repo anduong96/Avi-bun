@@ -1,19 +1,36 @@
 import { PrismaClient } from '@prisma/client';
 import { Logger } from './lib/logger';
 
-export const prisma = new PrismaClient();
+class _prisma extends PrismaClient {
+  static _instance: PrismaClient;
+  private static isConnected = false;
+  private logger = Logger.getSubLogger({ name: 'Prisma' });
 
-const logger = Logger.getSubLogger({ name: 'Prisma' });
-let hasConnection = false;
-export async function connectPrisma() {
-  logger.debug('Connecting to Prisma');
-
-  if (hasConnection) {
-    logger.debug('Already connected to Prisma; Disconnecting');
-    await prisma.$disconnect();
+  constructor() {
+    super();
+    this.connect();
   }
 
-  hasConnection = true;
-  await prisma.$connect();
-  logger.debug('Connected to Prisma');
+  private connect() {
+    if (!_prisma.isConnected) {
+      _prisma.isConnected = true;
+      this.$connect()
+        .then(() => {
+          this.logger.debug('Connected to Prisma');
+        })
+        .catch(error => {
+          this.logger.error('Unable to connect to Prisma', error);
+        });
+    }
+  }
+
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new this();
+    }
+
+    return this._instance;
+  }
 }
+
+export const prisma = _prisma.instance;

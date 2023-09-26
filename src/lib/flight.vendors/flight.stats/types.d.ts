@@ -346,6 +346,7 @@ export type FlightDetails = {
   };
 } & {
   [key in 'arrivalAirport' | 'departureAirport']: FlightStatAirport & {
+    baggage?: string;
     times: {
       [item in
         | 'estimatedGate'

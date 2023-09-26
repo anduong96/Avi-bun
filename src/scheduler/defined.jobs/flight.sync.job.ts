@@ -1,4 +1,4 @@
-import { Flight, FlightStatus, FlightVendor } from '@prisma/client';
+import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
 import { FlightStats_Status } from '@app/lib/flight.vendors/flight.stats/enums';
@@ -57,6 +57,24 @@ export class SyncActiveFlightsJob extends Job {
     }
 
     const payload = flightStatFlightToFlightPayload(result);
+    const updateData: Prisma.FlightUpdateInput = {
+      status: payload.status,
+      estimatedGateDeparture: payload.estimatedGateDeparture,
+      estimatedGateArrival: payload.estimatedGateArrival,
+      actualGateArrival: payload.actualGateArrival,
+      actualGateDeparture: payload.actualGateDeparture,
+      destinationBaggageClaim: payload.destinationBaggageClaim,
+      destinationGate: payload.destinationGate,
+      destinationTerminal: payload.destinationTerminal,
+      originGate: payload.originGate,
+      originTerminal: payload.originTerminal,
+      reconAttempt: {
+        increment: 1,
+      },
+    };
+
+    this.logger.debug('Flight[%s] updateData[%o]', flight.id, updateData);
+
     const writeResult = await prisma.flight.update({
       select: {
         id: true,
@@ -64,20 +82,15 @@ export class SyncActiveFlightsJob extends Job {
       where: {
         id: flight.id,
       },
-      data: {
-        status: payload.status,
-        estimatedGateDeparture: payload.estimatedGateDeparture,
-        estimatedGateArrival: payload.estimatedGateArrival,
-        actualGateArrival: payload.actualGateArrival,
-        actualGateDeparture: payload.actualGateDeparture,
-        reconAttempt: {
-          increment: 1,
-        },
-      },
+      data: updateData,
     });
 
     if (writeResult) {
-      this.logger.debug(`Updated flight: ${flight.id}`);
+      this.logger.debug(
+        `Updated flight[%s] result[%o]`,
+        flight.id,
+        writeResult,
+      );
     }
 
     const destination = await prisma.airport.findFirstOrThrow({
@@ -110,10 +123,7 @@ export class SyncActiveFlightsJob extends Job {
     );
     const delayDiffDur = moment.duration(delayDiff);
 
-    this.logger.info(`Flight: ${flight.id}`, {
-      delayDiff,
-      flight,
-    });
+    this.logger.info(`Flight[%s] diff[%s]`, flight.id, delayDiffDur);
 
     if (delayDiffDur.minutes() > 0) {
       const title = `${flightTitle}: Delayed`;

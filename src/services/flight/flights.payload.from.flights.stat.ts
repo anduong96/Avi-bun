@@ -12,6 +12,7 @@ export function flightStatFlightToFlightPayload(
   const info = flight.additionalFlightInfo;
   const schedule = flight.schedule;
   const aircraftTailnumber = info.equipment?.tailNumber;
+  const status = toFlightStatus(flight.status.status);
   const {
     scheduledGateDepartureUTC,
     scheduledGateArrivalUTC,
@@ -54,7 +55,8 @@ export function flightStatFlightToFlightPayload(
     destinationIata: flight.arrivalAirport.iata,
     destinationTerminal: flight.arrivalAirport.terminal,
     destinationGate: flight.arrivalAirport.gate,
-    status: toFlightStatus(flight.status),
+    destinationBaggageClaim: flight.arrivalAirport.baggage,
+    status: status,
     scheduledGateDeparture: scheduledGateDeparture!,
     scheduledGateArrival: scheduledGateArrival!,
     estimatedGateArrival: estimatedGateArrival!,

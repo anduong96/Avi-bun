@@ -32,7 +32,7 @@ export function toFlightStatus(
 ): FlightStatus {
   switch (status) {
     case FlightStats_Status.ARRIVED:
-      return FlightStatus.ARCHIVED;
+      return FlightStatus.ARRIVED;
 
     case FlightStats_Status.CANCELED:
       return FlightStatus.CANCELED;

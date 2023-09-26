@@ -54,6 +54,9 @@ export async function patchFlight(
         originIata: flight.originIata,
         destinationIata: flight.destinationIata,
       },
+      select: {
+        id: true,
+      },
     });
 
     if (!dbFlight) {

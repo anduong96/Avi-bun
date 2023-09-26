@@ -1,7 +1,7 @@
 import { AlertChannel, Flight } from '@prisma/client';
 
 import { BasicObject } from '@app/types/common';
-import FirebaseAdmin from 'firebase-admin';
+import { firebase } from '@app/firebase';
 import { Logger } from '../../lib/logger';
 import { buildFlightLinkData } from '../links/flight.link';
 import { merge } from 'lodash';
@@ -26,7 +26,11 @@ export async function sendFlightAlert(
   { title, body, data }: Payload,
 ) {
   try {
-    const response = await FirebaseAdmin.messaging().sendToTopic(flightID, {
+    /**
+     * Not working right now
+     * @see https://github.com/oven-sh/bun/issues/2036
+     */
+    const response = await firebase.messaging().sendToTopic(flightID, {
       data: merge(buildFlightLinkData(flightID), data),
       notification: {
         title,

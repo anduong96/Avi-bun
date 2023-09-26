@@ -56,6 +56,7 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
       request.status,
     );
     const response = await request.json<AeroDataBoxFlight[]>();
+    this.logger.debug('Result\n%o', response);
     return response;
   }
 }

@@ -53,8 +53,14 @@ class _FlightStats extends Singleton<_FlightStats>() {
     const route = `api-next/flight-tracker/other-days/${args.airlineIata}/${args.flightNumber}`;
     const request = await this.client.get(route);
     this.logger.debug('Search flights param[%s] url[%s]', args, request.url);
-    const response = await request.json<Response>();
 
+    if (!request.ok) {
+      this.logger.debug('Search flights failed');
+      return [];
+    }
+
+    const response = await request.json<Response>();
+    this.logger.debug('Result\n%o', response);
     const flights = flatten(
       response.data.map(entry => {
         const dateStr = `${entry.date1}-${entry.year}`;
@@ -134,11 +140,13 @@ class _FlightStats extends Singleton<_FlightStats>() {
       request.url,
     );
 
-    if (request.status > 299) {
+    if (!request.ok) {
       throw new Error('Failed to get flight details: ' + request.statusText);
     }
 
     const response = await request.json<FlightDetails>();
+
+    this.logger.debug('Result\n%o', response);
 
     return {
       ...response,

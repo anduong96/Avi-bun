@@ -11,7 +11,10 @@ import moment from 'moment';
  * @return {Promise<FlightPromptness>} A promise that resolves to the flight promptness object.
  */
 export async function upsertFlightPromptness(
-  flight: Flight,
+  flight: Pick<
+    Flight,
+    'airlineIata' | 'flightNumber' | 'originIata' | 'destinationIata'
+  >,
 ): Promise<FlightPromptness> {
   const remotePromptness = await FlightStats.getFlightPromptness({
     airlineIata: flight.airlineIata,
@@ -87,6 +90,12 @@ export async function getFlightPromptness(
     where: {
       id: flightID,
     },
+    select: {
+      airlineIata: true,
+      flightNumber: true,
+      originIata: true,
+      destinationIata: true,
+    },
   });
 
   const promptness = await prisma.flightPromptness.findFirst({
@@ -98,5 +107,12 @@ export async function getFlightPromptness(
     },
   });
 
-  return promptness ?? upsertFlightPromptness(flight);
+  if (
+    !promptness ||
+    moment().subtract(7, 'days').isBefore(promptness.updatedAt)
+  ) {
+    return upsertFlightPromptness(flight);
+  }
+
+  return promptness;
 }

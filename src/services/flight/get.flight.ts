@@ -3,10 +3,19 @@ import { prisma } from '@app/prisma';
 import { FlightQueryParam } from '@app/types/flight';
 import { Flight } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { createFlightsFromAeroDataBox } from './create.flights.from.aero';
-import moment from 'moment';
-import { createFlightFromFlightStats } from './create.flights.from.flight.stats';
+import { populateFlights } from './populate.flights';
 
+/**
+ * The function `getFlights` retrieves flights based on the provided parameters and throws an error if
+ * no flights are found and `throwIfNotFound` is set to true.
+ * @param {FlightQueryParam} param - The `param` parameter is an object that contains the following
+ * properties:
+ * @param [throwIfNotFound=false] - The `throwIfNotFound` parameter is a boolean flag that determines
+ * whether an error should be thrown if no flights are found for the given query parameters. If
+ * `throwIfNotFound` is set to `true`, an error will be thrown with the message "Flight(s) not found!"
+ * when no flights
+ * @returns a Promise that resolves to an array of Flight objects.
+ */
 export async function getFlights(
   param: FlightQueryParam,
   throwIfNotFound = false,
@@ -31,20 +40,7 @@ export async function getFlights(
     throw new Error('Flight(s) not found!');
   }
 
-  Logger.warn('Flights not found, attempting creating flights', param);
-
-  const today = moment();
-  const searchDate = moment({
-    year: param.flightYear,
-    month: param.flightMonth,
-    date: param.flightDate,
-  });
-
-  if (searchDate.isSame(today, 'day')) {
-    await createFlightFromFlightStats(param);
-  } else {
-    await createFlightsFromAeroDataBox(param);
-  }
+  await populateFlights(param);
 
   return getFlights(param, true);
 }

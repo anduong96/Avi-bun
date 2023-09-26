@@ -11,9 +11,9 @@ import { GraphqlMiddleware } from './api/graphql';
 import { Logger } from './lib/logger';
 import { RestMiddleware } from '@app/api/rest';
 import { Scheduler } from '@app/scheduler';
-import { prisma } from './prisma';
+import { connectPrisma, prisma } from './prisma';
 
-await prisma.$connect();
+await connectPrisma();
 await Scheduler.instance.start();
 
 const app = new Elysia();

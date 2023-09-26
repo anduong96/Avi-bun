@@ -2,7 +2,7 @@ import { Singleton } from '@app/lib/singleton';
 import { prisma } from '@app/prisma';
 import { Class } from '@app/types/class';
 import { ScheduledJob } from '@prisma/client';
-import { noop } from 'lodash';
+import { isEmpty, noop } from 'lodash';
 import { ArchiveFlightJob } from './defined.jobs/flight.archive.job';
 import { RemindCheckinFlightsJob } from './defined.jobs/flight.checkin.reminder.job';
 import { PatchFlightsJob } from './defined.jobs/flight.patch.job';
@@ -23,6 +23,11 @@ export class Scheduler extends Singleton<Scheduler>() {
 
   async start() {
     this.logger.debug('Starting scheduler');
+    if (!isEmpty(this.initiatedJobs)) {
+      this.logger.debug('Already initiated jobs');
+      return;
+    }
+
     for await (const job of this.jobsToInitiate) {
       await this.defineJob(job);
     }

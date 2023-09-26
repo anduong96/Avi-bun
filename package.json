@@ -4,7 +4,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "bun ./src/index.ts",
-    "dev": "bun --watch --inspect ./src/index.ts",
+    "dev": "bun --hot --inspect ./src/index.ts",
     "codegen": "prisma generate",
     "build": "bun build ./src/index.ts --compile --outfile .app",
     "lint": "eslint ./src/**/*.ts --fix",

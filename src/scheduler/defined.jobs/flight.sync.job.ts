@@ -14,7 +14,7 @@ export class SyncActiveFlightsJob extends Job {
   cronTime: string = CronTime.every(5).minutes();
   constructor() {
     super();
-    // this.onProcess().catch(() => {}));
+    // this.onProcess().catch(() => {});
   }
 
   private async checkRemote(flight: Flight, flightStatsID: string) {
@@ -44,7 +44,11 @@ export class SyncActiveFlightsJob extends Job {
       });
 
       if (!result) {
-        this.logger.warn(`Failed to find flight: ${flight.id}`);
+        this.logger.warn(
+          `Failed to find flight[%s] flightStatsID[%s]`,
+          flight.id,
+          flightStatsID,
+        );
       } else if (error) {
         this.logger.error(error);
       }
@@ -179,7 +183,7 @@ export class SyncActiveFlightsJob extends Job {
     this.logger.info('Flights to sync', candidates.length);
     const result = await Promise.allSettled(
       candidates.map(entry =>
-        this.checkRemote(entry.Flight, entry.flightID).then(
+        this.checkRemote(entry.Flight, entry.vendorResourceID).then(
           () => entry.Flight.id,
         ),
       ),

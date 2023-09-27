@@ -1,9 +1,9 @@
-import CronTime from 'cron-time-generator';
-import { Job } from '../job';
+import { RadarBox } from '@app/flight.vendors/radar.box';
 import { prisma } from '@app/prisma';
-import moment from 'moment';
 import { FlightStatus } from '@prisma/client';
-import { OpenSky } from '@app/flight.vendors/open.sky';
+import CronTime from 'cron-time-generator';
+import moment from 'moment';
+import { Job } from '../job';
 
 export class SyncActivePlaneLocationJob extends Job {
   override cronTime = CronTime.every(3).minutes();
@@ -16,6 +16,7 @@ export class SyncActivePlaneLocationJob extends Job {
       floor.toISOString(),
       ceil.toISOString(),
     );
+
     const flights = await prisma.flight.findMany({
       where: {
         aircraftTailnumber: {
@@ -43,26 +44,25 @@ export class SyncActivePlaneLocationJob extends Job {
   async updateAircraftPosition(tailNumber: string) {
     const aircraft = await prisma.aircraft.findFirstOrThrow({
       where: { tailNumber },
-      select: { icao: true, id: true },
+      select: { tailNumber: true, id: true },
     });
 
-    const position = await OpenSky.getAircraftRecentPositions(aircraft.icao);
-    const latestPosition = position.positions[0];
+    const position = await RadarBox.getAircraft(aircraft.tailNumber);
 
     await prisma.aircraftPosition.upsert({
       where: {
         aircraftID: aircraft.id,
       },
       update: {
-        latitude: latestPosition.latitude,
-        longitude: latestPosition.longitude,
-        altitude: latestPosition.altitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        altitude: position.altitude,
         aircraftID: aircraft.id,
       },
       create: {
-        latitude: latestPosition.latitude,
-        longitude: latestPosition.longitude,
-        altitude: latestPosition.altitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        altitude: position.altitude,
         aircraftID: aircraft.id,
       },
     });

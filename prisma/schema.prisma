@@ -197,9 +197,9 @@ model Aircraft {
 model AircraftPosition {
   id         Int      @id @default(autoincrement())
   aircraftID Int
-  latitude   Int
-  longitude  Int
-  altitude   Int
+  latitude   Int?
+  longitude  Int?
+  altitude   Int?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

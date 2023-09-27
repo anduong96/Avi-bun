@@ -8,14 +8,14 @@ export class GQL_AircraftPosition {
   @Field(() => Int)
   aircraftID: number;
 
-  @Field(() => Int)
-  latitude: number;
+  @Field(() => Int, { nullable: true })
+  latitude?: number;
 
-  @Field(() => Int)
-  longitude: number;
+  @Field(() => Int, { nullable: true })
+  longitude?: number;
 
-  @Field(() => Int)
-  altitude: number;
+  @Field(() => Int, { nullable: true })
+  altitude?: number;
 
   @Field()
   createdAt: Date;

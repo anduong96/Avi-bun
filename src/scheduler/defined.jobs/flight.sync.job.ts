@@ -14,7 +14,6 @@ export class SyncActiveFlightsJob extends Job {
   cronTime: string = CronTime.every(5).minutes();
   constructor() {
     super();
-    // this.onProcess().catch(() => {});
   }
 
   private async checkRemote(flight: Flight, flightStatsID: string) {

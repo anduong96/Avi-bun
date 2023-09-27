@@ -40,11 +40,9 @@ describe('Flight Stats', () => {
       const flight = await FlightStats.getFlightDetails({
         airlineIata: item.airlineIata,
         flightNumber: item.flightNumber,
-        departureDate: {
-          year: item.date.getFullYear(),
-          month: item.date.getMonth(),
-          date: item.date.getDate(),
-        },
+        flightYear: item.date.getFullYear(),
+        flightMonth: item.date.getMonth(),
+        flightDate: item.date.getDate(),
       });
 
       const isSameDepartureDate = moment(item.date).isSame(

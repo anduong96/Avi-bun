@@ -3,7 +3,7 @@ import { Job } from '../job';
 import { prisma } from '@app/prisma';
 import moment from 'moment';
 import { FlightStatus } from '@prisma/client';
-import { OpenSky } from '@app/lib/flight.vendors/open.sky';
+import { OpenSky } from '@app/flight.vendors/open.sky';
 
 export class SyncActivePlaneLocationJob extends Job {
   override cronTime = CronTime.every(3).minutes();

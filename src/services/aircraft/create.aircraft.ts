@@ -1,6 +1,6 @@
 import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.created.topic';
-import { Flightera } from '@app/lib/flight.vendors/flightera';
-import { Skybrary } from '@app/lib/flight.vendors/skybrary';
+import { Flightera } from '@app/flight.vendors/flightera';
+import { Skybrary } from '@app/flight.vendors/skybrary';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { prisma } from '@app/prisma';
 

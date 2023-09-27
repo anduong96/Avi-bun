@@ -1,7 +1,7 @@
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
-import { FlightStats_Status } from '@app/lib/flight.vendors/flight.stats/enums';
+import { FlightStats_Status } from '@app/flight.vendors/flight.stats/enums';
 import { prisma } from '@app/prisma';
 import { sendFlightAlert } from '@app/services/alerts/flight.alert';
 import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';

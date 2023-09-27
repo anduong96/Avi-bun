@@ -1,6 +1,6 @@
 import { toDateOrNull } from '@app/lib/date.or.null';
-import { AeroDataBox } from '@app/lib/flight.vendors/aero.data.box';
-import { AeroDataBoxFlight } from '@app/lib/flight.vendors/aero.data.box/types';
+import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
+import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
 import { FlightQueryParam } from '@app/types/flight';
 import { FlightStatus, Prisma } from '@prisma/client';
 import moment from 'moment';

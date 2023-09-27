@@ -1,4 +1,4 @@
-import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { fractionToPercent } from '@app/lib/fraction.to.percent';
 import { prisma } from '@app/prisma';
 import { Flight, FlightPromptness, FlightVendor } from '@prisma/client';

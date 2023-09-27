@@ -1,6 +1,6 @@
 import { Flight, FlightVendor } from '@prisma/client';
 
-import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { prisma } from '@app/prisma';
 import { isEmpty, pick } from 'lodash';
 import { Logger } from '../../lib/logger';

@@ -1,5 +1,5 @@
 import { toDateOrNull } from '@app/lib/date.or.null';
-import { FlightStats } from '@app/lib/flight.vendors/flight.stats';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { toFlightStatus } from '@app/flight.vendors/flight.stats/utils';
 import { Logger } from '@app/lib/logger';
 import { FlightQueryParam } from '@app/types/flight';

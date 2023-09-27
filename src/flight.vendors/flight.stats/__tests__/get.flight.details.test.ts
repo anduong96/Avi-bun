@@ -13,10 +13,12 @@ describe('Flight Stats', () => {
     });
 
     const flight = await FlightStats.getFlightDetails({
-      departureDate: target.departureDate,
       flightID: target.flightID.toString(),
       airlineIata,
       flightNumber,
+      flightYear: target.year,
+      flightMonth: target.month,
+      flightDate: target.date,
     });
 
     expect(flight).toBeTruthy();

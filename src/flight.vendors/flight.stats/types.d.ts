@@ -423,6 +423,7 @@ export type RandomFlight = {
     departureDateTime: string;
     departureGate?: string;
     departureTerminal: string;
+    tailNumber: string;
     departureTimeZone: string;
   };
 };

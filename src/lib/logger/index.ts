@@ -1,11 +1,11 @@
-import { isDev, isProd } from '@app/env';
+import { isDev, isProd, isTest } from '@app/env';
 import * as TsLog from 'tslog';
 
 export const Logger = new TsLog.Logger({
   name: 'App',
   type: 'pretty',
   hideLogPositionForProduction: isProd,
-  minLevel: isDev ? 0 : 3,
+  minLevel: isDev || isTest ? 0 : 3,
   overwrite: {
     addPlaceholders: (logObjMeta, placeholderValues) => {
       placeholderValues['filePathWithLine'] =

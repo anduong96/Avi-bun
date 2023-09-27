@@ -8,7 +8,7 @@ import {
   RandomFlight,
 } from './types';
 
-import { Singleton } from '@app/lib/singleton';
+import { Logger } from '@app/lib/logger';
 import { FlightQueryParam } from '@app/types/flight';
 import generateUniqueId from 'generate-unique-id';
 import ky from 'ky';
@@ -16,9 +16,10 @@ import { flatten, uniqBy } from 'lodash';
 import moment from 'moment-timezone';
 import { parseFlightIdFromUrl } from './utils';
 
-class _FlightStats extends Singleton<_FlightStats>() {
-  readonly BASE_URL = 'https://www.flightstats.com/v2';
-  private readonly client = ky.create({
+export class FlightStats {
+  private static readonly logger = Logger.getSubLogger({ name: this.name });
+  private static readonly BASE_URL = 'https://www.flightstats.com/v2';
+  private static readonly client = ky.create({
     prefixUrl: this.BASE_URL,
     searchParams: {
       rqid: generateUniqueId({
@@ -46,7 +47,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
    * @param args - The `args` parameter is an object that contains two properties:
    * @returns The function `searchFlights` returns an array of flight objects.
    */
-  async searchFlights(
+  static async searchFlights(
     args: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
   ) {
     type Response = FlightStatResp<FlightStatSearchItemV2[]>;
@@ -91,7 +92,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
    * @returns an object of type FlightStatAirportCondition, which represents the conditions of an
    * airport.
    */
-  async getAirportConditions(airportIata: string) {
+  static async getAirportConditions(airportIata: string) {
     const route = `api/airport/${airportIata}`;
     const request = await this.client.get(route);
     const response = await request.json<FlightStatAirportCondition>();
@@ -103,7 +104,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
    * @param args - The `args` parameter is an object that contains the following properties:
    * @returns the first element of the response array, which is of type FlightStatPromptness.
    */
-  async getFlightPromptness(args: {
+  static async getFlightPromptness(args: {
     airlineIata: string;
     flightNumber: string;
     originIata: string;
@@ -122,7 +123,9 @@ class _FlightStats extends Singleton<_FlightStats>() {
    * @returns The function `getFlightDetails` returns a promise that resolves to an object of type
    * `FlightDetails`.
    */
-  async getFlightDetails(args: FlightQueryParam & { flightID?: string }) {
+  static async getFlightDetails(
+    args: FlightQueryParam & { flightID?: string },
+  ) {
     // https://www.flightstats.com/v2/api/extendedDetails/DL/3/2023/08/29/1208166292?rqid=80y713n5xnl
 
     const date = moment({
@@ -157,7 +160,7 @@ class _FlightStats extends Singleton<_FlightStats>() {
     };
   }
 
-  async getFlightProgress(args: {
+  static async getFlightProgress(args: {
     flightID: string;
     airlineIata: string;
     flightNumber: string;
@@ -176,13 +179,13 @@ class _FlightStats extends Singleton<_FlightStats>() {
     return response.data;
   }
 
-  async getRandomFlight() {
+  static async getRandomFlight() {
     type Response = FlightStatResp<RandomFlight[]>;
     const route = 'api-next/random-flight';
     const request = await this.client.get(route);
     const response = await request.json<Response>();
-    return response.data[0]._source;
+    const flight = response.data[0]._source;
+    this.logger.debug('Random flight', flight.flightId);
+    return flight;
   }
 }
-
-export const FlightStats = _FlightStats.instance;

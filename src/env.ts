@@ -15,6 +15,7 @@ const remoteConfig: BasicObject = DOPPLER_TOKEN
  * @see {@link https://github.com/jquense/yup}
  */
 const schema = Yup.object({
+  LOG_LEVEL: Yup.string().default('debug').required(),
   PORT: Yup.number().default(3000).required(),
   NODE_ENV: Yup.string()
     .oneOf(['development', 'staging', 'test', 'production'])

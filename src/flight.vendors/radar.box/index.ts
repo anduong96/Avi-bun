@@ -5,6 +5,7 @@ import ky from 'ky';
 import { isEmpty } from 'lodash';
 import { RadarBoxCrawlData } from './types';
 import moment from 'moment';
+import { isMsOrSeconds } from '@app/lib/validators/is.ms.or.sec';
 
 export class RadarBox {
   private static readonly logger = Logger.getSubLogger({
@@ -38,9 +39,10 @@ export class RadarBox {
       const timestamps = Object.keys(data.route);
       const latestTs = timestamps[timestamps.length - 1];
       const latest = data.route[latestTs];
+      const isSeconds = isMsOrSeconds(Number(latestTs)) == 'seconds';
       lastLatitude = latest[0];
       lastLongitude = latest[1];
-      lastPositionTs = Number(latestTs);
+      lastPositionTs = Number(latestTs) * (isSeconds ? 1000 : 1);
       altitude = typeof latest[2] === 'number' ? latest[2] : null;
     }
 

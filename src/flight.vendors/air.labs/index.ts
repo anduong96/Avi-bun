@@ -1,12 +1,11 @@
 import { AirLabsFlightResponse, AirLabsResponse } from './types';
 
 import { ENV } from '@app/env';
-import { Singleton } from '@app/lib/singleton';
 import { FlightQueryParam } from '@app/types/flight';
 import ky from 'ky';
 
-export class AirLabs extends Singleton<AirLabs>() {
-  private readonly client = ky.create({
+export class AirLabs {
+  private static readonly client = ky.create({
     prefixUrl: 'https://airlabs.co/api/v9',
     searchParams: {
       api_key: ENV.AIR_LABS_API_KEY!,
@@ -19,7 +18,7 @@ export class AirLabs extends Singleton<AirLabs>() {
    * @param args - The `args` parameter is an object that contains two properties:
    * @returns the data from the API response.
    */
-  async getFlight(
+  static async getFlight(
     args: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
   ) {
     type Response = AirLabsResponse<AirLabsFlightResponse>;

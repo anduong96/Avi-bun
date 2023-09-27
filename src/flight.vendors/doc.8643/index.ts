@@ -1,7 +1,5 @@
-import { Singleton } from '@app/lib/singleton';
-
-export class Doc8643 extends Singleton<Doc8643>() {
-  baseURL: string = 'https://doc8643.com';
+export class Doc8643 {
+  static readonly baseURL: string = 'https://doc8643.com';
 
   /**
    * The function `get3dPhotoURL` returns a URL for a 3D photo of an aircraft based on its ICAO code.
@@ -9,7 +7,7 @@ export class Doc8643 extends Singleton<Doc8643>() {
    * International Civil Aviation Organization (ICAO) code of an aircraft.
    * @returns a URL string for a 3D photo of an aircraft, based on the provided aircraft ICAO code.
    */
-  get3dPhotoURL(aircraftIcao: string) {
+  static get3dPhotoURL(aircraftIcao: string) {
     return `${this.baseURL}/static/img/aircraft/3D/${aircraftIcao}.jpg`;
   }
 
@@ -21,7 +19,7 @@ export class Doc8643 extends Singleton<Doc8643>() {
    * URL is formed by appending the `aircraftIcao` value to the `/static/img/aircraft/large/` path and
    * adding the `.jpg` extension.
    */
-  getPhotoUrl(aircraftIcao: string) {
+  static getPhotoUrl(aircraftIcao: string) {
     return `${this.baseURL}/static/img/aircraft/large/${aircraftIcao}.jpg`;
   }
 }

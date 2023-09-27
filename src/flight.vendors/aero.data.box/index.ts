@@ -1,7 +1,7 @@
+import { Logger } from '@app/lib/logger';
 import { AeroDataBoxAircraft, AeroDataBoxFlight } from './types';
 
 import { ENV } from '@app/env';
-import { Singleton } from '@app/lib/singleton';
 import { FlightQueryParam } from '@app/types/flight';
 import ky from 'ky';
 import moment from 'moment';
@@ -9,9 +9,10 @@ import moment from 'moment';
 /**
  * @see https://doc.aerodatabox.com
  */
-export class _AeroDataBox extends Singleton<_AeroDataBox>() {
-  private readonly DATE_FORMAT = 'YYYY-MM-DD';
-  private readonly client = ky.create({
+export class AeroDataBox {
+  private static readonly logger = Logger.getSubLogger({ name: this.name });
+  private static readonly DATE_FORMAT = 'YYYY-MM-DD';
+  private static readonly client = ky.create({
     prefixUrl: 'https://aerodatabox.p.rapidapi.com',
     headers: {
       'X-RapidAPI-Key': ENV.AERO_DATABOX_API_KEY,
@@ -27,7 +28,7 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
    * @returns The function `getAircraft` is returning the data of type `AeroDataBoxAircraft` from the
    * API response.
    */
-  async getAircraft(tailNumber: string) {
+  static async getAircraft(tailNumber: string) {
     const route = `aircrafts/reg/${tailNumber}`;
     const request = await this.client.get(route, {
       searchParams: {
@@ -39,7 +40,7 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
     return response;
   }
 
-  async getFlights(args: FlightQueryParam) {
+  static async getFlights(args: FlightQueryParam) {
     const flightNum = `${args.airlineIata}${args.flightNumber}`;
     const { flightYear, flightMonth, flightDate } = args;
     const departureDate = moment({
@@ -60,5 +61,3 @@ export class _AeroDataBox extends Singleton<_AeroDataBox>() {
     return response;
   }
 }
-
-export const AeroDataBox = _AeroDataBox.instance;

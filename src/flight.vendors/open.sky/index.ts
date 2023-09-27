@@ -1,11 +1,10 @@
 import { OpenSky_Aircraft, OpenSky_AircraftPosition } from './types';
 
-import { Singleton } from '@app/lib/singleton';
 import ky from 'ky';
 import moment from 'moment';
 
-class _OpenSky extends Singleton<_OpenSky>() {
-  private readonly client = ky.create({
+export class OpenSky {
+  private static readonly client = ky.create({
     prefixUrl: 'https://opensky-network.org',
   });
 
@@ -19,7 +18,7 @@ class _OpenSky extends Singleton<_OpenSky>() {
    * identifier assigned to each aircraft by the International Civil Aviation Organization.
    * @returns the data of type `OpenSky_Aircraft` from the API response.
    */
-  async getAircraft(aircraftIcao: string) {
+  static async getAircraft(aircraftIcao: string) {
     const route = `api/metadata/aircraft/icao/${aircraftIcao}`;
     const request = await this.client.get(route);
     const response = await request.json<OpenSky_Aircraft>();
@@ -41,7 +40,7 @@ class _OpenSky extends Singleton<_OpenSky>() {
    * - `isGrounded`: a boolean indicating whether the aircraft is currently on the ground
    * - `timestamp`: a Date object
    */
-  async getAircraftRecentPositions(aircraftIcao: string) {
+  static async getAircraftRecentPositions(aircraftIcao: string) {
     const route = `tracks`;
     const request = await this.client.get(route, {
       searchParams: {
@@ -66,5 +65,3 @@ class _OpenSky extends Singleton<_OpenSky>() {
     };
   }
 }
-
-export const OpenSky = _OpenSky.instance;

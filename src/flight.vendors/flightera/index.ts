@@ -1,9 +1,8 @@
-import { Singleton } from '@app/lib/singleton';
 import ky from 'ky';
 import { getAircraftFromHtml } from './plane.crawl';
 
-class _Flightera extends Singleton<_Flightera>() {
-  private readonly client = ky.create({
+export class Flightera {
+  private static readonly client = ky.create({
     prefixUrl: 'https://www.flightera.net',
     timeout: 5 * 1000,
     headers: {},
@@ -18,12 +17,10 @@ class _Flightera extends Singleton<_Flightera>() {
    * @returns the result of calling the `getAircraftFromHtml` function with the `response` as an
    * argument.
    */
-  async getAircraftFromCrawl(tailNumber: string) {
+  static async getAircraftFromCrawl(tailNumber: string) {
     const route = `en/planes/${tailNumber}`;
     const response = await this.client.get(route);
     const data = await response.text();
     return getAircraftFromHtml(data);
   }
 }
-
-export const Flightera = _Flightera.instance;

@@ -1,9 +1,8 @@
-import { Singleton } from '@app/lib/singleton';
 import ky from 'ky';
 import { IataByIpResp } from './types';
 
-export class TravelerPayout extends Singleton<TravelerPayout>() {
-  private readonly client = ky.create({
+export class TravelerPayout {
+  private static readonly client = ky.create({
     prefixUrl: 'https://www.travelpayouts.com',
   });
 
@@ -14,7 +13,7 @@ export class TravelerPayout extends Singleton<TravelerPayout>() {
    * @returns the IATA code (International Air Transport Association code) associated with the given IP
    * address.
    */
-  async getIataByIP(ipAddress: string) {
+  static async getIataByIP(ipAddress: string) {
     const request = await this.client.get('whereami', {
       searchParams: {
         ip: ipAddress,

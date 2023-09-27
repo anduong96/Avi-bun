@@ -15,7 +15,7 @@ export class RadarBox {
     prefixUrl: 'https://www.radarbox.com',
   });
 
-  private static crawlAircraftHtml(html: string): RadarBoxCrawlData {
+  static crawlAircraftHtml(html: string): RadarBoxCrawlData {
     const $ = Cheerio.load(html);
     // Find the script tag containing "window.init" and get its contents
     const initScript = $('script:contains("window.init")').html();

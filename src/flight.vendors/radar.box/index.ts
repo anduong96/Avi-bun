@@ -33,6 +33,8 @@ export class RadarBox {
     let lastPositionTs = data.current.lastlalot;
     let lastLongitude = data.current.lastlo;
     let lastLatitude = data.current.lastla;
+    let updatedAt = data.current.lastlalot;
+    let flightNumberIata = data.current.fnia;
     let altitude = null;
 
     if (!isEmpty(data.route)) {
@@ -50,11 +52,14 @@ export class RadarBox {
       lastPositionTs = data.current.lastFlight.lastlalot;
       lastLongitude = data.current.lastFlight.lastlo;
       lastLatitude = data.current.lastFlight.lastla;
+      flightNumberIata = data.current.lastFlight.fnia;
+      updatedAt = data.current.lastFlight.lastlalot;
     }
 
     const timestamp = moment(lastPositionTs).toDate();
     const longitude = lastLongitude;
     const latitude = lastLatitude;
+    const updatedAtDate = moment(updatedAt).toDate();
 
     this.logger.debug('`RadarBox.getAircraft`', {
       tailNumber,
@@ -69,6 +74,9 @@ export class RadarBox {
       longitude,
       latitude,
       altitude,
+      flightNumberIata,
+      updatedAt: updatedAtDate,
+      raw: data,
     };
   }
 }

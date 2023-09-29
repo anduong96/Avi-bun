@@ -186,7 +186,7 @@ model Aircraft {
   updatedAt DateTime @updatedAt
 
   // @skip
-  AircraftPosition AircraftPosition?
+  AircraftPositions AircraftPosition[]
 
   @@unique([tailNumber])
   @@index([icao])
@@ -195,18 +195,26 @@ model Aircraft {
 }
 
 model AircraftPosition {
-  id         Int      @id @default(autoincrement())
-  aircraftID Int
-  latitude   Int?
-  longitude  Int?
-  altitude   Int?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  aircraftID      Int
+  latitude        Int?
+  longitude       Int?
+  altitude        Int?
+  flightYear      Int
+  flightMonth     Int
+  flightDate      Int
+  flightNumber    String
+  airlineIata     String
+  originIata      String
+  destinationIata String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
 
   // @skip
   Aircraft Aircraft @relation(fields: [aircraftID], references: [id])
 
-  @@unique([aircraftID])
+  @@unique([updatedAt])
+  @@index([aircraftID])
 }
 
 model FlightEvent {

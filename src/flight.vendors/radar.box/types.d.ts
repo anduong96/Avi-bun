@@ -1,16 +1,18 @@
+type FlightData = {
+  fid: number;
+  lastla: number;
+  lastlo: number;
+  lastlalot: number;
+  depsts: number;
+  arrsts: number;
+  lastlalot: number;
+  firstlalot: number;
+  svd: number;
+  fnia: string;
+};
+
 export type RadarBoxCrawlData = {
-  current: {
-    fid: number;
-    lastla: number;
-    lastlo: number;
-    lastlalot: number;
-    lastFlight: {
-      fid: number;
-      lastla: number;
-      lastlo: number;
-      lastlalot: number;
-    };
-  };
+  current: FlightData & { lastFlight: FlightData };
   route: Record<
     string,
     [

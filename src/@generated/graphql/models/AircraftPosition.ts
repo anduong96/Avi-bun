@@ -17,6 +17,27 @@ export class GQL_AircraftPosition {
   @Field(() => Int, { nullable: true })
   altitude?: number;
 
+  @Field(() => Int)
+  flightYear: number;
+
+  @Field(() => Int)
+  flightMonth: number;
+
+  @Field(() => Int)
+  flightDate: number;
+
+  @Field()
+  flightNumber: string;
+
+  @Field()
+  airlineIata: string;
+
+  @Field()
+  originIata: string;
+
+  @Field()
+  destinationIata: string;
+
   @Field()
   createdAt: Date;
 

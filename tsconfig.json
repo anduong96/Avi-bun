@@ -36,6 +36,7 @@
     "./src/**/*",
     "./__tests__/**/*",
     "./scripts/**/*",
+    "./prisma/**/*",
     "global.d.ts",
     "./.playground/**/*"
   ]

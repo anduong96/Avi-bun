@@ -33,8 +33,8 @@ export class GQL_Aircraft {
   @Field()
   updatedAt: Date;
 
-  @Field(() => GQL_AircraftPosition, { nullable: true })
-  AircraftPosition?: GQL_AircraftPosition;
+  @Field(() => [GQL_AircraftPosition])
+  AircraftPositions: GQL_AircraftPosition[];
 
   // skip overwrite 👇
 }

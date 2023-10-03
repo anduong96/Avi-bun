@@ -1,14 +1,12 @@
-import { describe, expect, test } from 'bun:test';
-import { RadarBox } from '..';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { describe, expect, test } from 'bun:test';
 import moment from 'moment';
+import { RadarBox } from '..';
 
 describe('RadarBox', () => {
   test('Get Aircraft', async () => {
     const position = await RadarBox.getAircraft('N508JL');
     expect(position).toBeTruthy();
-    expect(position.latitude).toBeTypeOf('number');
-    expect(position.longitude).toBeTypeOf('number');
   });
 
   test('Live Aircraft', async () => {

@@ -1,11 +1,10 @@
 import { Logger } from '@app/lib/logger';
-import assert from 'assert';
+import { isMsOrSeconds } from '@app/lib/validators/is.ms.or.sec';
 import * as Cheerio from 'cheerio';
 import ky from 'ky';
 import { isEmpty } from 'lodash';
-import { RadarBoxCrawlData } from './types';
 import moment from 'moment';
-import { isMsOrSeconds } from '@app/lib/validators/is.ms.or.sec';
+import { RadarBoxCrawlData } from './types';
 
 export class RadarBox {
   private static readonly logger = Logger.getSubLogger({
@@ -19,7 +18,14 @@ export class RadarBox {
     const $ = Cheerio.load(html);
     // Find the script tag containing "window.init" and get its contents
     const initScript = $('script:contains("window.init")').html();
-    assert(initScript, 'No script tag containing "window.init" found');
+    if (!initScript) {
+      this.logger.warn(
+        'No script tag containing "window.init" found\n%s',
+        html,
+      );
+
+      throw new Error('No script tag containing "window.init" found');
+    }
     // Use regular expressions to extract the value of "current" from the script
     const dataStr = initScript.replace('window.init(', '').slice(0, -1);
     const data = JSON.parse(dataStr) as RadarBoxCrawlData;

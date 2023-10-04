@@ -16,9 +16,9 @@ describe('Flight Stats', () => {
       flightID: target.flightID.toString(),
       airlineIata,
       flightNumber,
-      flightYear: target.year,
-      flightMonth: target.month,
-      flightDate: target.date,
+      flightYear: target.flightYear,
+      flightMonth: target.flightMonth,
+      flightDate: target.flightDate,
     });
 
     expect(flight).toBeTruthy();

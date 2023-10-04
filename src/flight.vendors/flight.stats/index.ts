@@ -71,9 +71,9 @@ export class FlightStats {
           flight => flight.departureAirport.iata + flight.arrivalAirport.iata,
         ).map(flight => ({
           ...flight,
-          year: date.year(),
-          month: date.month(),
-          date: date.date(),
+          flightYear: date.year(),
+          flightMonth: date.month(),
+          flightDate: date.date(),
           flightID: parseFlightIdFromUrl(flight.url),
         }));
       }),
@@ -185,7 +185,17 @@ export class FlightStats {
     const request = await this.client.get(route);
     const response = await request.json<Response>();
     const flight = response.data[0]._source;
+    const flightDepartureDate = moment(flight.departureDateTime, 'YYYY-MM-DD');
+    const flightYear = flightDepartureDate.year();
+    const flightMonth = flightDepartureDate.month();
+    const flightDate = flightDepartureDate.date();
     this.logger.debug('Random flight', flight.flightId);
-    return flight;
+
+    return {
+      ...flight,
+      flightYear,
+      flightMonth,
+      flightDate,
+    };
   }
 }

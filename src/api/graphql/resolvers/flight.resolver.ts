@@ -3,6 +3,7 @@ import { GQL_Airport } from '@app/@generated/graphql/models/Airport';
 import { GQL_Flight } from '@app/@generated/graphql/models/Flight';
 import { prisma } from '@app/prisma';
 import { getFlights } from '@app/services/flight/get.flights';
+import { getRandomFlight } from '@app/services/flight/get.random.flight';
 import {
   Arg,
   Authorized,
@@ -36,12 +37,21 @@ export class FlightResolver {
 
   @Authorized()
   @Query(() => GQL_Flight)
-  flight(@Arg('flightID') flightID: string) {
-    return prisma.flight.findFirstOrThrow({
+  async flight(@Arg('flightID') flightID: string) {
+    const flight = await prisma.flight.findFirstOrThrow({
       where: {
         id: flightID,
       },
     });
+
+    return flight;
+  }
+
+  @Authorized()
+  @Query(() => GQL_Flight)
+  async randomFlight() {
+    const flight = await getRandomFlight();
+    return flight;
   }
 
   @FieldResolver(() => GQL_Airport)

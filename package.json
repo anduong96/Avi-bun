@@ -14,7 +14,7 @@
     "prisma:generate": "bunx prisma generate",
     "prisma:deploy": "bunx prisma migrate deploy",
     "prisma:dev": "bunx prisma migrate dev",
-    "prisma:seed": "bun ./scripts/seed.ts",
+    "prisma:seed": "bun ./prisma/seed.ts",
     "ext:services": "sh ./scripts/run.services.sh",
     "ext:services:down": "sh ./scripts/down.services.sh"
   },

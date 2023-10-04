@@ -124,6 +124,7 @@ type Query {
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!
+  randomFlight: Flight!
   userActiveFlights: [UserFlight!]!
   userArchivedFlights: [UserFlight!]!
   userFlight(flightID: String!): UserFlight

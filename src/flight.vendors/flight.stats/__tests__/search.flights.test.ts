@@ -15,10 +15,11 @@ describe('Flight Stats', () => {
     expect(result).toBeArray();
     expect(result.length).toBeGreaterThan(0);
     const found = result.find(entry =>
-      moment({ date: entry.date, month: entry.month, year: entry.year }).isSame(
-        departureDate,
-        'date',
-      ),
+      moment({
+        date: entry.flightDate,
+        month: entry.flightMonth,
+        year: entry.flightYear,
+      }).isSame(departureDate, 'date'),
     );
 
     if (!found) {
@@ -43,10 +44,11 @@ describe('Flight Stats', () => {
     expect(result.length).toBeGreaterThan(0);
 
     const matches = result.filter(entry =>
-      moment({ date: entry.date, month: entry.month, year: entry.year }).isSame(
-        departureDate,
-        'date',
-      ),
+      moment({
+        date: entry.flightDate,
+        month: entry.flightMonth,
+        year: entry.flightYear,
+      }).isSame(departureDate, 'date'),
     );
 
     expect(matches.length).toBe(2);

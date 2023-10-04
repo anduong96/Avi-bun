@@ -80,9 +80,9 @@ export async function getFlightsPayloadFromFlightStats(
         flightID: entry.flightID,
         flightNumber: params.flightNumber,
         airlineIata: params.airlineIata,
-        flightYear: entry.year,
-        flightMonth: entry.month,
-        flightDate: entry.date,
+        flightYear: entry.flightYear,
+        flightMonth: entry.flightMonth,
+        flightDate: entry.flightDate,
       }),
     ),
   );

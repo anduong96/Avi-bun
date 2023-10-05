@@ -3,6 +3,37 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Aircraft {
+  AircraftPositions: [AircraftPosition!]!
+  airlineIata: String!
+  createdAt: DateTimeISO!
+  description: String
+  iata: String
+  icao: String!
+  id: Int!
+  imageURL: String
+  model: String!
+  tailNumber: String!
+  updatedAt: DateTimeISO!
+}
+
+type AircraftPosition {
+  aircraftID: Int!
+  airlineIata: String!
+  altitude: Int
+  createdAt: DateTimeISO!
+  destinationIata: String!
+  flightDate: Int!
+  flightMonth: Int!
+  flightNumber: String!
+  flightYear: Int!
+  id: Int!
+  latitude: Int
+  longitude: Int
+  originIata: String!
+  updatedAt: DateTimeISO!
+}
+
 type Airline {
   iata: String!
   id: ID!
@@ -118,6 +149,8 @@ type Mutation {
 }
 
 type Query {
+  aircraft(tailNumber: String!): Aircraft
+  aircraftPosition(aircraftID: Float!): AircraftPosition
   airline(iata: String!): Airline!
   airlines: [Airline!]!
   airport(iata: String!): Airport!

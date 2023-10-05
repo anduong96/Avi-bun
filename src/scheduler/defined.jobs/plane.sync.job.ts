@@ -44,11 +44,19 @@ export class SyncActivePlaneLocationJob extends Job {
   async updateAircraftPosition(tailNumber: string) {
     const aircraft = await prisma.aircraft.findFirstOrThrow({
       where: { tailNumber },
-      select: { id: true, tailNumber: true, airlineIata: true },
+      select: {
+        id: true,
+        tailNumber: true,
+        airlineIata: true,
+      },
     });
 
     const position = await RadarBox.getAircraft(aircraft.tailNumber);
-    const flightNumber = position.raw.current.fnia.replace(
+    if (!position) {
+      return;
+    }
+
+    const flightNumber = position?.flightNumberIata.replace(
       aircraft.airlineIata,
       '',
     );
@@ -66,7 +74,11 @@ export class SyncActivePlaneLocationJob extends Job {
         aircraftID: aircraft.id,
         airlineIata: aircraft.airlineIata,
         flightNumber: flightNumber,
-        // flightYear: position.
+        originIata: position.originIata,
+        destinationIata: position.destinationIata,
+        flightYear: position.flightDate.getFullYear(),
+        flightMonth: position.flightDate.getMonth(),
+        flightDate: position.flightDate.getDate(),
       },
     });
   }

@@ -1,8 +1,6 @@
 import { Logger } from '@app/lib/logger';
-import { isMsOrSeconds } from '@app/lib/validators/is.ms.or.sec';
 import * as Cheerio from 'cheerio';
 import ky from 'ky';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { RadarBoxCrawlData } from './types';
 
@@ -13,6 +11,7 @@ export class RadarBox {
   private static client = ky.create({
     prefixUrl: 'https://www.radarbox.com',
   });
+  private static DATE_FORMAT = 'dddd, MMMM D, YYYY';
 
   static crawlAircraftHtml(html: string): RadarBoxCrawlData {
     const $ = Cheerio.load(html);
@@ -36,53 +35,30 @@ export class RadarBox {
     const request = await this.client.get(`data/registration/${tailNumber}`);
     const html = await request.text();
     const data = this.crawlAircraftHtml(html);
-    let lastPositionTs = data.current.lastlalot;
-    let lastLongitude = data.current.lastlo;
-    let lastLatitude = data.current.lastla;
-    let updatedAt = data.current.lastlalot;
-    let flightNumberIata = data.current.fnia;
-    let altitude = null;
-
-    if (!isEmpty(data.route)) {
-      const timestamps = Object.keys(data.route);
-      const latestTs = timestamps[timestamps.length - 1];
-      const latest = data.route[latestTs];
-      const isSeconds = isMsOrSeconds(Number(latestTs)) == 'seconds';
-      lastLatitude = latest[0];
-      lastLongitude = latest[1];
-      lastPositionTs = Number(latestTs) * (isSeconds ? 1000 : 1);
-      altitude = typeof latest[2] === 'number' ? latest[2] : null;
+    if (!data.current.firstlalot) {
+      return null;
     }
 
-    if (!lastPositionTs) {
-      lastPositionTs = data.current.lastFlight.lastlalot;
-      lastLongitude = data.current.lastFlight.lastlo;
-      lastLatitude = data.current.lastFlight.lastla;
-      flightNumberIata = data.current.lastFlight.fnia;
-      updatedAt = data.current.lastFlight.lastlalot;
-    }
-
-    const timestamp = moment(lastPositionTs).toDate();
-    const longitude = lastLongitude;
-    const latitude = lastLatitude;
-    const updatedAtDate = moment(updatedAt).toDate();
-
-    this.logger.debug('`RadarBox.getAircraft`', {
-      tailNumber,
-      timestamp,
-      longitude,
-      latitude,
-      altitude,
-    });
+    const flightDateMoment = moment(data.current.depdate, this.DATE_FORMAT);
+    const updatedAtMoment = moment(data.current.lastlalot);
+    const updatedAt = updatedAtMoment.toDate();
+    const flightDate = flightDateMoment.toDate();
+    const originIata = data.current.apdstia;
+    const destinationIata = data.current.aplngia;
+    const longitude = data.current.lastlo;
+    const latitude = data.current.lastla;
+    const altitude = data.current.alt;
+    const flightNumberIata = data.current.fnia;
 
     return {
-      timestamp,
+      flightDate,
+      originIata,
+      destinationIata,
+      flightNumberIata,
       longitude,
       latitude,
+      updatedAt,
       altitude,
-      flightNumberIata,
-      updatedAt: updatedAtDate,
-      raw: data,
     };
   }
 }

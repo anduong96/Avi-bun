@@ -149,8 +149,6 @@ model Flight {
   // @skip
   UserFlight             UserFlight[]
   // @skip
-  FlightPositions        FlightPosition[]
-  // @skip
   FlightPlan             FlightPlan[]
   // @skip
   FlightVendorConnection FlightVendorConnection[]
@@ -245,26 +243,6 @@ model FlightTimeline {
   hasAlerted Boolean  @default(false)
 
   @@unique([flightID, index])
-}
-
-model FlightPosition {
-  id         Int    @id @default(autoincrement())
-  flightID   String
-  index      Int
-  latitude   Int
-  longitude  Int
-  course     Int
-  speedMph   Int
-  vrateMps   Int
-  altitudeFt Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // @skip
-  Flight Flight @relation(references: [id], fields: [flightID])
-
-  @@index([flightID])
 }
 
 model FlightPlan {

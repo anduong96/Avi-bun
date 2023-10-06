@@ -21,6 +21,11 @@ generator PrismaTypeGraphQLTypesGenerator {
   removeTypeInFieldDecorator = true
 }
 
+// generator gql {
+//   provider = "bun ./prisma/generators/graphql/index.ts"
+//   output   = "../src/@generated/gql"
+// }
+
 enum ImageType {
   SVG
   PNG

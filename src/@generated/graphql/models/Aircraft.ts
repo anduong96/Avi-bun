@@ -1,5 +1,4 @@
-import { Field, ObjectType, Int } from 'type-graphql';
-import { GQL_AircraftPosition } from './AircraftPosition';
+import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType('Aircraft')
 export class GQL_Aircraft {
@@ -32,9 +31,6 @@ export class GQL_Aircraft {
 
   @Field()
   updatedAt: Date;
-
-  @Field(() => [GQL_AircraftPosition])
-  AircraftPositions: GQL_AircraftPosition[];
 
   // skip overwrite 👇
 }

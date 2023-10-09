@@ -35,6 +35,14 @@ export function getIcao($: Cheerio.CheerioAPI) {
   return icao.trim();
 }
 
+export function getImage($: Cheerio.CheerioAPI) {
+  const target = $('dt:contains("PICTURE")');
+  const image = target.parent().find('img').attr('src');
+  return image?.startsWith('//')
+    ? image.replace('//', '').trim()
+    : image?.trim();
+}
+
 export function getDescription($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("DESCRIPTION")');
   const desc = target.parent().find('dd').text();
@@ -43,8 +51,15 @@ export function getDescription($: Cheerio.CheerioAPI) {
 
 export function getModel($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("MODEL")');
-  const model = target.parent().find('a').text();
-  return model.trim();
+  const model = target.parent().find('a').text().trim();
+  const match = model.match(/\(([^)]+)\)/);
+
+  if (match && match.length >= 2) {
+    const extractedString = match[1];
+    return extractedString;
+  }
+
+  return model;
 }
 
 export function getAirlineIata($: Cheerio.CheerioAPI) {
@@ -65,6 +80,7 @@ export function getAircraftFromHtml(content: string) {
     icao: getIcao($),
     model: getModel($),
     description: getDescription($),
+    image: getImage($),
     html: content,
   };
 }

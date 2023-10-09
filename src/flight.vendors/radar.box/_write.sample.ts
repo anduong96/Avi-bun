@@ -6,7 +6,7 @@ import fs from 'fs/promises';
 import ky from 'ky';
 import { RadarBox } from '.';
 
-const TAIL_NUMBER = 'N508JL';
+const TAIL_NUMBER = 'N582UW';
 const shouldWrite = true;
 
 const route = `https://www.radarbox.com/data/registration/${TAIL_NUMBER}`;
@@ -18,11 +18,14 @@ const data = RadarBox.crawlAircraftHtml(html) as any;
 
 const departure = moment(data.current.depsts * 1000);
 const arrival = moment(data.current.arrsts * 1000);
-const originIata = data.current.aplngia;
+
+const originIata = data.current.aporgia;
 const destinationIata = data.current.apdstia;
-const departureTz = data.current.aplngtzns;
+
+const departureTz = data.current.aporgtzns;
 const arrivalTz = data.current.apdsttzns;
-const departureUtcOffset = data.current.aplngtz;
+
+const departureUtcOffset = data.current.aporgtz;
 const arrivalUtcOffset = data.current.apdsttz;
 
 Logger.info(
@@ -30,8 +33,8 @@ Logger.info(
   now = %s
   Departure = %s
   Arrival = %s
-  Origin = %s %s - %s
-  Destination = %s %s - %s
+  Origin = %s %s (%s)
+  Destination = %s %s (%s)
   lastlalot = %s
   firstlalot = %s
   svd = %s

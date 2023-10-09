@@ -43,8 +43,8 @@ export class RadarBox {
     const updatedAtMoment = moment(data.current.lastlalot);
     const updatedAt = updatedAtMoment.toDate();
     const flightDate = flightDateMoment.toDate();
-    const originIata = data.current.apdstia;
-    const destinationIata = data.current.aplngia;
+    const originIata = data.current.aporgia;
+    const destinationIata = data.current.apdstia;
     const longitude = data.current.lastlo;
     const latitude = data.current.lastla;
     const altitude = data.current.alt;

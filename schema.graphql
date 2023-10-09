@@ -4,7 +4,6 @@
 # -----------------------------------------------
 
 type Aircraft {
-  AircraftPositions: [AircraftPosition!]!
   airlineIata: String!
   createdAt: DateTimeISO!
   description: String

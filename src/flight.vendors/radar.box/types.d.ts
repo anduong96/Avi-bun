@@ -4,8 +4,8 @@ type FlightData = {
   fnia: string;
   apdsttzns: string;
   aporgtzns: string;
-  apdstia: string /** Departure Airport IATA */;
-  aplngia: string /** Arrival Airport IATA */;
+  aporgia: string /** Departure Airport IATA */;
+  apdstia: string /** Arrival Airport IATA */;
   apdsttzns: string /** Arrival Timezone */;
   aplngtzns: string /** Departure Timezone */;
   apdsttz: number /** Arrival UTC offset in hours */;

@@ -13,6 +13,6 @@ describe('RadarBox', () => {
     const flight = await FlightStats.getRandomFlight();
     const position = await RadarBox.getAircraft(flight.tailNumber);
     expect(position).toBeTruthy();
-    expect(moment().isSame(position.timestamp, 'day')).toBe(true);
+    expect(moment().isSame(position!.flightDate, 'day')).toBe(true);
   });
 });

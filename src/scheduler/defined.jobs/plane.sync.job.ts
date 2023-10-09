@@ -4,6 +4,7 @@ import { FlightStatus } from '@prisma/client';
 import CronTime from 'cron-time-generator';
 import moment from 'moment';
 import { Job } from '../job';
+import { compact, uniq } from 'lodash';
 
 export class SyncActivePlaneLocationJob extends Job {
   override cronTime = CronTime.every(3).minutes();
@@ -17,28 +18,36 @@ export class SyncActivePlaneLocationJob extends Job {
       ceil.toISOString(),
     );
 
-    const flights = await prisma.flight.findMany({
+    const flights = await prisma.userFlight.findMany({
       where: {
-        aircraftTailnumber: {
-          not: null,
-        },
-        status: {
-          notIn: [
-            FlightStatus.ARRIVED,
-            FlightStatus.CANCELED,
-            FlightStatus.ARCHIVED,
-          ],
-        },
-        scheduledGateDeparture: {
-          gt: floor,
-          lt: ceil,
+        Flight: {
+          aircraftTailnumber: {
+            not: null,
+          },
+          status: {
+            notIn: [
+              FlightStatus.ARRIVED,
+              FlightStatus.CANCELED,
+              FlightStatus.ARCHIVED,
+            ],
+          },
+          estimatedGateDeparture: {
+            gt: floor,
+            lt: ceil,
+          },
         },
       },
-      distinct: ['aircraftTailnumber'],
-      select: { aircraftTailnumber: true },
+      distinct: ['flightID'],
+      include: {
+        Flight: {
+          select: {
+            aircraftTailnumber: true,
+          },
+        },
+      },
     });
 
-    return flights.map(entry => entry.aircraftTailnumber);
+    return uniq(compact(flights.map(entry => entry.Flight.aircraftTailnumber)));
   }
 
   async updateAircraftPosition(tailNumber: string) {
@@ -52,7 +61,7 @@ export class SyncActivePlaneLocationJob extends Job {
     });
 
     const position = await RadarBox.getAircraft(aircraft.tailNumber);
-    if (!position) {
+    if (!position || position?.destinationIata || !position.originIata) {
       return;
     }
 
@@ -64,6 +73,7 @@ export class SyncActivePlaneLocationJob extends Job {
     await prisma.aircraftPosition.upsert({
       where: {
         updatedAt: position.updatedAt,
+        aircraftID: aircraft.id,
       },
       update: {},
       create: {
@@ -87,9 +97,7 @@ export class SyncActivePlaneLocationJob extends Job {
     const planes = await this.getPlanes();
     this.logger.info('Planes to sync', planes.length);
     const result = await Promise.allSettled(
-      planes.map(entry =>
-        this.updateAircraftPosition(entry!).then(() => entry),
-      ),
+      planes.map(entry => this.updateAircraftPosition(entry).then(() => entry)),
     );
     this.logger.debug('Planes synced', result);
   }

@@ -1,8 +1,8 @@
 import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.created.topic';
 import { Flightera } from '@app/flight.vendors/flightera';
-import { Skybrary } from '@app/flight.vendors/skybrary';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { prisma } from '@app/prisma';
+import { Skybrary } from '@app/flight.vendors/skybrary';
 
 /**
  * The function creates an aircraft record in a database using information obtained from a remote
@@ -12,21 +12,26 @@ import { prisma } from '@app/prisma';
  * the tail of the aircraft.
  */
 export async function createAircraft(tailNumber: string) {
-  const remoteAircraft = await Flightera.getAircraftFromCrawl(tailNumber);
-  const aircraft = await prisma.aircraft.upsert({
+  let aircraft = await prisma.aircraft.findFirst({
     where: {
       tailNumber,
     },
-    update: {},
-    create: {
-      tailNumber,
-      airlineIata: remoteAircraft.airlineIata,
-      description: remoteAircraft.description,
-      icao: remoteAircraft.icao,
-      model: remoteAircraft.model,
-      imageURL: Skybrary.getPhotoURL(remoteAircraft.icao),
-    },
   });
 
-  TopicPublisher.broadcast(new AircraftCreatedTopic(aircraft));
+  if (!aircraft) {
+    const remoteAircraft = await Flightera.getAircraftFromCrawl(tailNumber);
+    aircraft = await prisma.aircraft.create({
+      data: {
+        tailNumber,
+        airlineIata: remoteAircraft.airlineIata,
+        description: remoteAircraft.description,
+        icao: remoteAircraft.icao,
+        model: remoteAircraft.model,
+        imageURL:
+          remoteAircraft.image || Skybrary.getPhotoURL(remoteAircraft.model),
+      },
+    });
+
+    TopicPublisher.broadcast(new AircraftCreatedTopic(aircraft));
+  }
 }

@@ -22,7 +22,7 @@ export async function populateFlights(params: FlightQueryParam) {
   });
 
   const flights =
-    searchDate.diff(today, 'days') > 2
+    searchDate.diff(today, 'days') <= 2
       ? await getFlightsPayloadFromFlightStats(params)
       : await getFlightsPayloadFromAeroDataBox(params);
 

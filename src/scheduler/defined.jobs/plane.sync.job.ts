@@ -1,13 +1,12 @@
 import { RadarBox } from '@app/flight.vendors/radar.box';
 import { prisma } from '@app/prisma';
-import { FlightStatus } from '@prisma/client';
+import { Aircraft, FlightStatus } from '@prisma/client';
 import CronTime from 'cron-time-generator';
 import moment from 'moment';
 import { Job } from '../job';
-import { compact, uniq } from 'lodash';
 
 export class SyncActivePlaneLocationJob extends Job {
-  override cronTime = CronTime.every(3).minutes();
+  override cronTime = CronTime.every(1).minutes();
 
   private async getPlanes() {
     const ceil = moment().endOf('day').add(10, 'hours').toDate();
@@ -18,48 +17,45 @@ export class SyncActivePlaneLocationJob extends Job {
       ceil.toISOString(),
     );
 
-    const flights = await prisma.userFlight.findMany({
-      where: {
-        Flight: {
-          aircraftTailnumber: {
-            not: null,
-          },
-          status: {
-            notIn: [
-              FlightStatus.ARRIVED,
-              FlightStatus.CANCELED,
-              FlightStatus.ARCHIVED,
-            ],
-          },
-          estimatedGateDeparture: {
-            gt: floor,
-            lt: ceil,
-          },
-        },
-      },
-      distinct: ['flightID'],
-      include: {
-        Flight: {
-          select: {
-            aircraftTailnumber: true,
-          },
-        },
-      },
-    });
-
-    return uniq(compact(flights.map(entry => entry.Flight.aircraftTailnumber)));
-  }
-
-  async updateAircraftPosition(tailNumber: string) {
-    const aircraft = await prisma.aircraft.findFirstOrThrow({
-      where: { tailNumber },
+    const aircrafts = await prisma.aircraft.findMany({
+      take: 20,
+      distinct: ['tailNumber', 'airlineIata'],
       select: {
         id: true,
         tailNumber: true,
         airlineIata: true,
       },
+      where: {
+        updatedAt: {
+          lt: moment().subtract(5, 'minutes').toDate(),
+        },
+        Flights: {
+          some: {
+            status: {
+              notIn: [
+                FlightStatus.ARRIVED,
+                FlightStatus.CANCELED,
+                FlightStatus.ARCHIVED,
+              ],
+            },
+            estimatedGateDeparture: {
+              gt: floor,
+              lt: ceil,
+            },
+            UserFlight: {
+              some: {},
+            },
+          },
+        },
+      },
     });
 
+    return aircrafts;
+  }
+
+  async updateAircraftPosition(
+    aircraft: Pick<Aircraft, 'id' | 'tailNumber' | 'airlineIata'>,
+  ) {
     const position = await RadarBox.getAircraft(aircraft.tailNumber);
     if (!position || position?.destinationIata || !position.originIata) {
       return;
@@ -74,6 +70,7 @@ export class SyncActivePlaneLocationJob extends Job {
       where: {
         updatedAt: position.updatedAt,
         aircraftID: aircraft.id,
+        airlineIata: aircraft.airlineIata,
       },
       update: {},
       create: {
@@ -95,10 +92,15 @@ export class SyncActivePlaneLocationJob extends Job {
 
   override async onProcess() {
     const planes = await this.getPlanes();
-    this.logger.info('Planes to sync', planes.length);
+    this.logger.info(
+      'Planes to sync',
+      planes.map(plane => plane.tailNumber),
+    );
+
     const result = await Promise.allSettled(
       planes.map(entry => this.updateAircraftPosition(entry).then(() => entry)),
     );
+
     this.logger.debug('Planes synced', result);
   }
 }

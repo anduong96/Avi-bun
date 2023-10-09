@@ -4,6 +4,7 @@ import { ImageType } from '@prisma/client';
 import ky from 'ky';
 import { tryNice } from 'try-nice';
 
+// https://api.travelpayouts.com/data/en/airlines.json
 const baseURL =
   'https://raw.githubusercontent.com/anduong96/airlines-logos/main';
 

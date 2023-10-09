@@ -62,7 +62,6 @@ model Airline {
 
   name                 String
   iata                 String
-  icao                 String
   logoFullImageURL     String
   logoFullImageType    ImageType
   logoCompactImageURL  String
@@ -150,8 +149,10 @@ model Flight {
 
   Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: NoAction)
   Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination", onDelete: NoAction)
+  Airline     Airline @relation(fields: [airlineIata], references: [iata])
 
-  Airline                Airline                  @relation(fields: [airlineIata], references: [iata])
+  // @skip
+  Aircraft               Aircraft?                @relation(references: [tailNumber], fields: [aircraftTailnumber], onDelete: NoAction)
   // @skip
   UserFlight             UserFlight[]
   // @skip
@@ -191,6 +192,8 @@ model Aircraft {
 
   // @skip
   AircraftPositions AircraftPosition[]
+  // @skip
+  Flights           Flight[]
 
   @@unique([tailNumber])
   @@index([icao])

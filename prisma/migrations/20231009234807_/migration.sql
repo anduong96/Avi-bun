@@ -113,7 +113,7 @@ CREATE TABLE "FlightVendorConnection" (
 CREATE TABLE "Aircraft" (
     "id" SERIAL NOT NULL,
     "iata" TEXT,
-    "icao" TEXT,
+    "icao" TEXT NOT NULL,
     "model" TEXT NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "description" TEXT,
@@ -129,8 +129,16 @@ CREATE TABLE "Aircraft" (
 CREATE TABLE "AircraftPosition" (
     "id" SERIAL NOT NULL,
     "aircraftID" INTEGER NOT NULL,
-    "latitude" INTEGER NOT NULL,
-    "longitude" INTEGER NOT NULL,
+    "latitude" INTEGER,
+    "longitude" INTEGER,
+    "altitude" INTEGER,
+    "flightYear" INTEGER NOT NULL,
+    "flightMonth" INTEGER NOT NULL,
+    "flightDate" INTEGER NOT NULL,
+    "flightNumber" TEXT NOT NULL,
+    "airlineIata" TEXT NOT NULL,
+    "originIata" TEXT NOT NULL,
+    "destinationIata" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -165,23 +173,6 @@ CREATE TABLE "FlightTimeline" (
     "hasAlerted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "FlightTimeline_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "FlightPosition" (
-    "id" SERIAL NOT NULL,
-    "flightID" TEXT NOT NULL,
-    "index" INTEGER NOT NULL,
-    "latitude" INTEGER NOT NULL,
-    "longitude" INTEGER NOT NULL,
-    "course" INTEGER NOT NULL,
-    "speedMph" INTEGER NOT NULL,
-    "vrateMps" INTEGER NOT NULL,
-    "altitudeFt" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "FlightPosition_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -311,7 +302,10 @@ CREATE INDEX "Aircraft_airlineIata_idx" ON "Aircraft"("airlineIata");
 CREATE UNIQUE INDEX "Aircraft_tailNumber_key" ON "Aircraft"("tailNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AircraftPosition_aircraftID_key" ON "AircraftPosition"("aircraftID");
+CREATE INDEX "AircraftPosition_aircraftID_idx" ON "AircraftPosition"("aircraftID");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AircraftPosition_updatedAt_key" ON "AircraftPosition"("updatedAt");
 
 -- CreateIndex
 CREATE INDEX "FlightEvent_flightTimelineID_idx" ON "FlightEvent"("flightTimelineID");
@@ -321,9 +315,6 @@ CREATE UNIQUE INDEX "FlightEvent_flightID_flightTimelineID_index_key" ON "Flight
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FlightTimeline_flightID_index_key" ON "FlightTimeline"("flightID", "index");
-
--- CreateIndex
-CREATE INDEX "FlightPosition_flightID_idx" ON "FlightPosition"("flightID");
 
 -- CreateIndex
 CREATE INDEX "FlightPlan_flightID_idx" ON "FlightPlan"("flightID");
@@ -356,13 +347,13 @@ ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationIata_fkey" FOREIGN KEY ("
 ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_fkey" FOREIGN KEY ("airlineIata") REFERENCES "Airline"("iata") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_aircraftTailnumber_fkey" FOREIGN KEY ("aircraftTailnumber") REFERENCES "Aircraft"("tailNumber") ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "FlightVendorConnection" ADD CONSTRAINT "FlightVendorConnection_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AircraftPosition" ADD CONSTRAINT "AircraftPosition_aircraftID_fkey" FOREIGN KEY ("aircraftID") REFERENCES "Aircraft"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FlightPosition" ADD CONSTRAINT "FlightPosition_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FlightPlan" ADD CONSTRAINT "FlightPlan_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

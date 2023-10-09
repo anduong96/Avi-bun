@@ -35,6 +35,7 @@ type AircraftPosition {
 
 type Airline {
   iata: String!
+  icao: String!
   id: ID!
   isLowCost: Boolean!
   logoCompactImageType: ImageType!

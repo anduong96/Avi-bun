@@ -39,6 +39,7 @@ export async function getOrCreateAircraft(tailNumber: string) {
           description: remoteAircraft.description,
           icao: remoteAircraft.icao,
           model: remoteAircraft.model,
+          firstFlight: remoteAircraft.firstFlight,
           imageURL,
         },
       });

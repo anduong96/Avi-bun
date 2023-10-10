@@ -30,6 +30,9 @@ export class GQL_Aircraft {
   imageURL?: string;
 
   @Field()
+  firstFlight: Date;
+
+  @Field()
   createdAt: Date;
 
   @Field()

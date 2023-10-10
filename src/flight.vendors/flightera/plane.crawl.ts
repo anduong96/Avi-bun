@@ -1,6 +1,7 @@
 import * as Cheerio from 'cheerio';
 
 import { keyBy } from 'lodash';
+import moment from 'moment';
 
 export function getSeatConfiguration($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("SEAT CONFIGURATION")');
@@ -62,6 +63,12 @@ export function getModel($: Cheerio.CheerioAPI) {
   return model;
 }
 
+export function getFirstFlight($: Cheerio.CheerioAPI) {
+  const target = $('dt:contains("FIRST FLIGHT")');
+  const date = target.parent().find('dd').text();
+  return moment(date, 'MMMM YYYY').toDate();
+}
+
 export function getAirlineIata($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("AIRLINE")');
   const airlineIata = target
@@ -80,6 +87,7 @@ export function getAircraftFromHtml(content: string) {
     icao: getIcao($),
     model: getModel($),
     description: getDescription($),
+    firstFlight: getFirstFlight($),
     image: getImage($),
     html: content,
   };

@@ -8,6 +8,7 @@ type Aircraft {
   airlineIata: String!
   createdAt: DateTimeISO!
   description: String
+  firstFlight: DateTimeISO!
   iata: String
   icao: String!
   id: Int!

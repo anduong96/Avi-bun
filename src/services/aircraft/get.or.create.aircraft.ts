@@ -47,7 +47,7 @@ export async function getOrCreateAircraft(tailNumber: string) {
       return [true, newAircraft];
     },
     {
-      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
     },
   );
 

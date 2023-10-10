@@ -147,12 +147,10 @@ model Flight {
   actualGateArrival       DateTime?
   reconAttempt            Int?         @default(0)
 
-  Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: NoAction)
-  Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination", onDelete: NoAction)
-  Airline     Airline @relation(fields: [airlineIata], references: [iata])
+  Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: NoAction, onUpdate: NoAction)
+  Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination", onDelete: NoAction, onUpdate: NoAction)
+  Airline     Airline @relation(fields: [airlineIata], references: [iata], onDelete: NoAction, onUpdate: NoAction)
 
-  // @skip
-  Aircraft               Aircraft?                @relation(references: [tailNumber], fields: [aircraftTailnumber], onDelete: NoAction)
   // @skip
   UserFlight             UserFlight[]
   // @skip
@@ -172,7 +170,7 @@ model FlightVendorConnection {
   flightID         String
 
   // @skip
-  Flight Flight @relation(fields: [flightID], references: [id])
+  Flight Flight @relation(fields: [flightID], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   @@unique([flightID, vendor])
 }
@@ -192,8 +190,6 @@ model Aircraft {
 
   // @skip
   AircraftPositions AircraftPosition[]
-  // @skip
-  Flights           Flight[]
 
   @@unique([tailNumber])
   @@index([icao])
@@ -218,7 +214,7 @@ model AircraftPosition {
   updatedAt       DateTime
 
   // @skip
-  Aircraft Aircraft @relation(fields: [aircraftID], references: [id])
+  Aircraft Aircraft @relation(fields: [aircraftID], references: [id], onUpdate: Restrict, onDelete: Cascade)
 
   @@unique([updatedAt])
   @@index([aircraftID])
@@ -322,7 +318,7 @@ model UserFlight {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  Flight Flight @relation(fields: [flightID], references: [id])
+  Flight Flight @relation(fields: [flightID], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([flightID, userID])
 }

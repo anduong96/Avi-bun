@@ -4,11 +4,12 @@ import { Aircraft, FlightStatus } from '@prisma/client';
 import CronTime from 'cron-time-generator';
 import moment from 'moment';
 import { Job } from '../job';
+import { isEmpty } from 'lodash';
 
 export class SyncActivePlaneLocationJob extends Job {
-  override cronTime = CronTime.every(1).minutes();
+  override cronTime = CronTime.every(7).minutes();
 
-  private async getPlanes() {
+  private async getTailNumbers() {
     const ceil = moment().endOf('day').add(10, 'hours').toDate();
     const floor = moment().startOf('day').subtract(12, 'hours').toDate();
     this.logger.debug(
@@ -17,40 +18,33 @@ export class SyncActivePlaneLocationJob extends Job {
       ceil.toISOString(),
     );
 
-    const aircrafts = await prisma.aircraft.findMany({
-      take: 20,
-      distinct: ['tailNumber', 'airlineIata'],
-      select: {
-        id: true,
-        tailNumber: true,
-        airlineIata: true,
-      },
+    const result = await prisma.userFlight.findMany({
+      take: 100,
+      distinct: ['flightID'],
       where: {
-        updatedAt: {
-          lt: moment().subtract(5, 'minutes').toDate(),
+        Flight: {
+          aircraftTailnumber: {
+            not: null,
+          },
+          status: {
+            notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
+          },
+          scheduledGateDeparture: {
+            gt: floor,
+            lt: ceil,
+          },
         },
-        Flights: {
-          some: {
-            status: {
-              notIn: [
-                FlightStatus.ARRIVED,
-                FlightStatus.CANCELED,
-                FlightStatus.ARCHIVED,
-              ],
-            },
-            estimatedGateDeparture: {
-              gt: floor,
-              lt: ceil,
-            },
-            UserFlight: {
-              some: {},
-            },
+      },
+      include: {
+        Flight: {
+          select: {
+            aircraftTailnumber: true,
           },
         },
       },
     });
 
-    return aircrafts;
+    return result.map(entry => entry.Flight.aircraftTailnumber!);
   }
 
   async updateAircraftPosition(
@@ -91,14 +85,24 @@ export class SyncActivePlaneLocationJob extends Job {
   }
 
   override async onProcess() {
-    const planes = await this.getPlanes();
-    this.logger.info(
-      'Planes to sync',
-      planes.map(plane => plane.tailNumber),
-    );
+    const tailNumbers = await this.getTailNumbers();
+    this.logger.info('Planes to sync\n%s', tailNumbers);
+    if (isEmpty(tailNumbers)) {
+      return;
+    }
+
+    const aircrafts = await prisma.aircraft.findMany({
+      where: {
+        tailNumber: {
+          in: tailNumbers,
+        },
+      },
+    });
 
     const result = await Promise.allSettled(
-      planes.map(entry => this.updateAircraftPosition(entry).then(() => entry)),
+      aircrafts.map(entry =>
+        this.updateAircraftPosition(entry).then(() => entry.tailNumber),
+      ),
     );
 
     this.logger.debug('Planes synced', result);

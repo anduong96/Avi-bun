@@ -1,10 +1,10 @@
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { Logger } from '@app/lib/logger';
 import { prisma } from '@app/prisma';
-import { Flight } from '@prisma/client';
-import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 import { TopicPublisher } from '@app/topics/topic.publisher';
+import { Flight } from '@prisma/client';
+import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
 
 /**
  * The function `getRandomFlight` retrieves a random flight from FlightStats API, checks if it already
@@ -44,7 +44,7 @@ export async function getRandomFlight(): Promise<Flight> {
     TopicPublisher.broadcast(new FlightCreatedTopic(flight));
     return flight;
   } catch (error) {
-    Logger.error('Unable to create flight', error);
+    Logger.error('Unable to create flight in getRandomFlight', error);
     throw new Error('Unable to create flight');
   }
 }

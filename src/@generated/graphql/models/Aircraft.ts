@@ -38,8 +38,5 @@ export class GQL_Aircraft {
   @Field(() => [GQL_AircraftPosition])
   AircraftPositions: GQL_AircraftPosition[];
 
-  @Field(() => [GQL_Flight])
-  Flights: GQL_Flight[];
-
   // skip overwrite 👇
 }

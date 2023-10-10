@@ -1,13 +1,13 @@
-import { FlightQueryParam } from '@app/types/flight';
-import moment from 'moment';
-import { getFlightsPayloadFromFlightStats } from './flights.payload.from.flights.stat';
-import { getFlightsPayloadFromAeroDataBox } from './flights.payload.from.aero.data.box';
-import { isEmpty } from 'lodash';
 import { Logger } from '@app/lib/logger';
 import { prisma } from '@app/prisma';
-import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
+import { TopicPublisher } from '@app/topics/topic.publisher';
+import { FlightQueryParam } from '@app/types/flight';
 import { Flight } from '@prisma/client';
+import { isEmpty } from 'lodash';
+import moment from 'moment';
+import { getFlightsPayloadFromAeroDataBox } from './flights.payload.from.aero.data.box';
+import { getFlightsPayloadFromFlightStats } from './flights.payload.from.flights.stat';
 
 /**
  * The `populateFlights` function populates flight data based on the provided parameters and creates
@@ -58,7 +58,7 @@ export async function populateFlights(params: FlightQueryParam) {
       flights.map(entry => new FlightCreatedTopic(entry as Flight)),
     );
   } catch (error) {
-    Logger.error('Unable to create flight(s)', error);
+    Logger.error('Unable to create flight(s) in populateFlights', error);
     throw new Error('Unable to create flight(s)');
   }
 }

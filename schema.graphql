@@ -4,6 +4,7 @@
 # -----------------------------------------------
 
 type Aircraft {
+  AircraftPositions: [AircraftPosition!]!
   airlineIata: String!
   createdAt: DateTimeISO!
   description: String
@@ -35,7 +36,6 @@ type AircraftPosition {
 
 type Airline {
   iata: String!
-  icao: String!
   id: ID!
   isLowCost: Boolean!
   logoCompactImageType: ImageType!

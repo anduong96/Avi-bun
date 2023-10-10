@@ -69,7 +69,9 @@ async function populateAirports() {
         .filter(item => !item.cityCode.includes('Raiway Stn'))
         .map(item => ({
           iata: item.iata,
-          name: item.name,
+          name: item.name
+            .replace('International', 'Intl')
+            .replace('Airport', ''),
           latitude: item.location?.coordinates[1] ?? -1,
           longitude: item.location?.coordinates[0] ?? -1,
           timezone: item.timezone,

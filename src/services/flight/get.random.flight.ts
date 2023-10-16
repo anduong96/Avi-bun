@@ -1,9 +1,11 @@
-import { FlightStats } from '@app/flight.vendors/flight.stats';
-import { Logger } from '@app/lib/logger';
-import { prisma } from '@app/prisma';
-import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
-import { TopicPublisher } from '@app/topics/topic.publisher';
 import { Flight } from '@prisma/client';
+
+import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
+import { TopicPublisher } from '@app/topics/topic.publisher';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
+
 import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
 
 /**
@@ -16,11 +18,11 @@ export async function getRandomFlight(): Promise<Flight> {
   const randFlight = await FlightStats.getRandomFlight();
   const exists = await prisma.flight.findFirst({
     where: {
-      flightNumber: randFlight.flightNumber,
       airlineIata: randFlight.carrierIata,
-      flightYear: randFlight.flightYear,
-      flightMonth: randFlight.flightMonth,
       flightDate: randFlight.flightDate,
+      flightMonth: randFlight.flightMonth,
+      flightNumber: randFlight.flightNumber,
+      flightYear: randFlight.flightYear,
     },
   });
 
@@ -29,12 +31,12 @@ export async function getRandomFlight(): Promise<Flight> {
   }
 
   const remoteFlight = await FlightStats.getFlightDetails({
-    flightID: randFlight.flightId.toString(),
-    flightNumber: randFlight.flightNumber,
     airlineIata: randFlight.carrierIata,
-    flightYear: randFlight.flightYear,
-    flightMonth: randFlight.flightMonth,
     flightDate: randFlight.flightDate,
+    flightID: randFlight.flightId.toString(),
+    flightMonth: randFlight.flightMonth,
+    flightNumber: randFlight.flightNumber,
+    flightYear: randFlight.flightYear,
   });
 
   try {

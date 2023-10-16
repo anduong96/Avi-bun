@@ -1,5 +1,6 @@
-import { DMMF } from '@prisma/client/runtime/library';
 import { flatten } from 'lodash';
+import { DMMF } from '@prisma/client/runtime/library';
+
 import { writeFile } from '../utils';
 
 const prefix = 'GQL_';

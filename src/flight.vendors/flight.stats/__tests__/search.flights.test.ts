@@ -1,6 +1,6 @@
+import moment from 'moment';
 import { describe, expect, test } from 'bun:test';
 
-import moment from 'moment';
 import { FlightStats } from '..';
 
 describe('Flight Stats', () => {

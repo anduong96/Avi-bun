@@ -1,8 +1,8 @@
 export enum FlightStats_Status {
-  DEPARTED = 'Departed',
   ARRIVED = 'Arrived',
-  SCHEDULED = 'Scheduled',
-  ESTIMATED = 'Estimated',
   CANCELED = 'Canceled',
+  DEPARTED = 'Departed',
+  ESTIMATED = 'Estimated',
   LANDED = 'Landed',
+  SCHEDULED = 'Scheduled',
 }

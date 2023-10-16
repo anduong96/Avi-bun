@@ -1,7 +1,7 @@
-import { OpenSky_Aircraft, OpenSky_AircraftPosition } from './types';
-
 import ky from 'ky';
 import moment from 'moment';
+
+import { OpenSky_Aircraft, OpenSky_AircraftPosition } from './types';
 
 export class OpenSky {
   private static readonly client = ky.create({
@@ -55,10 +55,10 @@ export class OpenSky {
       positions: response.path.map(position => {
         const [ts, latitude, longitude, altitude, , isGrounded] = position;
         return {
-          latitude,
-          longitude,
           altitude,
           isGrounded,
+          latitude,
+          longitude,
           timestamp: moment(ts).toDate(),
         };
       }),

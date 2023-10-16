@@ -1,0 +1,50 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:perfectionist/recommended-natural"
+  ],
+  "parserOptions": {
+    "project": ["./tsconfig.json"],
+    "extraFileExtensions": [".js"]
+  },
+  "ignorePatterns": ["src/@generated/**/*"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["prettier", "@typescript-eslint", "perfectionist"],
+  "rules": {
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "no-console": "error",
+    "prettier/prettier": "error",
+    "perfectionist/sort-imports": [
+      "error",
+      {
+        "custom-groups": {
+          "type": {
+            "bun": "bun"
+          },
+          "value": {
+            "bun": ["bun"]
+          }
+        },
+        "groups": [
+          "side-effect",
+          "type",
+          "bun",
+          "unknown",
+          ["builtin", "external"],
+          "internal-type",
+          "internal",
+          ["parent-type", "sibling-type", "index-type"],
+          ["parent", "sibling", "index"],
+          "style"
+        ],
+        "internal-pattern": ["@app/**"],
+        "newlines-between": "always",
+        "order": "asc",
+        "type": "line-length"
+      }
+    ]
+  }
+}

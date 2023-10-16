@@ -1,11 +1,12 @@
 import ky from 'ky';
+
 import { getAircraftFromHtml } from './plane.crawl';
 
 export class Flightera {
   private static readonly client = ky.create({
+    headers: {},
     prefixUrl: 'https://www.flightera.net',
     timeout: 5 * 1000,
-    headers: {},
   });
 
   /**

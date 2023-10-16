@@ -1,17 +1,19 @@
-import { Logger } from '@app/lib/logger';
-import * as Cheerio from 'cheerio';
 import ky from 'ky';
 import moment from 'moment';
+import * as Cheerio from 'cheerio';
+
+import { Logger } from '@app/lib/logger';
+
 import { RadarBoxCrawlData } from './types';
 
 export class RadarBox {
-  private static readonly logger = Logger.getSubLogger({
-    name: this.name,
-  });
+  private static DATE_FORMAT = 'dddd, MMMM D, YYYY';
   private static client = ky.create({
     prefixUrl: 'https://www.radarbox.com',
   });
-  private static DATE_FORMAT = 'dddd, MMMM D, YYYY';
+  private static readonly logger = Logger.getSubLogger({
+    name: this.name,
+  });
 
   static crawlAircraftHtml(html: string): RadarBoxCrawlData {
     const $ = Cheerio.load(html);
@@ -51,14 +53,14 @@ export class RadarBox {
     const flightNumberIata = data.current.fnia;
 
     return {
-      flightDate,
-      originIata,
-      destinationIata,
-      flightNumberIata,
-      longitude,
-      latitude,
-      updatedAt,
       altitude,
+      destinationIata,
+      flightDate,
+      flightNumberIata,
+      latitude,
+      longitude,
+      originIata,
+      updatedAt,
     };
   }
 }

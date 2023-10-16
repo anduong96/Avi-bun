@@ -1,8 +1,9 @@
-import { AirLabsFlightResponse, AirLabsResponse } from './types';
+import ky from 'ky';
 
 import { ENV } from '@app/env';
 import { FlightQueryParam } from '@app/types/flight';
-import ky from 'ky';
+
+import { AirLabsFlightResponse, AirLabsResponse } from './types';
 
 export class AirLabs {
   private static readonly client = ky.create({

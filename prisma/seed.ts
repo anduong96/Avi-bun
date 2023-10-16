@@ -1,8 +1,9 @@
-import { Logger } from '@app/lib/logger';
-import { prisma } from '@app/prisma';
-import { ImageType } from '@prisma/client';
 import ky from 'ky';
 import { tryNice } from 'try-nice';
+import { ImageType } from '@prisma/client';
+
+import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
 
 // https://api.travelpayouts.com/data/en/airlines.json
 const baseURL =
@@ -16,13 +17,13 @@ async function populateAirlines() {
   Logger.info('Getting airlines');
   const response = await getData<
     Array<{
-      name: string;
       iata: string;
       isLowCost: boolean;
-      logoFullImageType: ImageType;
       logoCompactImageType: ImageType;
-      logoFullImageURL: string;
       logoCompactImageURL: string;
+      logoFullImageType: ImageType;
+      logoFullImageURL: string;
+      name: string;
     }>
   >('/airlines.json');
   Logger.warn('Creating airlines count[%s]', response.length);
@@ -30,13 +31,13 @@ async function populateAirlines() {
     prisma.airline.deleteMany({}),
     prisma.airline.createMany({
       data: response.map(item => ({
-        name: item.name,
         iata: item.iata,
         isLowCost: item.isLowCost,
-        logoFullImageType: item.logoFullImageType,
         logoCompactImageType: item.logoCompactImageType,
         logoCompactImageURL: item.logoCompactImageURL,
+        logoFullImageType: item.logoFullImageType,
         logoFullImageURL: item.logoFullImageURL,
+        name: item.name,
       })),
     }),
   ]);
@@ -46,17 +47,17 @@ async function populateAirlines() {
 async function populateAirports() {
   Logger.info('Getting airports');
   type Entry = {
-    name: string;
-    iata: string;
-    timezone: string;
-    cityName: string;
     cityCode: string;
+    cityName: string;
     countryCode: string;
-    elevation: number;
-    icaoCode: string;
-    state: string;
     countyName: string;
+    elevation: number;
+    iata: string;
+    icaoCode: string;
     location: { coordinates: number[] };
+    name: string;
+    state: string;
+    timezone: string;
   };
 
   const response = await getData<Array<Entry>>('/airports.json');
@@ -68,19 +69,19 @@ async function populateAirports() {
       data: response
         .filter(item => !item.cityCode.includes('Raiway Stn'))
         .map(item => ({
-          iata: item.iata,
-          name: item.name
-            .replace('International', 'Intl')
-            .replace('Airport', ''),
-          latitude: item.location?.coordinates[1] ?? -1,
-          longitude: item.location?.coordinates[0] ?? -1,
-          timezone: item.timezone,
           cityCode: item.cityCode,
           cityName: item.cityName,
           countryCode: item.countryCode,
           countyName: item.countyName,
           elevation: item.elevation,
+          iata: item.iata,
+          latitude: item.location?.coordinates[1] ?? -1,
+          longitude: item.location?.coordinates[0] ?? -1,
+          name: item.name
+            .replace('International', 'Intl')
+            .replace('Airport', ''),
           state: item.state,
+          timezone: item.timezone,
         })),
     }),
   ]);
@@ -91,11 +92,11 @@ async function populateCities() {
   Logger.info('Getting cities');
   const response = await getData<
     Array<{
-      name: string;
-      iata: string;
-      timezone: string;
       countryCode: string;
+      iata: string;
       location: { coordinates: number[] };
+      name: string;
+      timezone: string;
     }>
   >('/cities.json');
   Logger.warn('Creating cities count[%s]', response.length);
@@ -103,12 +104,12 @@ async function populateCities() {
     prisma.city.deleteMany({}),
     prisma.city.createMany({
       data: response.map(item => ({
-        name: item.name,
         code: item.iata,
+        countryCode: item.countryCode,
         latitude: item.location?.coordinates[1] ?? -1,
         longitude: item.location?.coordinates[0] ?? -1,
+        name: item.name,
         timezone: item.timezone,
-        countryCode: item.countryCode,
       })),
     }),
   ]);
@@ -119,11 +120,11 @@ async function populateCountries() {
   Logger.info('Getting countries');
   const response = await getData<
     Array<{
-      name: string;
-      isoCode: string;
       dialCode: string;
       flagImageType: ImageType;
       flagImageUri: string;
+      isoCode: string;
+      name: string;
     }>
   >('/countries.json');
   Logger.warn('Creating countries count[%s]', response.length);
@@ -131,11 +132,11 @@ async function populateCountries() {
     prisma.country.deleteMany({}),
     prisma.country.createMany({
       data: response.map(item => ({
-        isoCode: item.isoCode,
-        name: item.name,
         dialCode: item.dialCode,
         flagImageType: item.flagImageType,
         flagImageURL: item.flagImageUri,
+        isoCode: item.isoCode,
+        name: item.name,
       })),
     }),
   ]);

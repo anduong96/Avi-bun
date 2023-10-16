@@ -1,13 +1,14 @@
+import { get } from 'lodash';
 import * as firebaseAdmin from 'firebase-admin';
 
 import { ENV } from '@app/env';
+
 import { Logger } from './lib/logger';
-import { get } from 'lodash';
 
 const credential = firebaseAdmin.credential.cert({
-  projectId: ENV.FIREBASE_PROJECT_ID,
   clientEmail: ENV.FIREBASE_CLIENT_EMAIL,
   privateKey: ENV.FIREBASE_PRIVATE_KEY,
+  projectId: ENV.FIREBASE_PROJECT_ID,
 });
 
 const admin = get(firebaseAdmin, 'default') as unknown as typeof firebaseAdmin;

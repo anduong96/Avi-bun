@@ -1,13 +1,15 @@
-import { Logger } from '@app/lib/logger';
-import { prisma } from '@app/prisma';
-import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
-import { TopicPublisher } from '@app/topics/topic.publisher';
-import { FlightQueryParam } from '@app/types/flight';
-import { Flight } from '@prisma/client';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
-import { getFlightsPayloadFromAeroDataBox } from './flights.payload.from.aero.data.box';
+import { isEmpty } from 'lodash';
+import { Flight } from '@prisma/client';
+
+import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
+import { FlightQueryParam } from '@app/types/flight';
+import { TopicPublisher } from '@app/topics/topic.publisher';
+import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
+
 import { getFlightsPayloadFromFlightStats } from './flights.payload.from.flights.stat';
+import { getFlightsPayloadFromAeroDataBox } from './flights.payload.from.aero.data.box';
 
 /**
  * The `populateFlights` function populates flight data based on the provided parameters and creates
@@ -16,9 +18,9 @@ import { getFlightsPayloadFromFlightStats } from './flights.payload.from.flights
 export async function populateFlights(params: FlightQueryParam) {
   const today = moment();
   const searchDate = moment({
-    year: params.flightYear,
-    month: params.flightMonth,
     date: params.flightDate,
+    month: params.flightMonth,
+    year: params.flightYear,
   });
 
   const flights =

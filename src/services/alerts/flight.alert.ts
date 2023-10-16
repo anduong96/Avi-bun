@@ -1,16 +1,17 @@
+import { merge } from 'lodash';
 import { AlertChannel, Flight } from '@prisma/client';
 
-import { BasicObject } from '@app/types/common';
+import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
+import { BasicObject } from '@app/types/common';
+
 import { Logger } from '../../lib/logger';
 import { buildFlightLinkData } from '../links/flight.link';
-import { merge } from 'lodash';
-import { prisma } from '@app/prisma';
 
 type Payload = {
-  title: string;
   body: string;
   data?: BasicObject;
+  title: string;
 };
 
 /**
@@ -23,7 +24,7 @@ type Payload = {
  */
 export async function sendFlightAlert(
   flightID: Flight['id'],
-  { title, body, data }: Payload,
+  { body, data, title }: Payload,
 ) {
   try {
     /**
@@ -33,25 +34,25 @@ export async function sendFlightAlert(
     const response = await firebase.messaging().sendToTopic(flightID, {
       data: merge(buildFlightLinkData(flightID), data),
       notification: {
-        title,
         body,
+        title,
       },
     });
 
     const entry = await prisma.flightAlert.create({
       data: {
-        flightID,
-        title,
         body,
-        receiptID: response.messageId.toString(),
         channel: [AlertChannel.PUSH],
+        flightID,
+        receiptID: response.messageId.toString(),
+        title,
       },
     });
 
     Logger.info('Flight alert sent', {
       flightID,
-      responseID: response.messageId,
       recordID: entry.id,
+      responseID: response.messageId,
     });
 
     return response.messageId;

@@ -1,4 +1,5 @@
 import { describe, expect, mock, test } from 'bun:test';
+
 import { Singleton } from '../singleton';
 
 describe('lib::Singleton', () => {

@@ -6,145 +6,145 @@ export type FlightStatResp<T> = {
 
 export type FlightStatAirport = {
   active: boolean;
-  icao: string;
-  fs: string;
-  iata: string;
-  name: string;
   city: string;
-  state: string;
   country: string;
-  timeZoneRegionName: string;
-  regionName: string;
-  gate?: string;
-  terminal?: string;
   date: string;
+  fs: string;
+  gate?: string;
+  iata: string;
+  icao: string;
+  name: string;
+  regionName: string;
+  state: string;
+  terminal?: string;
+  timeZoneRegionName: string;
 };
 
 export type FlightStatFlight = FlightStatResp<{
-  flightId: number;
-  departureAirport: FlightStatAirport;
   arrivalAirport: FlightStatAirport;
+  departureAirport: FlightStatAirport;
+  flightId: number;
   flightNote: {
-    final: boolean;
     canceled: boolean;
+    final: boolean;
+    hasActualGateDepartureTime: boolean;
+    hasActualRunwayDepartureTime: boolean;
     hasDepartedGate: boolean;
     hasDepartedRunway: boolean;
+    hasPositions: boolean;
     landed: boolean;
     message: string;
     messageCode: string;
     pastExpectedTakeOff: boolean;
-    tracking: boolean;
-    hasPositions: boolean;
-    trackingUnavailable: boolean;
     phase: unknown;
-    hasActualRunwayDepartureTime: boolean;
-    hasActualGateDepartureTime: boolean;
-  };
-  schedule: {
-    scheduledDeparture: string;
-    scheduledDepartureUTC: string;
-    estimatedActualDepartureRunway: boolean;
-    estimatedActualDeparture: string;
-    estimatedActualDepartureUTC: string;
-    scheduledArrival: string;
-    scheduledArrivalUTC: string;
-    estimatedActualArrivalRunway: boolean;
-    estimatedActualArrival: string;
-    estimatedActualArrivalUTC: string;
-    tookOff: string;
+    tracking: boolean;
+    trackingUnavailable: boolean;
   };
   positional: {
     flextrack: {
       bearing: number;
-      heading: number;
       delayMinutes: number;
+      heading: number;
       position: Array<{
-        lon: number;
-        lat: number;
-        speedMph: number;
         altitudeFt: number;
-        source: string;
-        date: string;
         course: number;
-        vrateMps: number;
+        date: string;
         lastObserved: string;
+        lat: number;
+        lon: number;
+        source: string;
+        speedMph: number;
+        vrateMps: number;
       }>;
     };
   };
+  schedule: {
+    estimatedActualArrival: string;
+    estimatedActualArrivalRunway: boolean;
+    estimatedActualArrivalUTC: string;
+    estimatedActualDeparture: string;
+    estimatedActualDepartureRunway: boolean;
+    estimatedActualDepartureUTC: string;
+    scheduledArrival: string;
+    scheduledArrivalUTC: string;
+    scheduledDeparture: string;
+    scheduledDepartureUTC: string;
+    tookOff: string;
+  };
   status: {
-    status: FlightStats_Status;
-    diverted: boolean;
     delay: {
-      departure: {
+      arrival: {
         minutes: number;
       };
-      arrival: {
+      departure: {
         minutes: number;
       };
     };
     delayStatus: {
       minutes: number;
     };
+    diverted: boolean;
+    status: FlightStats_Status;
   };
 }>;
 
 export type SearchFlightParam = {
-  date: Date;
   airlineIata: string;
+  date: Date;
   flightNumber: string;
 };
 
 export type FlightStatAirportCondition = {
-  detailsHeader: {
-    code: string;
-    name: string;
-    addressLine1: string;
-    addressLine2: string;
-    city: string;
-    countryCode: StringRegexOptions;
-    currentDate: string;
-    currentTime: string;
-    currentDateTime: string;
-    timeZoneRegionName: string;
-    currentDateMDY: string;
-    currentTimeAMPM: string;
-    stateCode: string;
-    timeZone: string;
-    latitude: number;
-    longitude: number;
+  currentWeather: {
+    direction: number;
+    hideCurrentWeatherConditionsCard: boolean;
+    icon: string;
+    sky: string;
+    tempC: number;
+    tempF: number;
+    visibility: {
+      km: number;
+      miles: number;
+    };
+    wind: {
+      knots: number;
+      kph: number;
+      mph: number;
+    };
   };
   delayIndex: {
+    lastUpdated: string;
     observed: boolean;
     score: number;
     status: string;
     trend: string;
-    lastUpdated: string;
   };
-  currentWeather: {
-    tempF: number;
-    tempC: number;
-    direction: number;
-    hideCurrentWeatherConditionsCard: boolean;
-    sky: string;
-    icon: string;
-    visibility: {
-      miles: number;
-      km: number;
-    };
-    wind: {
-      knots: number;
-      mph: number;
-      kph: number;
-    };
+  detailsHeader: {
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    code: string;
+    countryCode: StringRegexOptions;
+    currentDate: string;
+    currentDateMDY: string;
+    currentDateTime: string;
+    currentTime: string;
+    currentTimeAMPM: string;
+    latitude: number;
+    longitude: number;
+    name: string;
+    stateCode: string;
+    timeZone: string;
+    timeZoneRegionName: string;
   };
   forecastWeather: Array<{
     date: string;
     dateMDY: string;
     day1: string;
-    des1: string;
-    icon: string;
     day2: string;
+    des1: string;
     des2: string;
+    icon: string;
     icon2: string;
   }>;
 };
@@ -171,6 +171,14 @@ export type FlightStatPromptness = {
     state: string;
     timeZoneRegionName: string;
   };
+  chart: {
+    cancelled: number;
+    diverted: number;
+    excessive: number;
+    late: number;
+    onTime: number;
+    veryLate: number;
+  };
   departureAirport: {
     active: true;
     city: string;
@@ -182,14 +190,6 @@ export type FlightStatPromptness = {
     name: string;
     state: string;
     timeZoneRegionName: string;
-  };
-  chart: {
-    cancelled: number;
-    diverted: number;
-    excessive: number;
-    late: number;
-    onTime: number;
-    veryLate: number;
   };
   details: {
     delayPerformance: {
@@ -228,19 +228,6 @@ export type FlightStatPromptness = {
 };
 
 export type FlightDetails = {
-  flightId: number;
-  flightState: 'en-route';
-  sortTime: string;
-  url: string;
-  carrier: {
-    active: true;
-    category: string;
-    flightNumber: string;
-    fs: string;
-    iata: string;
-    icao: string;
-    name: string;
-  };
   additionalFlightInfo: {
     equipment?: {
       iata: string;
@@ -253,6 +240,15 @@ export type FlightDetails = {
       scheduled: string;
     };
   };
+  carrier: {
+    active: true;
+    category: string;
+    flightNumber: string;
+    fs: string;
+    iata: string;
+    icao: string;
+    name: string;
+  };
   eventTimeline: Array<{
     arrivalAirportTime: string;
     arrivalAirportTime24: string;
@@ -260,22 +256,7 @@ export type FlightDetails = {
     date2: string;
     departureAirportTime: string;
     departureAirportTime24: string;
-    shortTitle: string;
-    sortTime: string;
-    source: string;
-    title: string;
-    utcTime: string;
     events: Array<
-      | {
-          changed: string;
-          newDate: boolean;
-          fromAMPM0: string;
-          fromAMPM1: string;
-          fromMonth0: string;
-          fromMonth1: string;
-          fromTime0: string;
-          fromTime1: string;
-        }
       | {
           changed: string;
           fromAMPM0: string;
@@ -294,20 +275,37 @@ export type FlightDetails = {
           toTime1: string;
         }
       | {
+          changed: string;
+          fromAMPM0: string;
+          fromAMPM1: string;
+          fromMonth0: string;
+          fromMonth1: string;
+          fromTime0: string;
+          fromTime1: string;
+          newDate: boolean;
+        }
+      | {
           eventText: string;
           noAdjustment: boolean;
         }
     >;
+    shortTitle: string;
+    sortTime: string;
+    source: string;
+    title: string;
+    utcTime: string;
   }>;
+  flightId: number;
+  flightState: 'en-route';
   schedule: {
-    actualGateDeparture?: string;
-    actualGateDepartureUTC?: string;
-    actualRunwayDeparture?: string;
-    actualRunwayDepartureUTC?: string;
     actualGateArrival?: string;
     actualGateArrivalUTC?: string;
+    actualGateDeparture?: string;
+    actualGateDepartureUTC?: string;
     actualRunwayArrival?: string;
     actualRunwayArrivalUTC?: string;
+    actualRunwayDeparture?: string;
+    actualRunwayDepartureUTC?: string;
     estimatedGateArrival: string;
     estimatedGateArrivalUTC: string;
     estimatedGateDeparture: string;
@@ -321,29 +319,31 @@ export type FlightDetails = {
     scheduledRunwayDeparture: string;
     scheduledRunwayDepartureUTC: string;
   };
+  sortTime: string;
   status: {
     color: string;
-    diverted: boolean;
-    showEst: boolean;
-    status: FlightStats_Status;
-    statusCode: 'A';
-    statusDescription: string;
     delay: {
+      arrival: {
+        gateMinutes: number;
+        hasArrivalTime: number;
+        runwayMinutes: number;
+      };
       delayStatus: {
         minutes: number;
         wording: string;
-      };
-      arrival: {
-        gateMinutes: number;
-        runwayMinutes: number;
-        hasArrivalTime: number;
       };
       departure: {
         gateMinutes: number;
         runwayMinutes: number;
       };
     };
+    diverted: boolean;
+    showEst: boolean;
+    status: FlightStats_Status;
+    statusCode: 'A';
+    statusDescription: string;
   };
+  url: string;
 } & {
   [key in 'arrivalAirport' | 'departureAirport']: FlightStatAirport & {
     baggage?: string;
@@ -370,29 +370,12 @@ export type FlightProgress = {
   flightEquipmentIata: string;
   flightEquipmentName: string;
   flightId: string;
-  flightStatus: string;
-  heading: number;
-  responseTime: number;
-  statusAppend: string;
-  statusAppendKey: number;
-  statusCode: number;
-  statusColor: string;
-  statusName: 'DEPARTED';
-  positions: Array<{
-    altitudeFt: number;
-    course: number;
-    date: string;
-    lastObserved: string;
-    lat: number;
-    lon: number;
-    source: 'derived';
-    speedMph: number;
-    vrateMps: number;
-  }>;
   flightPlan: Array<{
     lat: number;
     lon: number;
   }>;
+  flightStatus: string;
+  heading: number;
   miniTracker: {
     arrivalAirport: string;
     departureAirport: string;
@@ -412,61 +395,78 @@ export type FlightProgress = {
     utcArrivalTime: validator;
     utcDepartureTime: number;
   };
+  positions: Array<{
+    altitudeFt: number;
+    course: number;
+    date: string;
+    lastObserved: string;
+    lat: number;
+    lon: number;
+    source: 'derived';
+    speedMph: number;
+    vrateMps: number;
+  }>;
+  responseTime: number;
+  statusAppend: string;
+  statusAppendKey: number;
+  statusCode: number;
+  statusColor: string;
+  statusName: 'DEPARTED';
 };
 
 export type RandomFlight = {
   _source: {
-    flightId: number;
-    flightNumber: string;
     carrier: string;
     carrierIata: string;
     departureDateTime: string;
     departureGate?: string;
     departureTerminal: string;
-    tailNumber: string;
     departureTimeZone: string;
+    flightId: number;
+    flightNumber: string;
+    tailNumber: string;
   };
 };
 
 export type FlightSearchItem = {
   _source: {
-    flightId: number;
-    flightNumber: string;
+    actualGateArrival?: string;
+    actualGateDeparture?: string;
+    actualRunwayArrival?: string;
+    actualRunwayDeparture?: string;
+    arrivalAirport: string;
+    arrivalAirportCity: string;
+    arrivalAirportName: string;
+    arrivalDateTime: string;
+    arrivalGate?: string;
+    arrivalTerminal?: string;
+    arrivalTimeZone: string;
+
     carrier: string;
     carrierIata: string;
     departureAirport: string;
     departureAirportCity: string;
+
     departureAirportName: string;
     departureDateTime: string;
-    departureTimeZone: string;
     departureGate?: string;
     departureTerminal?: string;
 
-    scheduledGateDeparture: string;
-    scheduledRunwayDeparture: string;
-    scheduledGateArrival: string;
-    scheduledRunwayArrival: string;
-
-    estimatedGateDeparture: string;
-    estimatedRunwayDeparture: string;
+    departureTimeZone: string;
     estimatedGateArrival: string;
+    estimatedGateDeparture: string;
     estimatedRunwayArrival: string;
 
-    actualGateDeparture?: string;
-    actualRunwayDeparture?: string;
-    actualGateArrival?: string;
-    actualRunwayArrival?: string;
-
-    arrivalAirport: string;
-    arrivalAirportCity: string;
-    arrivalAirportName: string;
-    arrivalGate?: string;
-    arrivalTerminal?: string;
-    arrivalDateTime: string;
-    arrivalTimeZone: string;
-    status: string;
-
+    estimatedRunwayDeparture: string;
+    flightId: number;
+    flightNumber: string;
     scheduledEquipment?: string;
+    scheduledGateArrival: string;
+    scheduledGateDeparture: string;
+    scheduledRunwayArrival: string;
+    scheduledRunwayDeparture: string;
+
+    status: string;
   };
 };
 
@@ -474,35 +474,35 @@ export type FlightStatSearchItemV2 = {
   date1: string;
   date2: string;
   day: string;
-  year: string;
   flights: Array<{
     arrivalAirport: {
       city: string;
+      country: string;
       fs: string;
       iata: string;
       name: string;
       state: string;
-      country: string;
     };
-    departureAirport: {
-      city: string;
-      fs: string;
-      iata: string;
-      name: string;
-      state: string;
-      country: string;
-    };
-    url: string;
     arrivalTime: string;
     arrivalTimeAmPm: 'AM' | 'PM';
     arrivalTimezone: string;
     departureAirport: {
+      city: string;
+      country: string;
+      fs: string;
+      iata: string;
+      name: string;
+      state: string;
+    };
+    departureAirport: {
       iata: string;
     };
     departureTime: string;
-    departureTimeAmPm: 'AM' | 'PM';
     departureTime24: string;
+    departureTimeAmPm: 'AM' | 'PM';
     departureTimezone: string;
     sortTime: string;
+    url: string;
   }>;
+  year: string;
 };

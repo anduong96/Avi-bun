@@ -1,7 +1,6 @@
-import * as Cheerio from 'cheerio';
-
-import { keyBy } from 'lodash';
 import moment from 'moment';
+import { keyBy } from 'lodash';
+import * as Cheerio from 'cheerio';
 
 export function getSeatConfiguration($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("SEAT CONFIGURATION")');
@@ -24,9 +23,9 @@ export function getSeatConfiguration($: Cheerio.CheerioAPI) {
   const Business = seatMap['Business'];
 
   return {
+    business: Business?.count,
     economy: Economy?.count,
     first: First?.count,
-    business: Business?.count,
   };
 }
 
@@ -82,13 +81,13 @@ export function getAirlineIata($: Cheerio.CheerioAPI) {
 export function getAircraftFromHtml(content: string) {
   const $ = Cheerio.load(content);
   return {
-    seatsConfiguration: getSeatConfiguration($),
     airlineIata: getAirlineIata($),
-    icao: getIcao($),
-    model: getModel($),
     description: getDescription($),
     firstFlight: getFirstFlight($),
-    image: getImage($),
     html: content,
+    icao: getIcao($),
+    image: getImage($),
+    model: getModel($),
+    seatsConfiguration: getSeatConfiguration($),
   };
 }

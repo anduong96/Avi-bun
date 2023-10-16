@@ -1,6 +1,8 @@
-import { FlightStats } from '@app/flight.vendors/flight.stats';
-import { describe, expect, test } from 'bun:test';
 import moment from 'moment';
+import { describe, expect, test } from 'bun:test';
+
+import { FlightStats } from '@app/flight.vendors/flight.stats';
+
 import { RadarBox } from '..';
 
 describe('RadarBox', () => {

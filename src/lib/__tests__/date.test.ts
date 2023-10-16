@@ -1,12 +1,12 @@
-import { describe, expect, test } from 'bun:test';
 import moment from 'moment';
+import { describe, expect, test } from 'bun:test';
 
 describe('lib:Date', () => {
   test('get correct date', () => {
     const year = 2023;
     const month = 1;
     const date = 23;
-    const target = moment({ year, month, date });
+    const target = moment({ date, month, year });
     const targetDate = target.toDate();
 
     expect(target.format('YYYY-MM-DD')).toBe('2023-02-23');

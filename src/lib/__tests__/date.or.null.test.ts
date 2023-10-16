@@ -1,6 +1,7 @@
 import moment from 'moment';
-import { toDateOrNull } from '../date.or.null';
 import { describe, expect, test } from 'bun:test';
+
+import { toDateOrNull } from '../date.or.null';
 
 describe('toDateOrNull', () => {
   test('should return null when input is falsy', () => {

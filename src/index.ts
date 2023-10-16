@@ -1,17 +1,18 @@
-import '@app/firebase';
 import '@app/prisma';
-import '@app/lib/sentry';
+import '@app/firebase';
 import '@app/scheduler';
-import '@app/topic.listeners';
+import '@app/lib/sentry';
 import 'reflect-metadata';
+import '@app/topic.listeners';
+
+import { Elysia } from 'elysia';
+
+import { Scheduler } from '@app/scheduler';
+import { RestMiddleware } from '@app/api/rest';
 
 import { ENV, isDev } from './env';
-
-import { RestMiddleware } from '@app/api/rest';
-import { Scheduler } from '@app/scheduler';
-import { Elysia } from 'elysia';
-import { GraphqlMiddleware } from './api/graphql';
 import { Logger } from './lib/logger';
+import { GraphqlMiddleware } from './api/graphql';
 
 await Scheduler.instance.start();
 

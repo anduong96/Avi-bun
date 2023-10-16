@@ -1,10 +1,11 @@
-import { toDateOrNull } from '@app/lib/date.or.null';
-import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
-import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
-import { FlightQueryParam } from '@app/types/flight';
-import { FlightStatus, Prisma } from '@prisma/client';
 import moment from 'moment';
 import * as uuid from 'uuid';
+import { FlightStatus, Prisma } from '@prisma/client';
+
+import { toDateOrNull } from '@app/lib/date.or.null';
+import { FlightQueryParam } from '@app/types/flight';
+import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
+import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
 
 function toFlightPayload(
   entry: AeroDataBoxFlight,
@@ -15,29 +16,29 @@ function toFlightPayload(
   );
 
   return {
-    id: uuid.v4(),
-    airlineIata: entry.airline.iata,
-    flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
     aircraftTailnumber: entry.aircraft.reg,
+    airlineIata: entry.airline.iata,
+    destinationBaggageClaim: entry.arrival.baggageBelt,
+    destinationIata: entry.arrival.airport.iata,
+    destinationTerminal: entry.arrival.terminal,
+    estimatedGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
+    estimatedGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
+    flightDate: departureDate.date(),
+    flightMonth: departureDate.month(),
+    flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
+    flightYear: departureDate.year(),
+    id: uuid.v4(),
     originIata: entry.departure.airport.iata,
     originTerminal: entry.departure.terminal,
-    destinationIata: entry.arrival.airport.iata,
-    destinationBaggageClaim: entry.arrival.baggageBelt,
-    destinationTerminal: entry.arrival.terminal,
-    totalDistanceKm: entry.greatCircleDistance.km,
-    flightYear: departureDate.year(),
-    flightMonth: departureDate.month(),
-    flightDate: departureDate.date(),
-    scheduledGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
-    estimatedGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
     scheduledGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
-    estimatedGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
+    scheduledGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
     status:
       entry.status === 'Arrived'
         ? FlightStatus.ARRIVED
         : entry.status === 'Departed'
         ? FlightStatus.DEPARTED
         : FlightStatus.SCHEDULED,
+    totalDistanceKm: entry.greatCircleDistance.km,
   };
 }
 

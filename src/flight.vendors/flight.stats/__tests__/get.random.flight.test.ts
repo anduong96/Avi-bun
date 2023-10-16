@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 
-import { FlightStats } from '..';
 import { Logger } from '@app/lib/logger';
+
+import { FlightStats } from '..';
 
 describe('Flight Stats', () => {
   test('getRandomFlight', async () => {

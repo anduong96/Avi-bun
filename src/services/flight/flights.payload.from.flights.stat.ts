@@ -1,10 +1,11 @@
+import * as uuid from 'uuid';
+import { FlightVendor, Prisma } from '@prisma/client';
+
+import { Logger } from '@app/lib/logger';
 import { toDateOrNull } from '@app/lib/date.or.null';
+import { FlightQueryParam } from '@app/types/flight';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { toFlightStatus } from '@app/flight.vendors/flight.stats/utils';
-import { Logger } from '@app/lib/logger';
-import { FlightQueryParam } from '@app/types/flight';
-import { FlightVendor, Prisma } from '@prisma/client';
-import * as uuid from 'uuid';
 
 export function flightStatFlightToFlightPayload(
   flight: Awaited<ReturnType<(typeof FlightStats)['getFlightDetails']>>,
@@ -14,12 +15,12 @@ export function flightStatFlightToFlightPayload(
   const aircraftTailnumber = info.equipment?.tailNumber;
   const status = toFlightStatus(flight.status.status);
   const {
-    scheduledGateDepartureUTC,
-    scheduledGateArrivalUTC,
-    estimatedGateArrivalUTC,
-    estimatedGateDepartureUTC,
     actualGateArrivalUTC,
     actualGateDepartureUTC,
+    estimatedGateArrivalUTC,
+    estimatedGateDepartureUTC,
+    scheduledGateArrivalUTC,
+    scheduledGateDepartureUTC,
   } = schedule;
 
   const scheduledGateDeparture = toDateOrNull(
@@ -36,33 +37,33 @@ export function flightStatFlightToFlightPayload(
   );
 
   return {
-    id: uuid.v4(),
     FlightVendorConnection: {
       create: {
         vendor: FlightVendor.FLIGHT_STATS,
         vendorResourceID: flight.flightId.toString(),
       },
     },
-    flightYear: flight.flightYear,
-    flightMonth: flight.flightMonth,
-    flightDate: flight.flightDate,
-    flightNumber: flight.flightNumber,
-    airlineIata: flight.airlineIata,
-    aircraftTailnumber: aircraftTailnumber,
-    originIata: flight.departureAirport.iata,
-    originTerminal: flight.departureAirport.terminal,
-    originGate: flight.departureAirport.gate,
-    destinationIata: flight.arrivalAirport.iata,
-    destinationTerminal: flight.arrivalAirport.terminal,
-    destinationGate: flight.arrivalAirport.gate,
-    destinationBaggageClaim: flight.arrivalAirport.baggage,
-    status: status,
-    scheduledGateDeparture: scheduledGateDeparture!,
-    scheduledGateArrival: scheduledGateArrival!,
-    estimatedGateArrival: estimatedGateArrival!,
-    estimatedGateDeparture: estimatedGateDeparture!,
     actualGateArrival: toDateOrNull(actualGateArrivalUTC),
     actualGateDeparture: toDateOrNull(actualGateDepartureUTC),
+    aircraftTailnumber: aircraftTailnumber,
+    airlineIata: flight.airlineIata,
+    destinationBaggageClaim: flight.arrivalAirport.baggage,
+    destinationGate: flight.arrivalAirport.gate,
+    destinationIata: flight.arrivalAirport.iata,
+    destinationTerminal: flight.arrivalAirport.terminal,
+    estimatedGateArrival: estimatedGateArrival!,
+    estimatedGateDeparture: estimatedGateDeparture!,
+    flightDate: flight.flightDate,
+    flightMonth: flight.flightMonth,
+    flightNumber: flight.flightNumber,
+    flightYear: flight.flightYear,
+    id: uuid.v4(),
+    originGate: flight.departureAirport.gate,
+    originIata: flight.departureAirport.iata,
+    originTerminal: flight.departureAirport.terminal,
+    scheduledGateArrival: scheduledGateArrival!,
+    scheduledGateDeparture: scheduledGateDeparture!,
+    status: status,
   };
 }
 
@@ -77,12 +78,12 @@ export async function getFlightsPayloadFromFlightStats(
   const detailFlights = await Promise.allSettled(
     remoteFlights.map(entry =>
       FlightStats.getFlightDetails({
-        flightID: entry.flightID,
-        flightNumber: params.flightNumber,
         airlineIata: params.airlineIata,
-        flightYear: entry.flightYear,
-        flightMonth: entry.flightMonth,
         flightDate: entry.flightDate,
+        flightID: entry.flightID,
+        flightMonth: entry.flightMonth,
+        flightNumber: params.flightNumber,
+        flightYear: entry.flightYear,
       }),
     ),
   );

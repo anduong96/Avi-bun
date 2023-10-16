@@ -1,8 +1,9 @@
+import moment from 'moment';
+import { Flight, FlightPromptness, FlightVendor } from '@prisma/client';
+
+import { prisma } from '@app/prisma';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { fractionToPercent } from '@app/lib/fraction.to.percent';
-import { prisma } from '@app/prisma';
-import { Flight, FlightPromptness, FlightVendor } from '@prisma/client';
-import moment from 'moment';
 
 /**
  * Upserts the flight promptness based on the provided flight information.
@@ -13,14 +14,14 @@ import moment from 'moment';
 export async function upsertFlightPromptness(
   flight: Pick<
     Flight,
-    'airlineIata' | 'flightNumber' | 'originIata' | 'destinationIata'
+    'airlineIata' | 'destinationIata' | 'flightNumber' | 'originIata'
   >,
 ): Promise<FlightPromptness> {
   const remotePromptness = await FlightStats.getFlightPromptness({
     airlineIata: flight.airlineIata,
+    destinationIata: flight.destinationIata,
     flightNumber: flight.flightNumber,
     originIata: flight.originIata,
-    destinationIata: flight.destinationIata,
   });
 
   const rating = fractionToPercent(remotePromptness.details.overall.stars, 5);
@@ -30,46 +31,46 @@ export async function upsertFlightPromptness(
     .as('milliseconds');
 
   const promptness = await prisma.flightPromptness.upsert({
+    create: {
+      airlineIata: flight.airlineIata,
+      averageDelayTimeMs,
+      cancelledCount: remotePromptness.chart.cancelled,
+      daysObserved: 60,
+      destinationIata: flight.destinationIata,
+      divertedCount: remotePromptness.chart.diverted,
+
+      excessiveCount: remotePromptness.chart.excessive,
+      expiresAt,
+      flightNumber: flight.flightNumber,
+      flightsObservered: remotePromptness.statistics.totalObservations,
+      lateCount: remotePromptness.chart.late,
+      onTimeCount: remotePromptness.chart.onTime,
+      onTimePercent: remotePromptness.details.overall.ontimePercent,
+      originIata: flight.originIata,
+      rating,
+      vendor: FlightVendor.FLIGHT_STATS,
+      veryLateCount: remotePromptness.chart.veryLate,
+    },
+    update: {
+      averageDelayTimeMs,
+      cancelledCount: remotePromptness.chart.cancelled,
+      daysObserved: 60,
+      divertedCount: remotePromptness.chart.diverted,
+      excessiveCount: remotePromptness.chart.excessive,
+      expiresAt,
+      flightsObservered: remotePromptness.statistics.totalObservations,
+      lateCount: remotePromptness.chart.late,
+      onTimeCount: remotePromptness.chart.onTime,
+      rating,
+      veryLateCount: remotePromptness.chart.veryLate,
+    },
     where: {
       airlineIata_flightNumber_originIata_destinationIata: {
         airlineIata: remotePromptness.airline.iata,
+        destinationIata: remotePromptness.arrivalAirport.iata,
         flightNumber: remotePromptness.airline.flightNumber,
         originIata: remotePromptness.departureAirport.iata,
-        destinationIata: remotePromptness.arrivalAirport.iata,
       },
-    },
-    create: {
-      vendor: FlightVendor.FLIGHT_STATS,
-      airlineIata: flight.airlineIata,
-      flightNumber: flight.flightNumber,
-      originIata: flight.originIata,
-      destinationIata: flight.destinationIata,
-      onTimePercent: remotePromptness.details.overall.ontimePercent,
-
-      onTimeCount: remotePromptness.chart.onTime,
-      cancelledCount: remotePromptness.chart.cancelled,
-      lateCount: remotePromptness.chart.late,
-      veryLateCount: remotePromptness.chart.veryLate,
-      excessiveCount: remotePromptness.chart.excessive,
-      divertedCount: remotePromptness.chart.diverted,
-      flightsObservered: remotePromptness.statistics.totalObservations,
-      daysObserved: 60,
-      expiresAt,
-      rating,
-      averageDelayTimeMs,
-    },
-    update: {
-      onTimeCount: remotePromptness.chart.onTime,
-      cancelledCount: remotePromptness.chart.cancelled,
-      lateCount: remotePromptness.chart.late,
-      veryLateCount: remotePromptness.chart.veryLate,
-      excessiveCount: remotePromptness.chart.excessive,
-      divertedCount: remotePromptness.chart.diverted,
-      flightsObservered: remotePromptness.statistics.totalObservations,
-      daysObserved: 60,
-      expiresAt,
-      rating,
-      averageDelayTimeMs,
     },
   });
 
@@ -87,23 +88,23 @@ export async function getFlightPromptness(
   flightID: Flight['id'],
 ): Promise<FlightPromptness> {
   const flight = await prisma.flight.findFirstOrThrow({
-    where: {
-      id: flightID,
-    },
     select: {
       airlineIata: true,
+      destinationIata: true,
       flightNumber: true,
       originIata: true,
-      destinationIata: true,
+    },
+    where: {
+      id: flightID,
     },
   });
 
   const promptness = await prisma.flightPromptness.findFirst({
     where: {
       airlineIata: flight.airlineIata,
+      destinationIata: flight.destinationIata,
       flightNumber: flight.flightNumber,
       originIata: flight.originIata,
-      destinationIata: flight.destinationIata,
     },
   });
 

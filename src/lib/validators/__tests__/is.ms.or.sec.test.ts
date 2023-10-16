@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+
 import { isMsOrSeconds } from '../is.ms.or.sec';
 
 describe('lib::isMsOrSeconds', () => {

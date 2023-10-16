@@ -1,8 +1,10 @@
 import { Context } from 'elysia';
-import { getRequestIpAddress } from './get.req.ip';
-import { getRequestUser } from './get.req.user';
-import { ApolloServerContext } from './types';
+
 import { Sentry } from '@app/lib/sentry';
+
+import { ApolloServerContext } from './types';
+import { getRequestUser } from './get.req.user';
+import { getRequestIpAddress } from './get.req.ip';
 import { getRequestTransactionID } from './get.req.transaction.id';
 
 export async function createApolloContext(
@@ -14,17 +16,17 @@ export async function createApolloContext(
   const transactionID = getRequestTransactionID(request);
   const ipAddress = getRequestIpAddress(request);
   const sentryTransaction = Sentry.startTransaction({
-    op: 'GraphQL',
     name: 'GraphQLTransaction',
+    op: 'GraphQL',
     traceId: transactionID,
   });
 
   return {
-    request,
-    user,
-    ipAddress,
     headers,
+    ipAddress,
+    request,
     sentryTransaction,
     transactionID,
+    user,
   };
 }

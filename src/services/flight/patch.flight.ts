@@ -1,21 +1,22 @@
+import { isEmpty, pick } from 'lodash';
 import { Flight, FlightVendor } from '@prisma/client';
 
-import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { prisma } from '@app/prisma';
-import { isEmpty, pick } from 'lodash';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
+
 import { Logger } from '../../lib/logger';
 
 export async function patchFlight(
   flight: Pick<
     Flight,
-    | 'id'
     | 'airlineIata'
-    | 'flightNumber'
-    | 'flightDate'
-    | 'flightYear'
-    | 'flightMonth'
-    | 'originIata'
     | 'destinationIata'
+    | 'flightDate'
+    | 'flightMonth'
+    | 'flightNumber'
+    | 'flightYear'
+    | 'id'
+    | 'originIata'
   >,
 ): Promise<void> {
   Logger.info('Patching flight[%s] with Flight Stats', flight.id);
@@ -45,17 +46,17 @@ export async function patchFlight(
     );
 
     const dbFlight = await prisma.flight.findFirst({
-      where: {
-        flightYear: flight.flightYear,
-        flightMonth: flight.flightMonth,
-        flightDate: flight.flightDate,
-        airlineIata: flight.airlineIata,
-        flightNumber: flight.flightNumber,
-        originIata: flight.originIata,
-        destinationIata: flight.destinationIata,
-      },
       select: {
         id: true,
+      },
+      where: {
+        airlineIata: flight.airlineIata,
+        destinationIata: flight.destinationIata,
+        flightDate: flight.flightDate,
+        flightMonth: flight.flightMonth,
+        flightNumber: flight.flightNumber,
+        flightYear: flight.flightYear,
+        originIata: flight.originIata,
       },
     });
 

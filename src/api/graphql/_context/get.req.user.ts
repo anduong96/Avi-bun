@@ -1,8 +1,10 @@
+import { Context } from 'elysia';
+import { tryNice } from 'try-nice';
+import { DecodedIdToken } from 'firebase-admin/auth';
+
 import { isDev } from '@app/env';
 import { firebase } from '@app/firebase';
-import { Context } from 'elysia';
-import { DecodedIdToken } from 'firebase-admin/auth';
-import { tryNice } from 'try-nice';
+
 import { getDevUser } from './get.dev.user';
 
 export async function getRequestUser(

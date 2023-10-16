@@ -1,20 +1,23 @@
-import { ApolloLogPlugin } from '@app/api/graphql/_plugins/log.plugin';
-import Elysia from 'elysia';
 import path from 'path';
+import Elysia from 'elysia';
 import { buildSchema } from 'type-graphql';
+
+import { ApolloLogPlugin } from '@app/api/graphql/_plugins/log.plugin';
+
 import { isDev } from '../../env';
 import { apollo } from './_apollo';
-import { validateApolloAuth } from './_auth/validate.auth';
-import { createApolloContext } from './_context/create.context';
-import { ApolloSentryPlugin } from './_plugins/sentry.plugin';
-import { DebugResolver } from './resolvers/_debug.resolver';
+import { UserResolver } from './resolvers/user.resolver';
 import { NoopResolver } from './resolvers/_noop.resolver';
+import { validateApolloAuth } from './_auth/validate.auth';
+import { DebugResolver } from './resolvers/_debug.resolver';
+import { FlightResolver } from './resolvers/flight.resolver';
+import { ApolloSentryPlugin } from './_plugins/sentry.plugin';
 import { AirlineResolver } from './resolvers/airline.resolver';
 import { AirportResolver } from './resolvers/airport.resolver';
-import { FlightPromptnessResolver } from './resolvers/flight.promptness.resolver';
-import { FlightResolver } from './resolvers/flight.resolver';
-import { UserFlightResolver } from './resolvers/user.flights.resolver';
+import { createApolloContext } from './_context/create.context';
 import { AircraftResolver } from './resolvers/aircraft.resolver';
+import { UserFlightResolver } from './resolvers/user.flights.resolver';
+import { FlightPromptnessResolver } from './resolvers/flight.promptness.resolver';
 import { AircraftPositionResolver } from './resolvers/aircraft.position.resolver';
 
 const emitSchemaFile = isDev
@@ -22,8 +25,8 @@ const emitSchemaFile = isDev
   : false;
 
 const gqlSchema = await buildSchema({
-  emitSchemaFile,
   authChecker: validateApolloAuth,
+  emitSchemaFile,
   resolvers: [
     isDev ? DebugResolver : NoopResolver,
     FlightResolver,
@@ -33,14 +36,15 @@ const gqlSchema = await buildSchema({
     AircraftResolver,
     AircraftPositionResolver,
     UserFlightResolver,
+    UserResolver,
   ],
 });
 
 export const GraphqlMiddleware = new Elysia().use(
   apollo({
-    path: '/graphql',
-    schema: gqlSchema,
-    plugins: [ApolloLogPlugin, ApolloSentryPlugin],
     context: createApolloContext,
+    path: '/graphql',
+    plugins: [ApolloLogPlugin, ApolloSentryPlugin],
+    schema: gqlSchema,
   }),
 );

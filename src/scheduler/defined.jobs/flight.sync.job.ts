@@ -1,13 +1,14 @@
+import { tryNice } from 'try-nice';
+import moment from 'moment-timezone';
+import CronTime from 'cron-time-generator';
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
-import { FlightStats } from '@app/flight.vendors/flight.stats';
-import { FlightStats_Status } from '@app/flight.vendors/flight.stats/enums';
 import { prisma } from '@app/prisma';
+import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { sendFlightAlert } from '@app/services/alerts/flight.alert';
+import { FlightStats_Status } from '@app/flight.vendors/flight.stats/enums';
 import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';
-import CronTime from 'cron-time-generator';
-import moment from 'moment-timezone';
-import { tryNice } from 'try-nice';
+
 import { Job } from '../job';
 
 export class SyncActiveFlightsJob extends Job {
@@ -21,19 +22,19 @@ export class SyncActiveFlightsJob extends Job {
 
     const [result, error] = await tryNice(() =>
       FlightStats.getFlightDetails({
-        flightID: flightStatsID,
-        flightYear: flight.flightYear,
-        flightMonth: flight.flightMonth,
-        flightDate: flight.flightDate,
         airlineIata: flight.airlineIata,
+        flightDate: flight.flightDate,
+        flightID: flightStatsID,
+        flightMonth: flight.flightMonth,
         flightNumber: flight.flightNumber,
+        flightYear: flight.flightYear,
       }),
     );
 
     if (error || !result) {
       await prisma.flight.update({
-        where: { id: flight.id },
         data: { reconAttempt: { increment: 1 } },
+        where: { id: flight.id },
       });
 
       this.logger.warn(
@@ -48,27 +49,27 @@ export class SyncActiveFlightsJob extends Job {
 
     const payload = flightStatFlightToFlightPayload(result);
     const updateData: Prisma.FlightUpdateInput = {
-      status: payload.status,
-      estimatedGateDeparture: payload.estimatedGateDeparture,
-      estimatedGateArrival: payload.estimatedGateArrival,
       actualGateArrival: payload.actualGateArrival,
       actualGateDeparture: payload.actualGateDeparture,
       destinationBaggageClaim: payload.destinationBaggageClaim,
       destinationGate: payload.destinationGate,
       destinationTerminal: payload.destinationTerminal,
+      estimatedGateArrival: payload.estimatedGateArrival,
+      estimatedGateDeparture: payload.estimatedGateDeparture,
       originGate: payload.originGate,
       originTerminal: payload.originTerminal,
       reconAttempt: {
         increment: 1,
       },
+      status: payload.status,
     };
 
     this.logger.debug('Flight[%s] updateData[%o]', flight.id, updateData);
 
     const writeResult = await prisma.flight.update({
-      where: { id: flight.id },
-      select: { id: true },
       data: updateData,
+      select: { id: true },
+      where: { id: flight.id },
     });
 
     if (writeResult) {
@@ -80,8 +81,8 @@ export class SyncActiveFlightsJob extends Job {
     }
 
     const destination = await prisma.airport.findFirstOrThrow({
-      where: { iata: flight.destinationIata },
       select: { cityCode: true, cityName: true },
+      where: { iata: flight.destinationIata },
     });
 
     const destinationName = destination.cityName || destination.cityCode;
@@ -93,9 +94,9 @@ export class SyncActiveFlightsJob extends Job {
       flight.status !== FlightStatus.CANCELED
     ) {
       await this.notifyFlightGroup({
+        body: `Your flight to ${destinationName} was cancelled`,
         flight,
         title: `${flightTitle}: Cancelled`,
-        body: `Your flight to ${destinationName} was cancelled`,
       });
     }
 
@@ -112,9 +113,9 @@ export class SyncActiveFlightsJob extends Job {
       const body = `Your flight to ${destinationName} is delayed. Expected departure at ${delayedTimeAt}`;
 
       await this.notifyFlightGroup({
+        body,
         flight,
         title,
-        body,
       });
     }
   }
@@ -134,8 +135,11 @@ export class SyncActiveFlightsJob extends Job {
         vendorResourceID: true,
       },
       where: {
-        vendor: FlightVendor.FLIGHT_STATS,
         Flight: {
+          scheduledGateDeparture: {
+            gt: floor,
+            lt: ceil,
+          },
           status: {
             notIn: [
               FlightStatus.ARRIVED,
@@ -143,11 +147,8 @@ export class SyncActiveFlightsJob extends Job {
               FlightStatus.ARCHIVED,
             ],
           },
-          scheduledGateDeparture: {
-            gt: floor,
-            lt: ceil,
-          },
         },
+        vendor: FlightVendor.FLIGHT_STATS,
       },
     });
 
@@ -160,13 +161,13 @@ export class SyncActiveFlightsJob extends Job {
    * @param args - The parameters for the `notifyFlightGroup` function are:
    */
   private async notifyFlightGroup(args: {
+    body: string;
     flight: Flight;
     title: string;
-    body: string;
   }) {
     const response = await sendFlightAlert(args.flight.id, {
-      title: args.title,
       body: args.body,
+      title: args.title,
     });
 
     this.logger.warn(

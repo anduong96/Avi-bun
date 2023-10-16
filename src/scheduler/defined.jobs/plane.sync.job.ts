@@ -1,10 +1,12 @@
-import { RadarBox } from '@app/flight.vendors/radar.box';
-import { prisma } from '@app/prisma';
-import { Aircraft, FlightStatus } from '@prisma/client';
-import CronTime from 'cron-time-generator';
 import moment from 'moment';
-import { Job } from '../job';
 import { isEmpty } from 'lodash';
+import CronTime from 'cron-time-generator';
+import { Aircraft, FlightStatus } from '@prisma/client';
+
+import { prisma } from '@app/prisma';
+import { RadarBox } from '@app/flight.vendors/radar.box';
+
+import { Job } from '../job';
 
 export class SyncActivePlaneLocationJob extends Job {
   override cronTime = CronTime.every(7).minutes();
@@ -19,22 +21,7 @@ export class SyncActivePlaneLocationJob extends Job {
     );
 
     const result = await prisma.userFlight.findMany({
-      take: 100,
       distinct: ['flightID'],
-      where: {
-        Flight: {
-          aircraftTailnumber: {
-            not: null,
-          },
-          status: {
-            notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
-          },
-          scheduledGateDeparture: {
-            gt: floor,
-            lt: ceil,
-          },
-        },
-      },
       include: {
         Flight: {
           select: {
@@ -42,46 +29,24 @@ export class SyncActivePlaneLocationJob extends Job {
           },
         },
       },
+      take: 100,
+      where: {
+        Flight: {
+          aircraftTailnumber: {
+            not: null,
+          },
+          scheduledGateDeparture: {
+            gt: floor,
+            lt: ceil,
+          },
+          status: {
+            notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
+          },
+        },
+      },
     });
 
     return result.map(entry => entry.Flight.aircraftTailnumber!);
-  }
-
-  async updateAircraftPosition(
-    aircraft: Pick<Aircraft, 'id' | 'tailNumber' | 'airlineIata'>,
-  ) {
-    const position = await RadarBox.getAircraft(aircraft.tailNumber);
-    if (!position || position?.destinationIata || !position.originIata) {
-      return;
-    }
-
-    const flightNumber = position?.flightNumberIata.replace(
-      aircraft.airlineIata,
-      '',
-    );
-
-    await prisma.aircraftPosition.upsert({
-      where: {
-        updatedAt: position.updatedAt,
-        aircraftID: aircraft.id,
-        airlineIata: aircraft.airlineIata,
-      },
-      update: {},
-      create: {
-        updatedAt: position.updatedAt,
-        latitude: position.latitude,
-        longitude: position.longitude,
-        altitude: position.altitude,
-        aircraftID: aircraft.id,
-        airlineIata: aircraft.airlineIata,
-        flightNumber: flightNumber,
-        originIata: position.originIata,
-        destinationIata: position.destinationIata,
-        flightYear: position.flightDate.getFullYear(),
-        flightMonth: position.flightDate.getMonth(),
-        flightDate: position.flightDate.getDate(),
-      },
-    });
   }
 
   override async onProcess() {
@@ -106,5 +71,42 @@ export class SyncActivePlaneLocationJob extends Job {
     );
 
     this.logger.debug('Planes synced', result);
+  }
+
+  async updateAircraftPosition(
+    aircraft: Pick<Aircraft, 'airlineIata' | 'id' | 'tailNumber'>,
+  ) {
+    const position = await RadarBox.getAircraft(aircraft.tailNumber);
+    if (!position || position?.destinationIata || !position.originIata) {
+      return;
+    }
+
+    const flightNumber = position?.flightNumberIata.replace(
+      aircraft.airlineIata,
+      '',
+    );
+
+    await prisma.aircraftPosition.upsert({
+      create: {
+        aircraftID: aircraft.id,
+        airlineIata: aircraft.airlineIata,
+        altitude: position.altitude,
+        destinationIata: position.destinationIata,
+        flightDate: position.flightDate.getDate(),
+        flightMonth: position.flightDate.getMonth(),
+        flightNumber: flightNumber,
+        flightYear: position.flightDate.getFullYear(),
+        latitude: position.latitude,
+        longitude: position.longitude,
+        originIata: position.originIata,
+        updatedAt: position.updatedAt,
+      },
+      update: {},
+      where: {
+        aircraftID: aircraft.id,
+        airlineIata: aircraft.airlineIata,
+        updatedAt: position.updatedAt,
+      },
+    });
   }
 }

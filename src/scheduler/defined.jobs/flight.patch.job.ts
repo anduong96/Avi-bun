@@ -1,8 +1,10 @@
+import moment from 'moment';
+import CronTime from 'cron-time-generator';
+import { FlightVendor } from '@prisma/client';
+
 import { prisma } from '@app/prisma';
 import { patchFlight } from '@app/services/flight/patch.flight';
-import { FlightVendor } from '@prisma/client';
-import CronTime from 'cron-time-generator';
-import moment from 'moment';
+
 import { Job } from '../job';
 
 export class PatchFlightsJob extends Job {
@@ -13,23 +15,23 @@ export class PatchFlightsJob extends Job {
     const floor = moment().subtract(2, 'days').toDate();
 
     this.logger.debug('Patch flights between\n', {
-      floor,
       ceil,
+      floor,
     });
 
     const flights = await prisma.flight.findMany({
       take: 50,
       where: {
-        estimatedGateDeparture: {
-          gt: floor,
-          lt: ceil,
-        },
         FlightVendorConnection: {
           every: {
             NOT: {
               vendor: FlightVendor.FLIGHT_STATS,
             },
           },
+        },
+        estimatedGateDeparture: {
+          gt: floor,
+          lt: ceil,
         },
       },
     });

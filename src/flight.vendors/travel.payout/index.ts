@@ -1,4 +1,5 @@
 import ky from 'ky';
+
 import { IataByIpResp } from './types';
 
 export class TravelerPayout {

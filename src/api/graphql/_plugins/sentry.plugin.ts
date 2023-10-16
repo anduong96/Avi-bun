@@ -1,8 +1,10 @@
+import assert from 'assert';
 import { ApolloServerPlugin } from '@apollo/server';
+
 import { Sentry } from '@app/lib/sentry';
 import { applyIpScopeToSentry } from '@app/lib/sentry/apply.ip.scope';
 import { applyUserScopeToSentry } from '@app/lib/sentry/apply.user.scope';
-import assert from 'assert';
+
 import { ApolloServerContext } from '../_context/types';
 
 export const ApolloSentryPlugin: ApolloServerPlugin<ApolloServerContext> = {
@@ -20,25 +22,7 @@ export const ApolloSentryPlugin: ApolloServerPlugin<ApolloServerContext> = {
     }
 
     return Promise.resolve({
-      async executionDidStart() {
-        return Promise.resolve({
-          willResolveField({ info, contextValue }) {
-            const span = contextValue.sentryTransaction.startChild({
-              op: 'resolver',
-              description: `${info.parentType.name}.${info.fieldName}`,
-            });
-
-            return () => {
-              span.finish();
-            };
-          },
-        });
-      },
-      async willSendResponse() {
-        context.contextValue.sentryTransaction.finish();
-        return Promise.resolve();
-      },
-      async didEncounterErrors({ operation, errors, request }) {
+      async didEncounterErrors({ errors, operation, request }) {
         if (!operation) {
           for (const error of errors) {
             Sentry.withScope(scope => {
@@ -60,8 +44,8 @@ export const ApolloSentryPlugin: ApolloServerPlugin<ApolloServerContext> = {
 
             if (error.path) {
               scope.addBreadcrumb({
-                level: 'debug',
                 category: 'query-path',
+                level: 'debug',
                 message: error.path.join(' > '),
               });
             }
@@ -70,6 +54,24 @@ export const ApolloSentryPlugin: ApolloServerPlugin<ApolloServerContext> = {
           });
         }
 
+        return Promise.resolve();
+      },
+      async executionDidStart() {
+        return Promise.resolve({
+          willResolveField({ contextValue, info }) {
+            const span = contextValue.sentryTransaction.startChild({
+              description: `${info.parentType.name}.${info.fieldName}`,
+              op: 'resolver',
+            });
+
+            return () => {
+              span.finish();
+            };
+          },
+        });
+      },
+      async willSendResponse() {
+        context.contextValue.sentryTransaction.finish();
         return Promise.resolve();
       },
     });

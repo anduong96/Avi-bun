@@ -1,27 +1,29 @@
 import type { Context, Elysia } from 'elysia';
-import { t } from 'elysia';
 
+import { t } from 'elysia';
+import assert from 'assert';
+import { type StartStandaloneServerOptions } from '@apollo/server/standalone';
 import {
   ApolloServer,
+  type ApolloServerOptions,
   BaseContext,
   GraphQLServerContext,
   HeaderMap,
-  type ApolloServerOptions,
 } from '@apollo/server';
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
 } from '@apollo/server/plugin/landingPage/default';
-import { type StartStandaloneServerOptions } from '@apollo/server/standalone';
+
 import { isDev } from '@app/env';
-import assert from 'assert';
+
 import { ApolloServerContext } from '../_context/types';
 
 export interface ServerRegistration<Path extends string = '/graphql'>
   extends Omit<StartStandaloneServerOptions<BaseContext>, 'context'> {
-  path?: Path;
-  enablePlayground: boolean;
   context?: (context: Context) => Promise<object> | object;
+  enablePlayground: boolean;
+  path?: Path;
 }
 
 export type ElysiaApolloConfig<
@@ -37,9 +39,9 @@ export class ElysiaApolloServer<
   Context extends BaseContext = BaseContext,
 > extends ApolloServer<Context> {
   public async createHandler<Path extends string>({
-    path = '/graphql' as Path,
-    enablePlayground = isDev,
     context = () => Promise.resolve({}),
+    enablePlayground = isDev,
+    path = '/graphql' as Path,
   }: ServerRegistration<Path>) {
     const landing = enablePlayground
       ? ApolloServerPluginLandingPageLocalDefault({ footer: false })
@@ -80,20 +82,20 @@ export class ElysiaApolloServer<
             // @ts-ignore
             context: () => context(c),
             httpGraphQLRequest: {
-              method: c.request.method,
               body: c.body,
-              search: getQueryString(c.request.url),
+              headers: c.request.headers as unknown as HeaderMap,
+              method: c.request.method,
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               request: c.request,
-              headers: c.request.headers as unknown as HeaderMap,
+              search: getQueryString(c.request.url),
             },
           })
             .then(res => {
               if (res.body.kind === 'complete')
                 return new Response(res.body.string, {
-                  status: res.status ?? 200,
                   headers: res.headers as unknown as HeadersInit,
+                  status: res.status ?? 200,
                 });
 
               return new Response('');
@@ -129,13 +131,13 @@ export class ElysiaApolloServer<
 }
 
 export const apollo = async <Path extends string = '/graphql'>({
-  path,
-  enablePlayground = process.env.ENV !== 'production',
   context,
+  enablePlayground = process.env.ENV !== 'production',
+  path,
   ...config
 }: ElysiaApolloConfig<Path, ApolloServerContext>) =>
   new ElysiaApolloServer(config).createHandler<Path>({
     context,
-    path,
     enablePlayground,
+    path,
   });

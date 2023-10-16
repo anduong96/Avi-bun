@@ -1,37 +1,37 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from 'bun:test';
 
-import { removeNilProp } from "./remove.nil.props";
+import { removeNilProp } from './remove.nil.props';
 
-describe("lib::remove.nil.prop", () => {
-  test("should remove null and undefined values from an object", () => {
+describe('lib::remove.nil.prop', () => {
+  test('should remove null and undefined values from an object', () => {
     const obj = {
       a: 1,
       b: null,
       c: undefined,
-      d: "hello",
+      d: 'hello',
       e: {
         f: null,
-        g: "world",
+        g: 'world',
       },
     };
 
     const result = removeNilProp(obj);
     expect(result).toEqual({
       a: 1,
-      d: "hello",
+      d: 'hello',
       e: {
-        g: "world",
+        g: 'world',
       },
     });
   });
 
-  test("should return an empty object if input object is empty", () => {
+  test('should return an empty object if input object is empty', () => {
     const obj = {};
     const result = removeNilProp(obj);
     expect(result).toEqual({});
   });
 
-  test("should not modify the original object", () => {
+  test('should not modify the original object', () => {
     const obj = {
       a: 1,
       b: null,

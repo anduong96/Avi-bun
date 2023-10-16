@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+
 import { fractionToPercent } from '../fraction.to.percent';
 
 describe('fractionToPercent', () => {

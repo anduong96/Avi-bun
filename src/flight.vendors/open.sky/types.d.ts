@@ -33,10 +33,9 @@ export type OpenSky_Aircraft = {
 };
 
 export type OpenSky_AircraftPosition = {
-  icao24: string;
   callsign: string;
-  startTime: number;
   endTime: number;
+  icao24: string;
   path: [
     number /**ts */,
     number /**lat */,
@@ -45,4 +44,5 @@ export type OpenSky_AircraftPosition = {
     number /**true_track */,
     boolean /**on_ground */,
   ][];
+  startTime: number;
 };

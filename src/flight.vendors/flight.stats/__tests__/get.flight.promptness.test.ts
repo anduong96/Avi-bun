@@ -10,9 +10,9 @@ describe('Flight Stats', () => {
     const destinationIata = 'LHR';
     const result = await FlightStats.getFlightPromptness({
       airlineIata,
+      destinationIata,
       flightNumber,
       originIata,
-      destinationIata,
     });
 
     expect(result.airline.iata).toBe(airlineIata);

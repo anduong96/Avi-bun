@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+
 import { Logger } from './lib/logger';
 
 class _prisma extends PrismaClient {
@@ -9,6 +10,14 @@ class _prisma extends PrismaClient {
   constructor() {
     super();
     this.connect();
+  }
+
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new this();
+    }
+
+    return this._instance;
   }
 
   private connect() {
@@ -22,14 +31,6 @@ class _prisma extends PrismaClient {
           this.logger.error('Unable to connect to Prisma', error);
         });
     }
-  }
-
-  static get instance() {
-    if (!this._instance) {
-      this._instance = new this();
-    }
-
-    return this._instance;
   }
 }
 

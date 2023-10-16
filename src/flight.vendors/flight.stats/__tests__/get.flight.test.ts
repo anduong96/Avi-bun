@@ -1,48 +1,48 @@
+import moment from 'moment';
 import { describe, expect, test } from 'bun:test';
 
 import { FlightStats } from '..';
-import moment from 'moment';
 
 describe('Flight Stats', () => {
   type Item = {
     airlineIata: string;
-    flightNumber: string;
     date: Date;
-    originIata: string;
     destinationIata: string;
+    flightNumber: string;
+    originIata: string;
   };
 
   const flightsToTest: Array<Item> = [];
   flightsToTest.push({
     airlineIata: 'AA',
-    flightNumber: '100',
     date: moment().toDate(),
-    originIata: 'JFK',
     destinationIata: 'LHR',
+    flightNumber: '100',
+    originIata: 'JFK',
   });
   flightsToTest.push({
     airlineIata: 'NK',
-    flightNumber: '706',
     date: moment().subtract(1, 'day').toDate(),
-    originIata: 'DTW',
     destinationIata: 'LAX',
+    flightNumber: '706',
+    originIata: 'DTW',
   });
   flightsToTest.push({
     airlineIata: 'B6',
-    flightNumber: '161',
     date: moment().subtract(1, 'day').toDate(),
-    originIata: 'JFK',
     destinationIata: 'SMF',
+    flightNumber: '161',
+    originIata: 'JFK',
   });
 
   for (const item of flightsToTest) {
     test(`getFlightDetails: ${item.airlineIata}${item.flightNumber}`, async () => {
       const flight = await FlightStats.getFlightDetails({
         airlineIata: item.airlineIata,
+        flightDate: item.date.getDate(),
+        flightMonth: item.date.getMonth(),
         flightNumber: item.flightNumber,
         flightYear: item.date.getFullYear(),
-        flightMonth: item.date.getMonth(),
-        flightDate: item.date.getDate(),
       });
 
       const isSameDepartureDate = moment(item.date).isSame(

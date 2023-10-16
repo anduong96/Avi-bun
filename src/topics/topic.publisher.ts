@@ -1,6 +1,8 @@
-import { Singleton } from '@app/lib/singleton';
-import { Class } from '@app/types/class';
 import { noop } from 'lodash';
+
+import { Class } from '@app/types/class';
+import { Singleton } from '@app/lib/singleton';
+
 import { Topic } from './topic';
 import { TopicListener } from './types';
 
@@ -13,6 +15,40 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
     }
 
     return this.listeners.get(topicKey)!;
+  }
+
+  /**
+   * The function broadcasts a topic asynchronously and catches any errors.
+   * @param {Topic} topic - The "topic" parameter is an object representing the topic of the broadcast.
+   * It could contain information such as the title, description, or any other relevant details about the
+   * topic being broadcasted.
+   */
+  broadcast(topic: Topic) {
+    this.broadcastAsync(topic).catch(noop);
+  }
+
+  /**
+   * The function `broadcastAll` broadcasts messages for multiple topics.
+   * @param {T[]} topic - The `topic` parameter is an array of elements of type `T`, where `T` extends
+   * the `Topic` type.
+   */
+  broadcastAll<T extends Topic>(topic: T[]) {
+    for (const t of topic) {
+      this.broadcast(t);
+    }
+  }
+
+  /**
+   * The `broadcastAsync` function broadcasts a given topic to all listeners asynchronously.
+   * @param {Topic} topic - The `topic` parameter is an object representing a topic. It likely has a
+   * `key` property that identifies the topic.
+   */
+  async broadcastAsync(topic: Topic) {
+    this.logger.debug(`Broadcasting topic[${topic.key}]`);
+    const listeners = this.getTopicListeners(topic.key);
+    for (const listener of listeners) {
+      await listener(topic)?.catch(noop);
+    }
   }
 
   /**
@@ -42,40 +78,6 @@ export class _TopicPublisher extends Singleton<_TopicPublisher>() {
       listeners.splice(index, 1);
       self.logger.debug('Removed listener to topic', topic.name);
     };
-  }
-
-  /**
-   * The `broadcastAsync` function broadcasts a given topic to all listeners asynchronously.
-   * @param {Topic} topic - The `topic` parameter is an object representing a topic. It likely has a
-   * `key` property that identifies the topic.
-   */
-  async broadcastAsync(topic: Topic) {
-    this.logger.debug(`Broadcasting topic[${topic.key}]`);
-    const listeners = this.getTopicListeners(topic.key);
-    for (const listener of listeners) {
-      await listener(topic)?.catch(noop);
-    }
-  }
-
-  /**
-   * The function broadcasts a topic asynchronously and catches any errors.
-   * @param {Topic} topic - The "topic" parameter is an object representing the topic of the broadcast.
-   * It could contain information such as the title, description, or any other relevant details about the
-   * topic being broadcasted.
-   */
-  broadcast(topic: Topic) {
-    this.broadcastAsync(topic).catch(noop);
-  }
-
-  /**
-   * The function `broadcastAll` broadcasts messages for multiple topics.
-   * @param {T[]} topic - The `topic` parameter is an array of elements of type `T`, where `T` extends
-   * the `Topic` type.
-   */
-  broadcastAll<T extends Topic>(topic: T[]) {
-    for (const t of topic) {
-      this.broadcast(t);
-    }
   }
 }
 

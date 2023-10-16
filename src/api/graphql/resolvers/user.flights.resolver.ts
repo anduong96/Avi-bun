@@ -1,3 +1,4 @@
+import { FlightStatus } from '@prisma/client';
 import {
   Arg,
   Authorized,
@@ -8,43 +9,84 @@ import {
   Root,
 } from 'type-graphql';
 
-import { GQL_UserFlight } from '@app/@generated/graphql/models/UserFlight';
 import { prisma } from '@app/prisma';
-import { CurrentUserID } from '../_decorators/current.user.id.decorator';
-import { FlightStatus } from '@prisma/client';
 import { GQL_Flight } from '@app/@generated/graphql/models/Flight';
+import { GQL_UserFlight } from '@app/@generated/graphql/models/UserFlight';
+
+import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 
 @Resolver(() => GQL_UserFlight)
 export class UserFlightResolver {
-  @Authorized()
-  @Query(() => Boolean)
-  async userHasFlights(@CurrentUserID() userID: string) {
-    const count = await prisma.userFlight.count({
-      take: 1,
+  @FieldResolver(() => GQL_Flight)
+  Flight(@Root() root: GQL_UserFlight) {
+    if (root.Flight) {
+      return root.Flight;
+    }
+
+    return prisma.flight.findFirst({
       where: {
+        id: root.flightID,
+      },
+    });
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async addUserFlight(
+    @CurrentUserID() userID: string,
+    @Arg('flightID') flightID: string,
+  ): Promise<string> {
+    const record = await prisma.userFlight.upsert({
+      create: {
+        flightID,
         userID,
+      },
+      update: {},
+      where: {
+        flightID_userID: {
+          flightID,
+          userID,
+        },
       },
     });
 
-    return count > 0;
+    return record.id;
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async deleteUserFlight(
+    @CurrentUserID() userID: string,
+    @Arg('flightID') flightID: string,
+  ): Promise<string> {
+    await prisma.userFlight.delete({
+      where: {
+        flightID_userID: {
+          flightID,
+          userID,
+        },
+      },
+    });
+
+    return flightID;
   }
 
   @Authorized()
   @Query(() => [GQL_UserFlight])
   async userActiveFlights(@CurrentUserID() userID: string) {
     const result = await prisma.userFlight.findMany({
+      orderBy: {
+        Flight: {
+          estimatedGateDeparture: 'asc',
+        },
+      },
       where: {
-        userID,
         Flight: {
           status: {
             notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
           },
         },
-      },
-      orderBy: {
-        Flight: {
-          estimatedGateDeparture: 'asc',
-        },
+        userID,
       },
     });
 
@@ -55,18 +97,18 @@ export class UserFlightResolver {
   @Query(() => [GQL_UserFlight])
   async userArchivedFlights(@CurrentUserID() userID: string) {
     const result = await prisma.userFlight.findMany({
+      orderBy: {
+        Flight: {
+          estimatedGateDeparture: 'desc',
+        },
+      },
       where: {
-        userID,
         Flight: {
           status: {
             in: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
           },
         },
-      },
-      orderBy: {
-        Flight: {
-          estimatedGateDeparture: 'desc',
-        },
+        userID,
       },
     });
 
@@ -81,8 +123,8 @@ export class UserFlightResolver {
   ) {
     const flight = await prisma.userFlight.findFirst({
       where: {
-        userID,
         flightID,
+        userID,
       },
     });
 
@@ -90,56 +132,15 @@ export class UserFlightResolver {
   }
 
   @Authorized()
-  @Mutation(() => String)
-  async deleteUserFlight(
-    @CurrentUserID() userID: string,
-    @Arg('flightID') flightID: string,
-  ): Promise<string> {
-    await prisma.userFlight.delete({
+  @Query(() => Boolean)
+  async userHasFlights(@CurrentUserID() userID: string) {
+    const count = await prisma.userFlight.count({
+      take: 1,
       where: {
-        flightID_userID: {
-          userID,
-          flightID,
-        },
-      },
-    });
-
-    return flightID;
-  }
-
-  @Authorized()
-  @Mutation(() => String)
-  async addUserFlight(
-    @CurrentUserID() userID: string,
-    @Arg('flightID') flightID: string,
-  ): Promise<string> {
-    const record = await prisma.userFlight.upsert({
-      where: {
-        flightID_userID: {
-          userID,
-          flightID,
-        },
-      },
-      create: {
         userID,
-        flightID,
-      },
-      update: {},
-    });
-
-    return record.id;
-  }
-
-  @FieldResolver(() => GQL_Flight)
-  Flight(@Root() root: GQL_UserFlight) {
-    if (root.Flight) {
-      return root.Flight;
-    }
-
-    return prisma.flight.findFirst({
-      where: {
-        id: root.flightID,
       },
     });
+
+    return count > 0;
   }
 }

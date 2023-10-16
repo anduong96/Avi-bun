@@ -1,4 +1,5 @@
 import { Flight } from '@prisma/client';
+
 import { Topic } from '../topic';
 
 export class FlightCreatedTopic extends Topic {

@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
-
-import { BasicObject } from '@app/types/common';
 import { merge } from 'lodash';
 import { providers } from 'gitops-secrets';
+
+import { BasicObject } from '@app/types/common';
 
 const DOPPLER_TOKEN = process.env.DOPPLER_TOKEN;
 const remoteConfig: BasicObject = DOPPLER_TOKEN
@@ -15,27 +15,27 @@ const remoteConfig: BasicObject = DOPPLER_TOKEN
  * @see {@link https://github.com/jquense/yup}
  */
 const schema = Yup.object({
+  AERO_DATABOX_API_KEY: Yup.string().required(),
+  AIR_LABS_API_KEY: Yup.string().optional(),
+  DATABASE_URL: Yup.string().when('NODE_ENV', {
+    is: 'test',
+    otherwise: schema => schema.required(),
+    then: schema => schema.optional(),
+  }),
+
+  FIREBASE_CLIENT_EMAIL: Yup.string().required(),
+
+  FIREBASE_PRIVATE_KEY: Yup.string()
+    .transform((value: string) => value.replace(/\\n/g, '\n'))
+    .required(),
+  FIREBASE_PROJECT_ID: Yup.string().required(),
+
   LOG_LEVEL: Yup.string().default('debug').required(),
-  PORT: Yup.number().default(3000).required(),
   NODE_ENV: Yup.string()
     .oneOf(['development', 'staging', 'test', 'production'])
     .default('development')
     .required(),
-
-  DATABASE_URL: Yup.string().when('NODE_ENV', {
-    is: 'test',
-    then: schema => schema.optional(),
-    otherwise: schema => schema.required(),
-  }),
-
-  AERO_DATABOX_API_KEY: Yup.string().required(),
-  AIR_LABS_API_KEY: Yup.string().optional(),
-
-  FIREBASE_PROJECT_ID: Yup.string().required(),
-  FIREBASE_CLIENT_EMAIL: Yup.string().required(),
-  FIREBASE_PRIVATE_KEY: Yup.string()
-    .transform((value: string) => value.replace(/\\n/g, '\n'))
-    .required(),
+  PORT: Yup.number().default(3000).required(),
 
   SENTRY_DSN: Yup.string().optional(),
 });

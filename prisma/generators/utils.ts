@@ -1,7 +1,8 @@
-import { Logger } from '@app/lib/logger';
 import fs from 'fs/promises';
 import * as path from 'path';
 import * as prettier from 'prettier';
+
+import { Logger } from '@app/lib/logger';
 
 export async function writeFile(
   content: string,
@@ -12,12 +13,12 @@ export async function writeFile(
   const headline = '// GENERATED CONTENT\n// DO NOT MODIFY\n\n';
   const location = path.resolve(dir, fileName);
   const formattedContent = await prettier.format(headline + content, {
-    trailingComma: 'es5',
-    tabWidth: 2,
+    parser: 'typescript',
     semi: true,
     singleQuote: true,
+    tabWidth: 2,
+    trailingComma: 'es5',
     useTabs: false,
-    parser: 'typescript',
   });
 
   await fs.writeFile(location, formattedContent);

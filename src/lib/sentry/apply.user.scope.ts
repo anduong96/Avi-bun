@@ -8,8 +8,8 @@ export function applyUserScopeToSentry(user?: DecodedIdToken | null) {
 
   Sentry.configureScope(scope => {
     scope.setUser({
-      id: user.uid,
       email: user.email,
+      id: user.uid,
       name: user.displayName,
     });
   });

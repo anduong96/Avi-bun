@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Logger } from '@app/lib/logger';
-import moment from 'moment';
-
-import fs from 'fs/promises';
 import ky from 'ky';
+import moment from 'moment';
+import fs from 'fs/promises';
+
+import { Logger } from '@app/lib/logger';
+
 import { RadarBox } from '.';
 
 const TAIL_NUMBER = 'N582UW';

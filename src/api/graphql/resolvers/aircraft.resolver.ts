@@ -1,7 +1,8 @@
-import { GQL_Aircraft } from '@app/@generated/graphql/models/Aircraft';
-import { Logger } from '@app/lib/logger';
-import { getOrCreateAircraft } from '@app/services/aircraft/get.or.create.aircraft';
 import { Arg, Authorized, Query, Resolver } from 'type-graphql';
+
+import { Logger } from '@app/lib/logger';
+import { GQL_Aircraft } from '@app/@generated/graphql/models/Aircraft';
+import { getOrCreateAircraft } from '@app/services/aircraft/get.or.create.aircraft';
 
 @Resolver(() => GQL_Aircraft)
 export class AircraftResolver {

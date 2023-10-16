@@ -8,13 +8,13 @@ describe('Flight Stats', () => {
     const flightNumber = '100';
 
     const [flight] = await FlightStats.searchFlights({
-      flightNumber,
       airlineIata,
+      flightNumber,
     });
 
     const progress = await FlightStats.getFlightProgress({
-      flightID: flight.flightID.toString(),
       airlineIata,
+      flightID: flight.flightID.toString(),
       flightNumber,
     });
 

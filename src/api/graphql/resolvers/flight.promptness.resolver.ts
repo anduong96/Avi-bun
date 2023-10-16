@@ -1,6 +1,7 @@
-import { GQL_FlightPromptness } from '@app/@generated/graphql/models/FlightPromptness';
-import { getFlightPromptness } from '@app/services/flight/get.flight.promptness';
 import { Arg, Authorized, Query, Resolver } from 'type-graphql';
+
+import { getFlightPromptness } from '@app/services/flight/get.flight.promptness';
+import { GQL_FlightPromptness } from '@app/@generated/graphql/models/FlightPromptness';
 
 @Resolver(() => GQL_FlightPromptness)
 export class FlightPromptnessResolver {

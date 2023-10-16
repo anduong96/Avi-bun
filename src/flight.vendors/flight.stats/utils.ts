@@ -1,6 +1,7 @@
+import { FlightStatus } from '@prisma/client';
+
 import { FlightDetails } from './types';
 import { FlightStats_Status } from './enums';
-import { FlightStatus } from '@prisma/client';
 
 /**
  * The function `parseFlightIdFromUrl` takes a URL as input and returns the value of the "flightId"

@@ -17,5 +17,21 @@
       "username": "local",
       "password": "local"
     }
-  ]
+  ],
+  "cSpell.words": [
+    "Adsb",
+    "bunx",
+    "codegen",
+    "Elysia",
+    "Flightera",
+    "gitops",
+    "skybrary"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "eslint.validate": ["typescript"],
+  "eslint.format.enable": true,
+  "editor.acceptSuggestionOnEnter": "smart",
+  "editor.tabCompletion": "on"
 }

@@ -1,8 +1,10 @@
-import { Logger } from '@app/lib/logger';
-import { prisma } from '@app/prisma';
-import { FlightQueryParam } from '@app/types/flight';
-import { Flight } from '@prisma/client';
 import { isEmpty } from 'lodash';
+import { Flight } from '@prisma/client';
+
+import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
+import { FlightQueryParam } from '@app/types/flight';
+
 import { populateFlights } from './populate.flights';
 
 /**
@@ -21,15 +23,15 @@ export async function getFlights(
   throwIfNotFound = false,
 ): Promise<Flight[]> {
   const flights = await prisma.flight.findMany({
-    where: {
-      airlineIata: param.airlineIata,
-      flightNumber: param.flightNumber,
-      flightYear: param.flightYear,
-      flightMonth: param.flightMonth,
-      flightDate: param.flightDate,
-    },
     orderBy: {
       scheduledGateDeparture: 'asc',
+    },
+    where: {
+      airlineIata: param.airlineIata,
+      flightDate: param.flightDate,
+      flightMonth: param.flightMonth,
+      flightNumber: param.flightNumber,
+      flightYear: param.flightYear,
     },
   });
 

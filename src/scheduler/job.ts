@@ -1,61 +1,57 @@
-import { isNil, noop } from 'lodash';
+import { sleep } from 'bun';
 
-import { Logger } from '@app/lib/logger';
-import { ScheduledJob } from '@prisma/client';
 import moment from 'moment';
 import parser from 'cron-parser';
+import { isNil, noop } from 'lodash';
+import { ScheduledJob } from '@prisma/client';
+
 import { prisma } from '@app/prisma';
-import { sleep } from 'bun';
+import { Logger } from '@app/lib/logger';
 
 /**
  * TODO: Implement stop
  */
 export abstract class Job {
-  private _isProcessing: boolean = false;
   private _internal: ScheduledJob;
+  private _isProcessing: boolean = false;
 
-  abstract readonly cronTime: string;
   readonly lockDurationMs: number = moment
     .duration({ minutes: 2 })
     .as('milliseconds');
-
-  get name() {
-    return this.constructor.name;
-  }
-
-  get id() {
-    return this._internal.id;
-  }
-
-  get logger() {
-    return Logger.getSubLogger({ name: `Scheduled Job[${this.name}]` });
-  }
-
-  setDef(jobDef: ScheduledJob) {
-    this._internal = jobDef;
-  }
-
-  protected onPreprocess(job: ScheduledJob): void | Promise<void> {
-    this.logger.debug(`onProcess job[%s`, job.name);
-  }
-
-  protected abstract onProcess(job: ScheduledJob): void | Promise<void>;
-
-  protected onError(error: Error, job: ScheduledJob): void | Promise<void> {
-    this.logger.error(`onError job[%s]`, job.name, error);
-  }
-
-  protected onSuccess(job: ScheduledJob): void | Promise<void> {
-    this.logger.info(`onSuccess job[%s]`, job.name);
-  }
-
-  protected onFinish(job: ScheduledJob): void | Promise<void> {
-    this.logger.debug(`onFinish job[%s]`, job.name);
-  }
-
   /**
-   * INTERNAL
+   * The function `acquireLock` checks if a job is currently being processed and updates its unlock
+   * time if it is not.
+   * @returns The `acquireLock` function returns a Promise that resolves to a boolean value. The
+   * boolean value indicates whether the lock was successfully acquired or not. If the lock was
+   * acquired, the Promise resolves to `true`, otherwise it resolves to `false`.
    */
+  private async acquireLock(): Promise<boolean> {
+    if (this._isProcessing) {
+      return false;
+    }
+
+    this.logger.debug('Acquiring lock');
+    const [entry] = await prisma
+      .$transaction([
+        prisma.scheduledJob.update({
+          data: {
+            lastRunAt: moment().toDate(),
+            unlockAt: moment()
+              .add(this.lockDurationMs, 'milliseconds')
+              .toDate(),
+          },
+          where: {
+            OR: [{ unlockAt: null }, { unlockAt: { lte: moment().toDate() } }],
+            id: this._internal.id,
+          },
+        }),
+      ])
+      .catch(() => [null]);
+
+    const hasLock = !isNil(entry);
+    this.logger.debug('Has lock', hasLock);
+    return hasLock;
+  }
 
   /**
    * The `delayTime` function calculates the time delay until the next run of a job.
@@ -95,68 +91,6 @@ export abstract class Job {
     return cron.next().toDate();
   }
 
-  /**
-   * The function "updateJob" updates the value of the "job" property with a new value.
-   * @param {Schedule} newJob - The newJob parameter is of type Schedule, which means it represents a
-   * schedule object.
-   */
-  private async updateJobDef(next: ScheduledJob): Promise<void> {
-    this._internal = next;
-    await prisma.scheduledJob.update({
-      where: {
-        id: this.id,
-      },
-      data: {
-        nextRunAt: next.nextRunAt,
-        lastFailedAt: next.lastFailedAt,
-        lastFailedReason: next.lastFailedReason,
-        lastSucceedAt: next.lastSucceedAt,
-        lastRunAt: next.lastRunAt,
-        unlockAt: next.unlockAt,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    this.logger.debug(`Job[%s] def updated`, this.name);
-  }
-
-  /**
-   * The function `acquireLock` checks if a job is currently being processed and updates its unlock
-   * time if it is not.
-   * @returns The `acquireLock` function returns a Promise that resolves to a boolean value. The
-   * boolean value indicates whether the lock was successfully acquired or not. If the lock was
-   * acquired, the Promise resolves to `true`, otherwise it resolves to `false`.
-   */
-  private async acquireLock(): Promise<boolean> {
-    if (this._isProcessing) {
-      return false;
-    }
-
-    this.logger.debug('Acquiring lock');
-    const [entry] = await prisma
-      .$transaction([
-        prisma.scheduledJob.update({
-          where: {
-            id: this._internal.id,
-            OR: [{ unlockAt: null }, { unlockAt: { lte: moment().toDate() } }],
-          },
-          data: {
-            unlockAt: moment()
-              .add(this.lockDurationMs, 'milliseconds')
-              .toDate(),
-            lastRunAt: moment().toDate(),
-          },
-        }),
-      ])
-      .catch(() => [null]);
-
-    const hasLock = !isNil(entry);
-    this.logger.debug('Has lock', hasLock);
-    return hasLock;
-  }
-
   private async run(): Promise<void> {
     const next = { ...this._internal };
     const hasLock = await this.acquireLock();
@@ -194,6 +128,57 @@ export abstract class Job {
     }
   }
 
+  /**
+   * The function "updateJob" updates the value of the "job" property with a new value.
+   * @param {Schedule} newJob - The newJob parameter is of type Schedule, which means it represents a
+   * schedule object.
+   */
+  private async updateJobDef(next: ScheduledJob): Promise<void> {
+    this._internal = next;
+    await prisma.scheduledJob.update({
+      data: {
+        lastFailedAt: next.lastFailedAt,
+        lastFailedReason: next.lastFailedReason,
+        lastRunAt: next.lastRunAt,
+        lastSucceedAt: next.lastSucceedAt,
+        nextRunAt: next.nextRunAt,
+        unlockAt: next.unlockAt,
+      },
+      select: {
+        id: true,
+      },
+      where: {
+        id: this.id,
+      },
+    });
+
+    this.logger.debug(`Job[%s] def updated`, this.name);
+  }
+
+  protected onError(error: Error, job: ScheduledJob): Promise<void> | void {
+    this.logger.error(`onError job[%s]`, job.name, error);
+  }
+
+  protected onFinish(job: ScheduledJob): Promise<void> | void {
+    this.logger.debug(`onFinish job[%s]`, job.name);
+  }
+
+  protected onPreprocess(job: ScheduledJob): Promise<void> | void {
+    this.logger.debug(`onProcess job[%s`, job.name);
+  }
+
+  protected onSuccess(job: ScheduledJob): Promise<void> | void {
+    this.logger.info(`onSuccess job[%s]`, job.name);
+  }
+
+  setDef(jobDef: ScheduledJob) {
+    this._internal = jobDef;
+  }
+
+  /**
+   * INTERNAL
+   */
+
   async stop(): Promise<void> {}
 
   async sync(): Promise<void> {
@@ -206,4 +191,20 @@ export abstract class Job {
     await sleep(delayTime);
     return this.sync();
   }
+
+  get id() {
+    return this._internal.id;
+  }
+
+  get logger() {
+    return Logger.getSubLogger({ name: `Scheduled Job[${this.name}]` });
+  }
+
+  get name() {
+    return this.constructor.name;
+  }
+
+  abstract readonly cronTime: string;
+
+  protected abstract onProcess(job: ScheduledJob): Promise<void> | void;
 }

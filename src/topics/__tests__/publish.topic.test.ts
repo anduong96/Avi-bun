@@ -1,8 +1,8 @@
+import { noop } from 'lodash';
 import { describe, expect, mock, test } from 'bun:test';
 
 import { Topic } from '../topic';
 import { TopicPublisher } from '../topic.publisher';
-import { noop } from 'lodash';
 
 class MockTopic extends Topic {}
 class MockTopicv2 extends Topic {}

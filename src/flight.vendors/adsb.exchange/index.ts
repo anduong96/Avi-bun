@@ -1,6 +1,7 @@
 import ky from 'ky';
-import { toLower } from 'lodash';
 import moment from 'moment';
+import { toLower } from 'lodash';
+
 import { ADSB_AircraftTrace } from './types';
 
 /**
@@ -8,20 +9,24 @@ import { ADSB_AircraftTrace } from './types';
  * 42 is not the correct id
  */
 export class AdsbExchange {
-  private static getClient(aircraftIcao: string) {
-    return ky.create({
-      prefixUrl: 'https://globe.adsbexchange.com',
-      headers: {
-        Referer: `https://globe.adsbexchange.com/?icao=${aircraftIcao}`,
-      },
-    });
+  static async getAircraftFullPositions(aircraftIcao: string) {
+    const route = `/data/traces/42/trace_full_${toLower(aircraftIcao)}.json`;
+    const request = await this.getClient(aircraftIcao).get(route);
+    const response = await request.json<ADSB_AircraftTrace>();
+    return this.formatTraceResult(response);
+  }
+
+  static async getAircraftRecentPositions(aircraftIcao: string) {
+    const route = `/data/traces/42/trace_recent_${toLower(aircraftIcao)}.json`;
+    const request = await this.getClient(aircraftIcao).get(route);
+    const response = await request.json<ADSB_AircraftTrace>();
+    return this.formatTraceResult(response);
   }
 
   private static formatTraceResult(result: ADSB_AircraftTrace) {
     const timestamp = moment(result.timestamp);
 
     return {
-      timestamp: timestamp.toDate(),
       positions: result.trace.map(entry => {
         const [
           secAfterTs,
@@ -38,29 +43,25 @@ export class AdsbExchange {
         ] = entry;
 
         return {
-          ts: timestamp.clone().add({ seconds: secAfterTs }).toDate(),
+          altitude: typeof alt === 'number' ? alt : 0,
+          groundSpeed,
           latitude: lat,
           longitude: lon,
-          altitude: typeof alt === 'number' ? alt : 0,
           trackDeg,
-          groundSpeed,
+          ts: timestamp.clone().add({ seconds: secAfterTs }).toDate(),
           verticalRate,
         };
       }),
+      timestamp: timestamp.toDate(),
     };
   }
 
-  static async getAircraftRecentPositions(aircraftIcao: string) {
-    const route = `/data/traces/42/trace_recent_${toLower(aircraftIcao)}.json`;
-    const request = await this.getClient(aircraftIcao).get(route);
-    const response = await request.json<ADSB_AircraftTrace>();
-    return this.formatTraceResult(response);
-  }
-
-  static async getAircraftFullPositions(aircraftIcao: string) {
-    const route = `/data/traces/42/trace_full_${toLower(aircraftIcao)}.json`;
-    const request = await this.getClient(aircraftIcao).get(route);
-    const response = await request.json<ADSB_AircraftTrace>();
-    return this.formatTraceResult(response);
+  private static getClient(aircraftIcao: string) {
+    return ky.create({
+      headers: {
+        Referer: `https://globe.adsbexchange.com/?icao=${aircraftIcao}`,
+      },
+      prefixUrl: 'https://globe.adsbexchange.com',
+    });
   }
 }

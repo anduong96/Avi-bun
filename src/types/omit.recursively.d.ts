@@ -1,9 +1,9 @@
-import type { BasicObject, PartialBy } from "./common";
+import type { BasicObject, PartialBy } from './common';
 
 // Cosmetic use only makes the tooltips ex-pad the type can be removed
 type Id<T> = {} & { [P in keyof T]: T[P] };
 
-type ObjectId = { _bsontype: "ObjectID" };
+type ObjectId = { _bsontype: 'ObjectID' };
 
 type OmitDistributive<
   T extends BasicObject,
@@ -11,7 +11,7 @@ type OmitDistributive<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > = T extends any
   ? T extends object
-    ? T extends ObjectId | Date
+    ? T extends Date | ObjectId
       ? T
       : Id<OmitRecursively<T, K>>
     : T
@@ -28,7 +28,7 @@ type PartialDistributive<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > = T extends any
   ? T extends object
-    ? T extends ObjectId | Date
+    ? T extends Date | ObjectId
       ? T
       : Id<OmitRecursively<T, K>>
     : T

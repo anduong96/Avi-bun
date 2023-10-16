@@ -1,30 +1,30 @@
 type FlightData = {
-  fid: number;
-  svd: number;
-  fnia: string;
-  apdsttzns: string;
-  aporgtzns: string;
-  aporgia: string /** Departure Airport IATA */;
   apdstia: string /** Arrival Airport IATA */;
-  apdsttzns: string /** Arrival Timezone */;
-  aplngtzns: string /** Departure Timezone */;
   apdsttz: number /** Arrival UTC offset in hours */;
+  apdsttzns: string;
+  apdsttzns: string /** Arrival Timezone */;
   aplngtz: number /** Deparuture UTC offset in hours */;
+  aplngtzns: string /** Departure Timezone */;
+  aporgia: string /** Departure Airport IATA */;
+  aporgtzns: string;
   depdate: string /** Departure Date */;
+  fid: number;
+  fnia: string;
+  svd: number;
 } & (
   | {
-      firstlalot: null;
+      alt: number /** Altitude */;
+      arrsts: number /** Arrival time epoc */;
+      depsts: number /** Departure time epoc */;
+      firstlalot: number;
+      firstlalot: number /** First recorded coordinate for current trip */;
+      lastla: number /** Last recorded latitude for current trip */;
+      lastlalot: number /** Last recorded coordinate for current trip */;
+      lastlalot: number /** Last recorded coordinate for current trip */;
+      lastlo: number /** Last recorded longitiude for current trip */;
     }
   | {
-      firstlalot: number;
-      lastla: number /** Last recorded latitude for current trip */;
-      lastlo: number /** Last recorded longitiude for current trip */;
-      lastlalot: number /** Last recorded coordinate for current trip */;
-      depsts: number /** Departure time epoc */;
-      arrsts: number /** Arrival time epoc */;
-      lastlalot: number /** Last recorded coordinate for current trip */;
-      firstlalot: number /** First recorded coordinate for current trip */;
-      alt: number /** Altitude */;
+      firstlalot: null;
     }
 );
 
@@ -35,7 +35,7 @@ export type RadarBoxCrawlData = {
     [
       number, // latitude
       number, // longitude
-      number | null, // altitude
+      null | number, // altitude
     ]
   >;
 };

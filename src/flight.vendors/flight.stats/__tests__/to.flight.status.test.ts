@@ -1,8 +1,8 @@
+import { FlightStatus } from '@prisma/client';
 import { describe, expect, it, test } from 'bun:test';
 
-import { FlightStats_Status } from '../enums';
-import { FlightStatus } from '@prisma/client';
 import { toFlightStatus } from '../utils';
+import { FlightStats_Status } from '../enums';
 
 describe('Flight Stats', () => {
   test('toFlightStatus', () => {

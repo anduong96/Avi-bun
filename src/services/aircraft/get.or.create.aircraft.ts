@@ -1,9 +1,10 @@
-import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.created.topic';
-import { Flightera } from '@app/flight.vendors/flightera';
-import { TopicPublisher } from '@app/topics/topic.publisher';
+import { Prisma } from '@prisma/client';
+
 import { prisma } from '@app/prisma';
 import { Skybrary } from '@app/flight.vendors/skybrary';
-import { Prisma } from '@prisma/client';
+import { Flightera } from '@app/flight.vendors/flightera';
+import { TopicPublisher } from '@app/topics/topic.publisher';
+import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.created.topic';
 
 /**
  * Retrieves an existing aircraft from the database based on the tail number,
@@ -34,20 +35,21 @@ export async function getOrCreateAircraft(tailNumber: string) {
       const imageURL = remoteAircraft.image || skybraryImage;
       const newAircraft = await tx.aircraft.create({
         data: {
-          tailNumber,
           airlineIata: remoteAircraft.airlineIata,
           description: remoteAircraft.description,
-          icao: remoteAircraft.icao,
-          model: remoteAircraft.model,
           firstFlight: remoteAircraft.firstFlight,
+          icao: remoteAircraft.icao,
           imageURL,
+          model: remoteAircraft.model,
+          tailNumber,
         },
       });
 
       return [true, newAircraft];
     },
     {
-      isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      maxWait: 5000,
     },
   );
 

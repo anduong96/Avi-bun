@@ -1,5 +1,5 @@
 type NonNullableObject<T> = {
-  [P in keyof T]: Exclude<T[P], undefined | null> extends infer U
+  [P in keyof T]: Exclude<T[P], null | undefined> extends infer U
     ? U extends object
       ? NonNullableObject<U>
       : U

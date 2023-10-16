@@ -28,28 +28,28 @@ type ADSB_AircraftTraceExtra = {
  * @see {@link https://www.adsbexchange.com/version-2-api-wip/}
  */
 export type ADSB_AircraftTrace = {
-  icao: string;
-  r: string;
-  t: string;
   dbFlags: number;
   desc: string;
+  icao: string;
   ownOp: string;
-  year: string;
+  r: string;
+  t: string;
   timestamp: number;
   trace: [
     number /** seconds after timestamp */,
     number /** latitude */,
     number /** longitude */,
-    "grounded" | number | null /** altitude in ft or "ground" or null */,
-    number | null /**ground speed in knots or null */,
-    number | null /**track in degrees or null*/,
+    'grounded' | null | number /** altitude in ft or "ground" or null */,
+    null | number /**ground speed in knots or null */,
+    null | number /**track in degrees or null*/,
     number /** flags as a bitfield */,
     number /** vertical rate in fpm or null */,
     ADSB_AircraftTraceExtra,
     string /** source of this position or null */,
-    number | null /** geometric altitude or null */,
-    number | null /** geometric vertical rate or null, */,
-    number | null /** indicated airspeed or null, */,
-    number | null /** roll angle or null */,
+    null | number /** geometric altitude or null */,
+    null | number /** geometric vertical rate or null, */,
+    null | number /** indicated airspeed or null, */,
+    null | number /** roll angle or null */,
   ][];
+  year: string;
 };

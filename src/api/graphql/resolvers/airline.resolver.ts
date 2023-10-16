@@ -1,7 +1,8 @@
-import { GQL_Airline } from '@app/@generated/graphql/models/Airline';
-import { prisma } from '@app/prisma';
 import { Airline } from '@prisma/client';
 import { Arg, Authorized, Query, Resolver } from 'type-graphql';
+
+import { prisma } from '@app/prisma';
+import { GQL_Airline } from '@app/@generated/graphql/models/Airline';
 
 @Resolver(() => GQL_Airline)
 export class AirlineResolver {

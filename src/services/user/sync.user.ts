@@ -1,4 +1,5 @@
 import assert from 'assert';
+import moment from 'moment';
 
 import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
@@ -14,24 +15,40 @@ import { firebase } from '@app/firebase';
 export async function syncAuthProviderForUser(userID: string) {
   const firebaseUser = await firebase.auth().getUser(userID);
   assert(firebaseUser, 'User not found');
-  await prisma.$transaction(
-    firebaseUser.providerData.map(entry => {
-      return prisma.userAuthentication.upsert({
-        create: {
-          email: entry.email,
-          id: entry.uid,
-          phone: entry.phoneNumber,
-          provider: entry.providerId,
-          userID,
+  const authPayload = firebaseUser.providerData.map(entry => ({
+    avatarURL: entry.photoURL,
+    email: entry.email,
+    id: entry.uid,
+    phone: entry.phoneNumber,
+    provider: entry.providerId,
+  }));
+
+  const user = await prisma.user.upsert({
+    create: {
+      Authentications: {
+        createMany: {
+          data: authPayload,
         },
-        update: {},
-        where: {
-          provider_userID: {
-            provider: entry.providerId,
-            userID,
+      },
+      id: userID,
+    },
+    update: {
+      Authentications: {
+        connectOrCreate: authPayload.map(entry => ({
+          create: entry,
+          where: {
+            id: entry.id,
           },
-        },
-      });
-    }),
-  );
+        })),
+      },
+      lastSignInAt: moment(firebaseUser.metadata.lastSignInTime).toDate(),
+    },
+    where: {
+      avatarURL: firebaseUser.photoURL,
+      displayName: firebaseUser.displayName,
+      id: userID,
+    },
+  });
+
+  return user;
 }

@@ -18,6 +18,9 @@ export class GQL_UserAuthentication {
   @Field()
   userID: string;
 
+  @Field({ nullable: true })
+  avatarURL?: string;
+
   @Field(() => GQL_User)
   User: GQL_User;
 

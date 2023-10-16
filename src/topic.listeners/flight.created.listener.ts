@@ -3,7 +3,7 @@ import { getOrCreateAircraft } from '@app/services/aircraft/get.or.create.aircra
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 
 TopicPublisher.subscribe(FlightCreatedTopic, async topic => {
-  if (topic.flight.aircraftTailnumber) {
-    await getOrCreateAircraft(topic.flight.aircraftTailnumber);
+  if (topic.flight.aircraftTailNumber) {
+    await getOrCreateAircraft(topic.flight.aircraftTailNumber);
   }
 });

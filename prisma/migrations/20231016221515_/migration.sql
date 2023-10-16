@@ -78,7 +78,7 @@ CREATE TABLE "Flight" (
     "flightDate" INTEGER NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "flightNumber" TEXT NOT NULL,
-    "aircraftTailnumber" TEXT,
+    "aircraftTailNumber" TEXT,
     "status" "FlightStatus" NOT NULL,
     "totalDistanceKm" INTEGER DEFAULT 0,
     "originIata" TEXT NOT NULL,
@@ -229,8 +229,26 @@ CREATE TABLE "FlightPromptness" (
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
+    "displayName" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "avatarURL" TEXT,
+    "lastSignInAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserAuthentication" (
+    "id" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "email" TEXT,
+    "phone" TEXT,
+    "userID" TEXT NOT NULL,
+    "avatarURL" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserAuthentication_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -333,6 +351,9 @@ CREATE INDEX "FlightPromptness_vendor_idx" ON "FlightPromptness"("vendor");
 CREATE UNIQUE INDEX "FlightPromptness_airlineIata_flightNumber_originIata_destin_key" ON "FlightPromptness"("airlineIata", "flightNumber", "originIata", "destinationIata");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "UserAuthentication_provider_userID_key" ON "UserAuthentication"("provider", "userID");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserFlight_flightID_userID_key" ON "UserFlight"("flightID", "userID");
 
 -- CreateIndex
@@ -355,6 +376,9 @@ ALTER TABLE "AircraftPosition" ADD CONSTRAINT "AircraftPosition_aircraftID_fkey"
 
 -- AddForeignKey
 ALTER TABLE "FlightPlan" ADD CONSTRAINT "FlightPlan_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserAuthentication" ADD CONSTRAINT "UserAuthentication_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserFlight" ADD CONSTRAINT "UserFlight_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE CASCADE ON UPDATE RESTRICT;

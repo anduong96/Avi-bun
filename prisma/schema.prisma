@@ -129,7 +129,7 @@ model Flight {
 
   airlineIata             String
   flightNumber            String
-  aircraftTailnumber      String?
+  aircraftTailNumber      String?
   status                  FlightStatus
   totalDistanceKm         Int?         @default(0)
   originIata              String
@@ -323,8 +323,10 @@ model UserAuthentication {
   phone     String?
   userID    String
   avatarURL String?
-  User      User     @relation(fields: [userID], references: [id])
   createdAt DateTime @default(now())
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
 
   @@unique([provider, userID])
 }

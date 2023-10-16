@@ -21,9 +21,6 @@ export class GQL_UserAuthentication {
   @Field({ nullable: true })
   avatarURL?: string;
 
-  @Field(() => GQL_User)
-  User: GQL_User;
-
   @Field()
   createdAt: Date;
 

@@ -25,14 +25,14 @@ export class SyncActivePlaneLocationJob extends Job {
       include: {
         Flight: {
           select: {
-            aircraftTailnumber: true,
+            aircraftTailNumber: true,
           },
         },
       },
       take: 100,
       where: {
         Flight: {
-          aircraftTailnumber: {
+          aircraftTailNumber: {
             not: null,
           },
           scheduledGateDeparture: {
@@ -46,7 +46,7 @@ export class SyncActivePlaneLocationJob extends Job {
       },
     });
 
-    return result.map(entry => entry.Flight.aircraftTailnumber!);
+    return result.map(entry => entry.Flight.aircraftTailNumber!);
   }
 
   override async onProcess() {

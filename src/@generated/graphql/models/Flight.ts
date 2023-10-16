@@ -24,7 +24,7 @@ export class GQL_Flight {
   flightNumber: string;
 
   @Field({ nullable: true })
-  aircraftTailnumber?: string;
+  aircraftTailNumber?: string;
 
   @Field(() => GQL_FlightStatus)
   status: GQL_FlightStatus;

@@ -72,7 +72,7 @@ type Flight {
   Origin: Airport!
   actualGateArrival: DateTimeISO
   actualGateDeparture: DateTimeISO
-  aircraftTailnumber: String
+  aircraftTailNumber: String
   airlineIata: String!
   destinationBaggageClaim: String
   destinationGate: String
@@ -147,6 +147,7 @@ type Mutation {
   _sendFlightNotification(body: String!, data: JSON, flightID: String!, title: String!): Float!
   addUserFlight(flightID: String!): String!
   deleteUserFlight(flightID: String!): String!
+  userSignIn: Boolean!
 }
 
 type Query {
@@ -159,10 +160,31 @@ type Query {
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!
   randomFlight: Flight!
+  user: User!
   userActiveFlights: [UserFlight!]!
   userArchivedFlights: [UserFlight!]!
   userFlight(flightID: String!): UserFlight
   userHasFlights: Boolean!
+}
+
+type User {
+  Authentications: [UserAuthentication!]!
+  avatarURL: String
+  createdAt: DateTimeISO!
+  displayName: String
+  id: ID!
+  lastSignInAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+}
+
+type UserAuthentication {
+  avatarURL: String
+  createdAt: DateTimeISO!
+  email: String
+  id: ID!
+  phone: String
+  provider: String!
+  userID: String!
 }
 
 type UserFlight {

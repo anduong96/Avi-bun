@@ -12,7 +12,7 @@ export function flightStatFlightToFlightPayload(
 ): Prisma.FlightUncheckedCreateInput {
   const info = flight.additionalFlightInfo;
   const schedule = flight.schedule;
-  const aircraftTailnumber = info.equipment?.tailNumber;
+  const aircraftTailNumber = info.equipment?.tailNumber;
   const status = toFlightStatus(flight.status.status);
   const {
     actualGateArrivalUTC,
@@ -45,7 +45,7 @@ export function flightStatFlightToFlightPayload(
     },
     actualGateArrival: toDateOrNull(actualGateArrivalUTC),
     actualGateDeparture: toDateOrNull(actualGateDepartureUTC),
-    aircraftTailnumber: aircraftTailnumber,
+    aircraftTailNumber: aircraftTailNumber,
     airlineIata: flight.airlineIata,
     destinationBaggageClaim: flight.arrivalAirport.baggage,
     destinationGate: flight.arrivalAirport.gate,

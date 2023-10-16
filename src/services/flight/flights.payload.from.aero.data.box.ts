@@ -16,7 +16,7 @@ function toFlightPayload(
   );
 
   return {
-    aircraftTailnumber: entry.aircraft.reg,
+    aircraftTailNumber: entry.aircraft.reg,
     airlineIata: entry.airline.iata,
     destinationBaggageClaim: entry.arrival.baggageBelt,
     destinationIata: entry.arrival.airport.iata,

@@ -307,7 +307,25 @@ model FlightPromptness {
 }
 
 model User {
-  id String @id
+  id              String               @id
+  displayName     String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  avatarURL       String?
+  lastSignInAt    DateTime             @default(now())
+  Authentications UserAuthentication[]
+}
+
+model UserAuthentication {
+  id        String   @id
+  provider  String
+  email     String?
+  phone     String?
+  userID    String
+  User      User     @relation(fields: [userID], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([provider, userID])
 }
 
 model UserFlight {

@@ -12,3 +12,9 @@ export function CurrentUserID() {
     ({ context }) => context.user!.uid,
   );
 }
+
+export function CurrentUser() {
+  return createParamDecorator<ApolloServerContext>(
+    ({ context }) => context.user!,
+  );
+}

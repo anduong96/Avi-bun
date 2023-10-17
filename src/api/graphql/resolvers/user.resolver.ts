@@ -9,10 +9,10 @@ import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 @Resolver(() => GQL_User)
 export class UserResolver {
   @Authorized()
-  @Mutation(() => GQL_User)
+  @Mutation(() => Boolean)
   async syncUser(@CurrentUserID() userID: string) {
-    const user = await syncAuthProviderForUser(userID);
-    return user;
+    await syncAuthProviderForUser(userID);
+    return true;
   }
 
   @Authorized()

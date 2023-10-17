@@ -3,6 +3,9 @@ import moment from 'moment';
 
 import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
+import { Logger } from '@app/lib/logger';
+import { TopicPublisher } from '@app/topics/topic.publisher';
+import { UserCreatedTopic } from '@app/topics/defined.topics/user.created.topic';
 
 /**
  * The `syncAuthProviderForUser` function synchronizes the authentication providers for a user by
@@ -23,6 +26,7 @@ export async function syncAuthProviderForUser(userID: string) {
     provider: entry.providerId,
   }));
 
+  const createdAt = moment();
   const user = await prisma.user.upsert({
     create: {
       Authentications: {
@@ -30,6 +34,7 @@ export async function syncAuthProviderForUser(userID: string) {
           data: authPayload,
         },
       },
+      createdAt: createdAt.toDate(),
       id: userID,
     },
     update: {
@@ -49,6 +54,11 @@ export async function syncAuthProviderForUser(userID: string) {
       id: userID,
     },
   });
+
+  if (createdAt.isSame(user.createdAt)) {
+    Logger.debug('User[%s] created', user.id);
+    TopicPublisher.broadcast(new UserCreatedTopic(user.id));
+  }
 
   return user;
 }

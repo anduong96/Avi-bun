@@ -1,11 +1,15 @@
 import path from 'path';
 import Elysia from 'elysia';
 import { buildSchema } from 'type-graphql';
+import { ApolloServer, HeaderMap } from '@apollo/server';
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from '@apollo/server/plugin/landingPage/default';
 
 import { ApolloLogPlugin } from '@app/api/graphql/_plugins/log.plugin';
 
 import { isDev } from '../../env';
-import { apollo } from './_apollo';
 import { UserResolver } from './resolvers/user.resolver';
 import { NoopResolver } from './resolvers/_noop.resolver';
 import { validateApolloAuth } from './_auth/validate.auth';
@@ -40,11 +44,51 @@ const gqlSchema = await buildSchema({
   ],
 });
 
-export const GraphqlMiddleware = new Elysia().use(
-  apollo({
-    context: createApolloContext,
-    path: '/graphql',
-    plugins: [ApolloLogPlugin, ApolloSentryPlugin],
-    schema: gqlSchema,
-  }),
-);
+const apollo = new ApolloServer({
+  plugins: [
+    ApolloLogPlugin,
+    ApolloSentryPlugin,
+    isDev
+      ? ApolloServerPluginLandingPageLocalDefault({ footer: false })
+      : ApolloServerPluginLandingPageProductionDefault({ footer: false }),
+  ],
+  schema: gqlSchema,
+});
+
+// server
+function getQueryString(url: string) {
+  return url.slice(url.indexOf('?', 11) + 1);
+}
+
+export const GraphqlMiddleware = new Elysia()
+  .on('start', () => apollo.start())
+  .all('/graphql', async context => {
+    const method = context.request.method;
+    const search = getQueryString(context.request.url);
+    const body = context.body;
+    const headers = context.request.headers as unknown as HeaderMap;
+    const result = await apollo.executeHTTPGraphQLRequest({
+      context: () => createApolloContext(context),
+      httpGraphQLRequest: {
+        body,
+        headers,
+        method,
+        search,
+      },
+    });
+
+    if (result.body.kind === 'complete') {
+      if (method === 'GET') {
+        return new Response(result.body.string, {
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        });
+      }
+
+      return new Response(result.body.string, {
+        headers: result.headers as unknown as HeadersInit,
+        status: result.status ?? 200,
+      });
+    }
+  });

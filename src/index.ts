@@ -1,8 +1,8 @@
+import 'reflect-metadata';
 import '@app/prisma';
 import '@app/firebase';
 import '@app/scheduler';
 import '@app/lib/sentry';
-import 'reflect-metadata';
 import '@app/topic.listeners';
 
 import { Elysia } from 'elysia';

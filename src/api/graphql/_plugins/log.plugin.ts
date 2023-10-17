@@ -1,5 +1,10 @@
 import moment from 'moment';
-import { ApolloServerPlugin } from '@apollo/server';
+import { Kind } from 'graphql/language/kinds';
+import {
+  ApolloServerPlugin,
+  BaseContext,
+  GraphQLRequestContext,
+} from '@apollo/server';
 
 import { isDev } from '@app/env';
 import { Logger } from '@app/lib/logger';
@@ -7,6 +12,25 @@ import { Logger } from '@app/lib/logger';
 import { ApolloServerContext } from '../_context/types';
 
 const logger = Logger.getSubLogger({ name: 'Apollo Log' });
+
+function getOps(context: GraphQLRequestContext<BaseContext>) {
+  if (!context.document) {
+    return null;
+  }
+
+  const operations: string[] = [];
+  for (const def of context.document.definitions) {
+    if (def.kind === Kind.OPERATION_DEFINITION) {
+      for (const selection of def.selectionSet.selections) {
+        if (selection.kind === Kind.FIELD) {
+          operations.push(selection.name.value);
+        }
+      }
+    }
+  }
+
+  return operations;
+}
 
 export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
   async requestDidStart(requestContext) {
@@ -23,26 +47,37 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
 
     return Promise.resolve({
       didEncounterErrors(requestContext) {
+        const gqlError = requestContext.errors[0];
+        const error = new Error(gqlError.message);
+        error.stack = gqlError.stack;
+        error.name = gqlError.name;
+        error.cause = gqlError.cause;
+        requestContext.document;
         logger.error(
-          'GQL Error => User[%s] Op[%s]',
+          'GQL Error => User[%s] Transaction[%s] Op[%s]',
           requestContext.contextValue.user?.uid ?? 'UNKNOWN',
-          op,
-          requestContext.errors[0],
-          query,
+          requestContext.contextValue.transactionID,
+          getOps(requestContext),
+          error,
         );
 
         return Promise.resolve();
       },
-      willSendResponse() {
+      willSendResponse(context) {
         if (!shouldLog) {
+          return Promise.resolve();
+        } else if (context.errors) {
           return Promise.resolve();
         }
 
+        const duration = moment.duration(moment().diff(start));
+
         logger.debug(
-          'GQL Reqest => User[%s] Op[%s] Duration[%s ms]',
+          'GQL Request => User[%s] Op[%s] Duration[%s ms]\n%o',
           requestContext.contextValue.user?.uid ?? 'UNKNOWN',
-          op,
-          moment.duration(moment().diff(start)).asMilliseconds(),
+          getOps(requestContext),
+          duration.asMilliseconds(),
+          context.response.body,
         );
 
         return Promise.resolve();

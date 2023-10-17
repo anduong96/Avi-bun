@@ -147,7 +147,7 @@ type Mutation {
   _sendFlightNotification(body: String!, data: JSON, flightID: String!, title: String!): Float!
   addUserFlight(flightID: String!): String!
   deleteUserFlight(flightID: String!): String!
-  userSignIn: Boolean!
+  syncUser: User!
 }
 
 type Query {

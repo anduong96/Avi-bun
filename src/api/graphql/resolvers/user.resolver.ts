@@ -9,6 +9,13 @@ import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 @Resolver(() => GQL_User)
 export class UserResolver {
   @Authorized()
+  @Mutation(() => GQL_User)
+  async syncUser(@CurrentUserID() userID: string) {
+    const user = await syncAuthProviderForUser(userID);
+    return user;
+  }
+
+  @Authorized()
   @Query(() => GQL_User)
   async user(@CurrentUserID() userID: string) {
     const user = prisma.user.findFirstOrThrow({
@@ -18,12 +25,5 @@ export class UserResolver {
     });
 
     return user;
-  }
-
-  @Authorized()
-  @Mutation(() => Boolean)
-  async userSignIn(@CurrentUserID() userID: string) {
-    await syncAuthProviderForUser(userID);
-    return true;
   }
 }

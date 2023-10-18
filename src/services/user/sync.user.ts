@@ -49,8 +49,6 @@ export async function syncAuthProviderForUser(userID: string) {
       lastSignInAt: moment(firebaseUser.metadata.lastSignInTime).toDate(),
     },
     where: {
-      avatarURL: firebaseUser.photoURL,
-      displayName: firebaseUser.displayName,
       id: userID,
     },
   });

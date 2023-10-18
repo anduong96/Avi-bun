@@ -77,7 +77,6 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
           requestContext.contextValue.user?.uid ?? 'UNKNOWN',
           getOps(requestContext),
           duration.asMilliseconds(),
-          context.response.body,
         );
 
         return Promise.resolve();

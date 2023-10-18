@@ -19,7 +19,9 @@ export class AeroDataBox {
     },
     prefixUrl: 'https://aerodatabox.p.rapidapi.com',
   });
-  private static readonly logger = Logger.getSubLogger({ name: this.name });
+  private static readonly logger = Logger.getSubLogger({
+    name: this.name,
+  });
 
   /**
    * The function `getAircraft` retrieves aircraft data based on a given tail number.

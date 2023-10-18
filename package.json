@@ -21,11 +21,11 @@
   },
   "devDependencies": {
     "@prisma/generator-helper": "^5.4.2",
-    "@types/lodash": "^4.14.199",
-    "@types/request-ip": "^0.0.39",
-    "@types/uuid": "^9.0.5",
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
+    "@types/lodash": "^4.14.200",
+    "@types/request-ip": "^0.0.40",
+    "@types/uuid": "^9.0.6",
+    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/parser": "^6.8.0",
     "bun-types": "latest",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
@@ -33,7 +33,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "prettier": "^3.0.3",
     "prisma-typegraphql-types-generator": "^1.5.14",
-    "typegraphql-prisma": "^0.27.0",
+    "typegraphql-prisma": "^0.27.1",
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
@@ -43,7 +43,7 @@
   "dependencies": {
     "@apollo/server": "^4.9.4",
     "@prisma/client": "5.4.2",
-    "@sentry/bun": "^7.74.0",
+    "@sentry/bun": "^7.74.1",
     "cheerio": "1.0.0-rc.12",
     "cron-parser": "^4.9.0",
     "cron-time-generator": "^2.0.1",
@@ -52,7 +52,7 @@
     "generate-unique-id": "^2.0.3",
     "gitops-secrets": "^0.0.6",
     "graphql-scalars": "^1.22.4",
-    "ky": "^1.0.1",
+    "ky": "^1.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",

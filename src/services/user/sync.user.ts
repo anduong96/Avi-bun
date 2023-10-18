@@ -34,7 +34,9 @@ export async function syncAuthProviderForUser(userID: string) {
           data: authPayload,
         },
       },
+      avatarURL: firebaseUser.photoURL,
       createdAt: createdAt.toDate(),
+      displayName: firebaseUser.displayName,
       id: userID,
     },
     update: {

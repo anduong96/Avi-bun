@@ -73,7 +73,7 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
         const duration = moment.duration(moment().diff(start));
 
         logger.debug(
-          'GQL Request => User[%s] Op[%s] Duration[%s ms]\n%o',
+          'GQL Request => User[%s] Op[%s] Duration[%s ms]',
           requestContext.contextValue.user?.uid ?? 'UNKNOWN',
           getOps(requestContext),
           duration.asMilliseconds(),

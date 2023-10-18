@@ -1,5 +1,6 @@
 import assert from 'assert';
 import moment from 'moment';
+import { omit } from 'lodash';
 
 import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
@@ -41,11 +42,10 @@ export async function syncAuthProviderForUser(userID: string) {
     },
     update: {
       Authentications: {
-        connectOrCreate: authPayload.map(entry => ({
+        upsert: authPayload.map(entry => ({
           create: entry,
-          where: {
-            id: entry.id,
-          },
+          update: omit(entry, 'id'),
+          where: { id: entry.id },
         })),
       },
       lastSignInAt: moment(firebaseUser.metadata.lastSignInTime).toDate(),

@@ -2,6 +2,7 @@ import moment from 'moment';
 import { Flight, FlightPromptness, FlightVendor } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { fractionToPercent } from '@app/lib/fraction.to.percent';
 
@@ -29,6 +30,13 @@ export async function upsertFlightPromptness(
   const averageDelayTimeMs = moment
     .duration(remotePromptness.details.overall.delayMean, 'minutes')
     .as('milliseconds');
+
+  Logger.debug('Upsert flight promptness', {
+    airlineIata: remotePromptness.airline.iata,
+    destinationIata: remotePromptness.arrivalAirport.iata,
+    flightNumber: remotePromptness.airline.flightNumber,
+    originIata: remotePromptness.departureAirport.iata,
+  });
 
   const promptness = await prisma.flightPromptness.upsert({
     create: {

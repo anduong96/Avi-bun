@@ -86,7 +86,7 @@ export class SyncActiveFlightsJob extends Job {
     });
 
     const destinationName = destination.cityName || destination.cityCode;
-    const flightTitle = payload.airlineIata + payload.flightNumber;
+    const flightTitle = result.airlineIata + payload.flightNumber;
     //TODO: build logic engine
 
     if (

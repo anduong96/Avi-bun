@@ -97,25 +97,25 @@ type Flight {
 
 type FlightPromptness {
   airlineIata: String!
-  averageDelayTimeMs: Int!
-  cancelledCount: Int!
+  averageDelayTimeMs: Int
+  cancelledCount: Int
   createdAt: DateTimeISO!
-  daysObserved: Int!
+  daysObserved: Int
   destinationIata: String!
-  divertedCount: Int!
-  excessiveCount: Int!
+  divertedCount: Int
+  excessiveCount: Int
   expiresAt: DateTimeISO!
   flightNumber: String!
-  flightsObserved: Int!
+  flightsObserved: Int
   id: ID!
-  lateCount: Int!
-  onTimeCount: Int!
-  onTimePercent: Int!
+  lateCount: Int
+  onTimeCount: Int
+  onTimePercent: Int
   originIata: String!
-  rating: Int!
+  rating: Int
   updatedAt: DateTimeISO!
   vendor: FlightVendor!
-  veryLateCount: Int!
+  veryLateCount: Int
 }
 
 enum FlightStatus {

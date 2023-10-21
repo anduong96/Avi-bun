@@ -21,38 +21,38 @@ export class GQL_FlightPromptness {
   @Field(() => GQL_FlightVendor)
   vendor: GQL_FlightVendor;
 
-  @Field(() => Int)
-  rating: number;
+  @Field(() => Int, { nullable: true })
+  rating?: number;
 
-  @Field(() => Int)
-  onTimePercent: number;
+  @Field(() => Int, { nullable: true })
+  onTimePercent?: number;
 
-  @Field(() => Int)
-  averageDelayTimeMs: number;
+  @Field(() => Int, { nullable: true })
+  averageDelayTimeMs?: number;
 
-  @Field(() => Int)
-  daysObserved: number;
+  @Field(() => Int, { nullable: true })
+  daysObserved?: number;
 
-  @Field(() => Int)
-  flightsObserved: number;
+  @Field(() => Int, { nullable: true })
+  flightsObserved?: number;
 
-  @Field(() => Int)
-  onTimeCount: number;
+  @Field(() => Int, { nullable: true })
+  onTimeCount?: number;
 
-  @Field(() => Int)
-  lateCount: number;
+  @Field(() => Int, { nullable: true })
+  lateCount?: number;
 
-  @Field(() => Int)
-  veryLateCount: number;
+  @Field(() => Int, { nullable: true })
+  veryLateCount?: number;
 
-  @Field(() => Int)
-  excessiveCount: number;
+  @Field(() => Int, { nullable: true })
+  excessiveCount?: number;
 
-  @Field(() => Int)
-  cancelledCount: number;
+  @Field(() => Int, { nullable: true })
+  cancelledCount?: number;
 
-  @Field(() => Int)
-  divertedCount: number;
+  @Field(() => Int, { nullable: true })
+  divertedCount?: number;
 
   @Field()
   createdAt: Date;

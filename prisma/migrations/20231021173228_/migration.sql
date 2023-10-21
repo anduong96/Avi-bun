@@ -1,0 +1,12 @@
+-- AlterTable
+ALTER TABLE "FlightPromptness" ALTER COLUMN "rating" DROP NOT NULL,
+ALTER COLUMN "onTimePercent" DROP NOT NULL,
+ALTER COLUMN "averageDelayTimeMs" DROP NOT NULL,
+ALTER COLUMN "daysObserved" DROP NOT NULL,
+ALTER COLUMN "flightsObserved" DROP NOT NULL,
+ALTER COLUMN "onTimeCount" DROP NOT NULL,
+ALTER COLUMN "lateCount" DROP NOT NULL,
+ALTER COLUMN "veryLateCount" DROP NOT NULL,
+ALTER COLUMN "excessiveCount" DROP NOT NULL,
+ALTER COLUMN "cancelledCount" DROP NOT NULL,
+ALTER COLUMN "divertedCount" DROP NOT NULL;

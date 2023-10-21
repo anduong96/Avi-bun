@@ -283,19 +283,19 @@ model FlightPromptness {
   destinationIata String
   vendor          FlightVendor
 
-  rating             Int
-  onTimePercent      Int
-  averageDelayTimeMs Int
+  rating             Int?
+  onTimePercent      Int?
+  averageDelayTimeMs Int?
 
-  daysObserved    Int
-  flightsObserved Int
+  daysObserved    Int?
+  flightsObserved Int?
 
-  onTimeCount    Int
-  lateCount      Int
-  veryLateCount  Int
-  excessiveCount Int
-  cancelledCount Int
-  divertedCount  Int
+  onTimeCount    Int?
+  lateCount      Int?
+  veryLateCount  Int?
+  excessiveCount Int?
+  cancelledCount Int?
+  divertedCount  Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

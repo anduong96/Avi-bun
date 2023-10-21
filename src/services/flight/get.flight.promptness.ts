@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Flight, FlightPromptness, FlightVendor } from '@prisma/client';
+import { Flight, FlightPromptness, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
@@ -15,28 +15,48 @@ import { fractionToPercent } from '@app/lib/fraction.to.percent';
 export async function upsertFlightPromptness(
   flight: Pick<
     Flight,
-    'airlineIata' | 'destinationIata' | 'flightNumber' | 'originIata'
+    'airlineIata' | 'destinationIata' | 'flightNumber' | 'id' | 'originIata'
   >,
 ): Promise<FlightPromptness> {
+  Logger.debug('Upsert flight promptness[%s] with Flight Stats', flight.id);
+  const expiresAt = moment().add(30, 'days').toDate();
   const remotePromptness = await FlightStats.getFlightPromptness({
     airlineIata: flight.airlineIata,
     destinationIata: flight.destinationIata,
     flightNumber: flight.flightNumber,
     originIata: flight.originIata,
   });
+  const where: Prisma.FlightPromptnessWhereUniqueInput = {
+    airlineIata_flightNumber_originIata_destinationIata: {
+      airlineIata: flight.airlineIata,
+      destinationIata: flight.destinationIata,
+      flightNumber: flight.flightNumber,
+      originIata: flight.originIata,
+    },
+  };
+
+  if (!remotePromptness) {
+    Logger.warn('No promptness found! %o', { flight });
+    const filler = await prisma.flightPromptness.upsert({
+      create: {
+        airlineIata: flight.airlineIata,
+        destinationIata: flight.destinationIata,
+        expiresAt,
+        flightNumber: flight.flightNumber,
+        originIata: flight.originIata,
+        vendor: FlightVendor.FLIGHT_STATS,
+      },
+      update: {},
+      where,
+    });
+
+    return filler;
+  }
 
   const rating = fractionToPercent(remotePromptness.details.overall.stars, 5);
-  const expiresAt = moment().add(30, 'days').toDate();
   const averageDelayTimeMs = moment
     .duration(remotePromptness.details.overall.delayMean, 'minutes')
     .as('milliseconds');
-
-  Logger.debug('Upsert flight promptness', {
-    airlineIata: remotePromptness.airline.iata,
-    destinationIata: remotePromptness.arrivalAirport.iata,
-    flightNumber: remotePromptness.airline.flightNumber,
-    originIata: remotePromptness.departureAirport.iata,
-  });
 
   const promptness = await prisma.flightPromptness.upsert({
     create: {
@@ -72,14 +92,7 @@ export async function upsertFlightPromptness(
       rating,
       veryLateCount: remotePromptness.chart.veryLate,
     },
-    where: {
-      airlineIata_flightNumber_originIata_destinationIata: {
-        airlineIata: remotePromptness.airline.iata,
-        destinationIata: remotePromptness.arrivalAirport.iata,
-        flightNumber: remotePromptness.airline.flightNumber,
-        originIata: remotePromptness.departureAirport.iata,
-      },
-    },
+    where,
   });
 
   return promptness;
@@ -100,6 +113,7 @@ export async function getFlightPromptness(
       airlineIata: true,
       destinationIata: true,
       flightNumber: true,
+      id: true,
       originIata: true,
     },
     where: {
@@ -111,17 +125,13 @@ export async function getFlightPromptness(
     where: {
       airlineIata: flight.airlineIata,
       destinationIata: flight.destinationIata,
+      expiresAt: {
+        gte: moment().toDate(),
+      },
       flightNumber: flight.flightNumber,
       originIata: flight.originIata,
     },
   });
 
-  if (
-    !promptness ||
-    moment().subtract(7, 'days').isBefore(promptness.updatedAt)
-  ) {
-    return upsertFlightPromptness(flight);
-  }
-
-  return promptness;
+  return promptness ?? upsertFlightPromptness(flight);
 }

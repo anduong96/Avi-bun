@@ -134,7 +134,13 @@ export class FlightStats {
     const route = `api/on-time-performance/${args.airlineIata}/${args.flightNumber}/${args.originIata}/${args.destinationIata}`;
     const request = await this.client.get(route);
     const response = await request.json<FlightStatPromptness[]>();
-    return response[0];
+    const result = response[0];
+    if ('errorCode' in result) {
+      this.logger.error(result);
+      return null;
+    }
+
+    return result;
   }
 
   static async getRandomFlight() {

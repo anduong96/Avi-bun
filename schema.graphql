@@ -21,7 +21,7 @@ type Aircraft {
 type AircraftPosition {
   aircraftID: Int!
   airlineIata: String!
-  altitude: Int
+  altitude: Float
   createdAt: DateTimeISO!
   destinationIata: String!
   flightDate: Int!
@@ -29,8 +29,8 @@ type AircraftPosition {
   flightNumber: String!
   flightYear: Int!
   id: Int!
-  latitude: Int
-  longitude: Int
+  latitude: Float
+  longitude: Float
   originIata: String!
   updatedAt: DateTimeISO!
 }
@@ -54,8 +54,8 @@ type Airport {
   elevation: Int
   iata: String!
   id: ID!
-  latitude: Int!
-  longitude: Int!
+  latitude: Float!
+  longitude: Float!
   name: String!
   state: String
   timezone: String!

@@ -1,4 +1,5 @@
 import { Field, ObjectType, Int } from 'type-graphql';
+import { Field, ObjectType, Int, Float } from 'type-graphql';
 
 @ObjectType('AircraftPosition')
 export class GQL_AircraftPosition {
@@ -8,13 +9,13 @@ export class GQL_AircraftPosition {
   @Field(() => Int)
   aircraftID: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Float, { nullable: true })
   latitude?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Float, { nullable: true })
   longitude?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Float, { nullable: true })
   altitude?: number;
 
   @Field(() => Int)

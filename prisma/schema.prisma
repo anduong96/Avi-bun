@@ -85,8 +85,8 @@ model Airport {
   elevation   Int?
   countyName  String?
   state       String?
-  latitude    Int
-  longitude   Int
+  latitude    Float
+  longitude   Float
 
   // @skip
   OriginFlights      Flight[] @relation("origin")
@@ -102,8 +102,8 @@ model City {
   countryCode String
   code        String
   timezone    String
-  latitude    Int
-  longitude   Int
+  latitude    Float
+  longitude   Float
 
   @@unique([code])
 }
@@ -201,9 +201,9 @@ model Aircraft {
 model AircraftPosition {
   id              Int      @id @default(autoincrement())
   aircraftID      Int
-  latitude        Int?
-  longitude       Int?
-  altitude        Int?
+  latitude        Float?
+  longitude       Float?
+  altitude        Float?
   flightYear      Int
   flightMonth     Int
   flightDate      Int
@@ -255,8 +255,8 @@ model FlightPlan {
   id        Int    @id @default(autoincrement())
   flightID  String
   index     Int
-  latitude  Int
-  longitude Int
+  latitude  Float
+  longitude Float
 
   Flight Flight? @relation(fields: [flightID], references: [id])
 

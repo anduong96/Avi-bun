@@ -38,9 +38,19 @@ export function getIcao($: Cheerio.CheerioAPI) {
 export function getImage($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("PICTURE")');
   const image = target.parent().find('img').attr('src');
-  return image?.startsWith('//')
+  let imageSrc = image?.startsWith('//')
     ? image.replace('//', '').trim()
     : image?.trim();
+
+  if (!imageSrc) {
+    return undefined;
+  }
+
+  if (!imageSrc.startsWith('http')) {
+    imageSrc = `https://${imageSrc}`;
+  }
+
+  return imageSrc;
 }
 
 export function getDescription($: Cheerio.CheerioAPI) {

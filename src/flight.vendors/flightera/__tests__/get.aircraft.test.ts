@@ -6,10 +6,9 @@ import { Flightera } from '..';
 describe('Flightera', () => {
   test('getAircraftFromHtml', async () => {
     const aircraftTailNumber = 'N725AN';
+    const flighteraStaticUrl = 'https://www.flightera.net/staticfiles/';
     const aircraft = await Flightera.getAircraftFromCrawl(aircraftTailNumber);
-    const hasAircraftImage = aircraft.image?.startsWith(
-      'www.flightera.net/staticfiles/',
-    );
+    const hasAircraftImage = aircraft.image?.startsWith(flighteraStaticUrl);
 
     expect(aircraft.airlineIata).toBe('AA');
     expect(aircraft.model).toBe('B77W');

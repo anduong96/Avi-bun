@@ -1,7 +1,5 @@
 import { Field, Int, ObjectType } from 'type-graphql';
-import { Field, ObjectType, Int } from 'type-graphql';
 import { GQL_AircraftPosition } from './AircraftPosition';
-import { GQL_Flight } from './Flight';
 
 @ObjectType('Aircraft')
 export class GQL_Aircraft {
@@ -29,8 +27,8 @@ export class GQL_Aircraft {
   @Field({ nullable: true })
   imageURL?: string;
 
-  @Field()
-  firstFlight: Date;
+  @Field({ nullable: true })
+  firstFlight?: Date;
 
   @Field()
   createdAt: Date;

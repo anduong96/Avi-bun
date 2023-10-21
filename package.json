@@ -14,10 +14,14 @@
     "postinstall": "bunx patch-package",
     "prisma:generate": "bunx prisma generate",
     "prisma:deploy": "bunx prisma migrate deploy",
-    "prisma:dev": "bunx prisma migrate dev",
-    "prisma:seed": "bun ./prisma/seed.ts",
+    "prisma:dev": "bunx prisma migrate dev --create-only",
+    "prisma:seed": "bunx prisma db seed",
+    "prisma:reset": "bun ./prisma/reset.ts",
     "ext:services": "sh ./scripts/run.services.sh",
     "ext:services:down": "sh ./scripts/down.services.sh"
+  },
+  "prisma": {
+    "seed": "bun ./prisma/seed.ts"
   },
   "devDependencies": {
     "@prisma/generator-helper": "^5.4.2",

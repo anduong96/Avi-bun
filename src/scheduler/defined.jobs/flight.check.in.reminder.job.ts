@@ -7,7 +7,7 @@ import { sendFlightAlert } from '@app/services/alerts/flight.alert';
 
 import { Job } from '../job';
 
-export class RemindCheckinFlightsJob extends Job {
+export class RemindCheckInFlightsJob extends Job {
   readonly cronTime: string = CronTime.every(10).minutes();
 
   async onProcess() {

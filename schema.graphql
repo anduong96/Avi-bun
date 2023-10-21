@@ -8,7 +8,7 @@ type Aircraft {
   airlineIata: String!
   createdAt: DateTimeISO!
   description: String
-  firstFlight: DateTimeISO!
+  firstFlight: DateTimeISO
   iata: String
   icao: String!
   id: Int!
@@ -106,7 +106,7 @@ type FlightPromptness {
   excessiveCount: Int!
   expiresAt: DateTimeISO!
   flightNumber: String!
-  flightsObservered: Int!
+  flightsObserved: Int!
   id: ID!
   lateCount: Int!
   onTimeCount: Int!

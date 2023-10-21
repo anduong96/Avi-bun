@@ -176,7 +176,7 @@ model FlightVendorConnection {
 }
 
 model Aircraft {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   iata        String?
   icao        String
   model       String
@@ -184,7 +184,7 @@ model Aircraft {
   description String?
   tailNumber  String
   imageURL    String?
-  firstFlight DateTime
+  firstFlight DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -287,8 +287,8 @@ model FlightPromptness {
   onTimePercent      Int
   averageDelayTimeMs Int
 
-  daysObserved      Int
-  flightsObservered Int
+  daysObserved    Int
+  flightsObserved Int
 
   onTimeCount    Int
   lateCount      Int

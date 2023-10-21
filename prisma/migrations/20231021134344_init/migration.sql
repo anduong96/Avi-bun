@@ -212,7 +212,7 @@ CREATE TABLE "FlightPromptness" (
     "onTimePercent" INTEGER NOT NULL,
     "averageDelayTimeMs" INTEGER NOT NULL,
     "daysObserved" INTEGER NOT NULL,
-    "flightsObservered" INTEGER NOT NULL,
+    "flightsObserved" INTEGER NOT NULL,
     "onTimeCount" INTEGER NOT NULL,
     "lateCount" INTEGER NOT NULL,
     "veryLateCount" INTEGER NOT NULL,

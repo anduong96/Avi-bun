@@ -10,13 +10,13 @@ import { PatchFlightsJob } from './defined.jobs/flight.patch.job';
 import { ArchiveFlightJob } from './defined.jobs/flight.archive.job';
 import { SyncActiveFlightsJob } from './defined.jobs/flight.sync.job';
 import { SyncActivePlaneLocationJob } from './defined.jobs/plane.sync.job';
-import { RemindCheckinFlightsJob } from './defined.jobs/flight.checkin.reminder.job';
+import { RemindCheckInFlightsJob } from './defined.jobs/flight.check.in.reminder.job';
 
-export class Scheduler extends Singleton<Scheduler>() {
+export class _Scheduler extends Singleton<_Scheduler>() {
   private readonly initiatedJobs: Map<ScheduledJob['id'], Job> = new Map();
   private readonly jobsToInitiate = [
     ArchiveFlightJob,
-    RemindCheckinFlightsJob,
+    RemindCheckInFlightsJob,
     PatchFlightsJob,
     SyncActiveFlightsJob,
     SyncActivePlaneLocationJob,
@@ -62,3 +62,7 @@ export class Scheduler extends Singleton<Scheduler>() {
     }
   }
 }
+
+export const Scheduler = _Scheduler.instance;
+
+await Scheduler.start();

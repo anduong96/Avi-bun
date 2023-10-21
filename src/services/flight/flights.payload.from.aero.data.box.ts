@@ -7,19 +7,30 @@ import { FlightQueryParam } from '@app/types/flight';
 import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
 import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
 
-function toFlightPayload(
-  entry: AeroDataBoxFlight,
-): Prisma.FlightUncheckedCreateInput {
+function toFlightPayload(entry: AeroDataBoxFlight): Prisma.FlightCreateInput {
   const departureDate = moment(
     entry.departure.scheduledTimeLocal,
     'YYYY-MM-DD',
   );
 
   return {
+    Airline: {
+      connect: {
+        iata: entry.airline.iata,
+      },
+    },
+    Destination: {
+      connect: {
+        iata: entry.arrival.airport.iata,
+      },
+    },
+    Origin: {
+      connect: {
+        iata: entry.departure.airport.iata,
+      },
+    },
     aircraftTailNumber: entry.aircraft.reg,
-    airlineIata: entry.airline.iata,
     destinationBaggageClaim: entry.arrival.baggageBelt,
-    destinationIata: entry.arrival.airport.iata,
     destinationTerminal: entry.arrival.terminal,
     estimatedGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
     estimatedGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
@@ -28,7 +39,6 @@ function toFlightPayload(
     flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
     flightYear: departureDate.year(),
     id: uuid.v4(),
-    originIata: entry.departure.airport.iata,
     originTerminal: entry.departure.terminal,
     scheduledGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
     scheduledGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,

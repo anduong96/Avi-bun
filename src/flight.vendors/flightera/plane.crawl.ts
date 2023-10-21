@@ -65,6 +65,10 @@ export function getModel($: Cheerio.CheerioAPI) {
 export function getFirstFlight($: Cheerio.CheerioAPI) {
   const target = $('dt:contains("FIRST FLIGHT")');
   const date = target.parent().find('dd').text();
+  if (!date) {
+    return null;
+  }
+
   return moment(date, 'MMMM YYYY').toDate();
 }
 

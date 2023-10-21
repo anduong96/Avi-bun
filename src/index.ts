@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+
 import '@app/prisma';
 import '@app/firebase';
 import '@app/scheduler';
@@ -7,14 +8,11 @@ import '@app/topic.listeners';
 
 import { Elysia } from 'elysia';
 
-import { Scheduler } from '@app/scheduler';
 import { RestMiddleware } from '@app/api/rest';
 
 import { ENV, isDev } from './env';
 import { Logger } from './lib/logger';
 import { GraphqlMiddleware } from './api/graphql';
-
-await Scheduler.instance.start();
 
 const app = new Elysia();
 

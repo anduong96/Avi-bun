@@ -43,7 +43,7 @@ export async function getRandomFlight(): Promise<Flight> {
     const data = flightStatFlightToFlightPayload(remoteFlight);
     Logger.debug('Creating flight', data);
     const flight = await prisma.flight.create({ data });
-    TopicPublisher.broadcast(new FlightCreatedTopic(flight));
+    TopicPublisher.broadcast(new FlightCreatedTopic(flight.id));
     return flight;
   } catch (error) {
     Logger.error('Unable to create flight in getRandomFlight', error);

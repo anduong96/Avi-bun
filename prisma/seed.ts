@@ -143,7 +143,7 @@ async function populateCountries() {
   Logger.info('Created countries');
 }
 
-Logger.warn('Upserting database');
+Logger.warn('Upsert database');
 const [r, error] = await tryNice(() =>
   Promise.allSettled([
     populateAirlines(),
@@ -152,6 +152,9 @@ const [r, error] = await tryNice(() =>
     populateAirports(),
   ]),
 );
+
+await prisma.$disconnect();
+Logger.info('Disconnected from database');
 
 if (!r) {
   Logger.error(error);

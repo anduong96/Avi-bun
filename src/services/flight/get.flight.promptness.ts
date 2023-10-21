@@ -6,7 +6,7 @@ import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { fractionToPercent } from '@app/lib/fraction.to.percent';
 
 /**
- * Upserts the flight promptness based on the provided flight information.
+ * Upsert the flight promptness based on the provided flight information.
  *
  * @param {Flight} flight - The flight object containing the airline, flight number, origin, and destination.
  * @return {Promise<FlightPromptness>} A promise that resolves to the flight promptness object.
@@ -42,7 +42,7 @@ export async function upsertFlightPromptness(
       excessiveCount: remotePromptness.chart.excessive,
       expiresAt,
       flightNumber: flight.flightNumber,
-      flightsObservered: remotePromptness.statistics.totalObservations,
+      flightsObserved: remotePromptness.statistics.totalObservations,
       lateCount: remotePromptness.chart.late,
       onTimeCount: remotePromptness.chart.onTime,
       onTimePercent: remotePromptness.details.overall.ontimePercent,
@@ -58,7 +58,7 @@ export async function upsertFlightPromptness(
       divertedCount: remotePromptness.chart.diverted,
       excessiveCount: remotePromptness.chart.excessive,
       expiresAt,
-      flightsObservered: remotePromptness.statistics.totalObservations,
+      flightsObserved: remotePromptness.statistics.totalObservations,
       lateCount: remotePromptness.chart.late,
       onTimeCount: remotePromptness.chart.onTime,
       rating,

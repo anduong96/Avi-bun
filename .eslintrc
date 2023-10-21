@@ -22,13 +22,16 @@
       {
         "custom-groups": {
           "type": {
-            "bun": "bun"
+            "bun": "bun",
+            "reflect-metadata": "reflect-metadata"
           },
           "value": {
-            "bun": ["bun"]
+            "bun": ["bun"],
+            "reflect-metadata": ["reflect-metadata"]
           }
         },
         "groups": [
+          "reflect-metadata",
           "side-effect",
           "type",
           "bun",
@@ -37,8 +40,7 @@
           "internal-type",
           "internal",
           ["parent-type", "sibling-type", "index-type"],
-          ["parent", "sibling", "index"],
-          "style"
+          ["parent", "sibling", "index"]
         ],
         "internal-pattern": ["@app/**"],
         "newlines-between": "always",

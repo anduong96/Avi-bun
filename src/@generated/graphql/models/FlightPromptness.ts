@@ -34,7 +34,7 @@ export class GQL_FlightPromptness {
   daysObserved: number;
 
   @Field(() => Int)
-  flightsObservered: number;
+  flightsObserved: number;
 
   @Field(() => Int)
   onTimeCount: number;

@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { Flight } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
@@ -57,7 +56,7 @@ export async function populateFlights(params: FlightQueryParam) {
     );
 
     TopicPublisher.broadcastAll(
-      flights.map(entry => new FlightCreatedTopic(entry as Flight)),
+      result.map(flight => new FlightCreatedTopic(flight.id)),
     );
   } catch (error) {
     Logger.error('Unable to create flight(s) in populateFlights', error);

@@ -98,7 +98,6 @@ export function getAircraftFromHtml(content: string) {
     airlineIata: getAirlineIata($),
     description: getDescription($),
     firstFlight: getFirstFlight($),
-    html: content,
     icao: getIcao($),
     image: getImage($),
     model: getModel($),

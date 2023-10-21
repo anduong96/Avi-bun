@@ -1,0 +1,17 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Flightera Aircraft: N725AN 1`] = `
+{
+  "airlineIata": "AA",
+  "description": "The Boeing 777-300ER (Extended Range), also known as the B77W, is a long-haul, twin-engine airliner. It boasts an impressive range and a large passenger capacity, typically around 396 passengers. Known for its fuel efficiency, spacious cabin, and high-tech features, it's often used for international and transcontinental flights.",
+  "firstFlight": 2013-07-01T00:00:00.000Z,
+  "icao": "A9B62C",
+  "image": "https://www.flightera.net/staticfiles/acftpic_131875.jpg",
+  "model": "B77W",
+  "seatsConfiguration": {
+    "business": 52,
+    "economy": 216,
+    "first": 8,
+  },
+}
+`;

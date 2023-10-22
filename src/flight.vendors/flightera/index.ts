@@ -3,6 +3,7 @@ import moment from 'moment';
 import { format } from 'util';
 
 import { getAircraftFromHtml } from './plane.crawl';
+import { getFlightFromCrawl } from './flight.crawl';
 
 export class Flightera {
   private static readonly BASE_URL = 'https://www.flightera.net';
@@ -41,9 +42,10 @@ export class Flightera {
   static async getAircraftFromCrawl(tailNumber: string) {
     const route = this.getPlaneUrl(tailNumber);
     const response = await this.client.get(route);
-    const data = await response.text();
-    return getAircraftFromHtml(data);
+    const html = await response.text();
+    return getAircraftFromHtml(html);
   }
+
   static getDirectFlightUrl(params: {
     airlineIata: string;
     airlineName: string;
@@ -77,10 +79,19 @@ export class Flightera {
     return encodeURI(url);
     // https://www.flightera.net/en/flight_details/American+Airlines-New+York-London/AA100/KJFK/2023-10-19
   }
+  static async getFlightFromCrawl(params: {
+    airlineIata: string;
+    flightNumber: string;
+  }) {
+    const route = this.getFlightUrl(params);
+    const request = await this.client.get(route);
+    const html = await request.text();
+    return getFlightFromCrawl(html);
+  }
 
   static getFlightUrl(params: { airlineIata: string; flightNumber: string }) {
     const route = format(
-      '%s/en/flights/%s%s',
+      '%s/en/flight/%s%s',
       this.BASE_URL,
       params.airlineIata.toUpperCase(),
       params.flightNumber,

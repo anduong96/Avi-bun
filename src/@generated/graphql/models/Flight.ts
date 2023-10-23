@@ -32,6 +32,9 @@ export class GQL_Flight {
   @Field(() => Int, { nullable: true })
   totalDistanceKm?: number;
 
+  @Field(() => Int)
+  originUtcHourOffset: number;
+
   @Field()
   originIata: string;
 
@@ -46,6 +49,9 @@ export class GQL_Flight {
 
   @Field({ nullable: true })
   destinationGate?: string;
+
+  @Field(() => Int)
+  destinationUtcHourOffset: number;
 
   @Field({ nullable: true })
   destinationTerminal?: string;

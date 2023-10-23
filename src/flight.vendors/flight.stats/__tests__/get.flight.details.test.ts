@@ -1,3 +1,4 @@
+import { maxBy } from 'lodash';
 import { describe, expect, test } from 'bun:test';
 
 import { FlightStats } from '..';
@@ -7,11 +8,12 @@ describe('Flight Stats', () => {
     const airlineIata = 'AA';
     const flightNumber = '100';
 
-    const [target] = await FlightStats.searchFlights({
+    const searchResult = await FlightStats.searchFlights({
       airlineIata,
       flightNumber,
     });
 
+    const target = maxBy(searchResult, 'flightDate')!;
     const flight = await FlightStats.getFlightDetails({
       airlineIata,
       flightDate: target.flightDate,

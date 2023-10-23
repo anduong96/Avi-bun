@@ -86,7 +86,7 @@ export class Flightera {
     const route = this.getFlightUrl(params);
     const request = await this.client.get(route);
     const html = await request.text();
-    return getFlightFromCrawl(html);
+    return getFlightFromCrawl(html, params);
   }
 
   static getFlightUrl(params: { airlineIata: string; flightNumber: string }) {

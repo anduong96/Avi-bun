@@ -127,25 +127,27 @@ model Flight {
   flightMonth Int
   flightDate  Int
 
-  airlineIata             String
-  flightNumber            String
-  aircraftTailNumber      String?
-  status                  FlightStatus
-  totalDistanceKm         Int?         @default(0)
-  originIata              String
-  originGate              String?
-  originTerminal          String?
-  destinationIata         String
-  destinationGate         String?
-  destinationTerminal     String?
-  destinationBaggageClaim String?
-  scheduledGateDeparture  DateTime
-  estimatedGateDeparture  DateTime
-  actualGateDeparture     DateTime?
-  scheduledGateArrival    DateTime
-  estimatedGateArrival    DateTime
-  actualGateArrival       DateTime?
-  reconAttempt            Int?         @default(0)
+  airlineIata              String
+  flightNumber             String
+  aircraftTailNumber       String?
+  status                   FlightStatus
+  totalDistanceKm          Int?         @default(0)
+  originUtcHourOffset      Int
+  originIata               String
+  originGate               String?
+  originTerminal           String?
+  destinationIata          String
+  destinationGate          String?
+  destinationUtcHourOffset Int
+  destinationTerminal      String?
+  destinationBaggageClaim  String?
+  scheduledGateDeparture   DateTime
+  estimatedGateDeparture   DateTime
+  actualGateDeparture      DateTime?
+  scheduledGateArrival     DateTime
+  estimatedGateArrival     DateTime
+  actualGateArrival        DateTime?
+  reconAttempt             Int?         @default(0)
 
   Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: NoAction, onUpdate: NoAction)
   Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination", onDelete: NoAction, onUpdate: NoAction)

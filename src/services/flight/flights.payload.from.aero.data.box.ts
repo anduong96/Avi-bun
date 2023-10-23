@@ -1,17 +1,14 @@
-import moment from 'moment';
 import * as uuid from 'uuid';
+import moment from 'moment-timezone';
 import { FlightStatus, Prisma } from '@prisma/client';
 
-import { toDateOrNull } from '@app/lib/date.or.null';
 import { FlightQueryParam } from '@app/types/flight';
 import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
 import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
 
 function toFlightPayload(entry: AeroDataBoxFlight): Prisma.FlightCreateInput {
-  const departureDate = moment(
-    entry.departure.scheduledTimeLocal,
-    'YYYY-MM-DD',
-  );
+  const departureDate = moment.parseZone(entry.departure.actualTimeLocal);
+  const arrivalDate = moment.parseZone(entry.arrival.actualTimeLocal);
 
   return {
     Airline: {
@@ -32,16 +29,18 @@ function toFlightPayload(entry: AeroDataBoxFlight): Prisma.FlightCreateInput {
     aircraftTailNumber: entry.aircraft.reg,
     destinationBaggageClaim: entry.arrival.baggageBelt,
     destinationTerminal: entry.arrival.terminal,
-    estimatedGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
-    estimatedGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
+    destinationUtcHourOffset: arrivalDate.utcOffset() / 60,
+    estimatedGateArrival: arrivalDate.toDate(),
+    estimatedGateDeparture: departureDate.toDate(),
     flightDate: departureDate.date(),
     flightMonth: departureDate.month(),
     flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
     flightYear: departureDate.year(),
     id: uuid.v4(),
     originTerminal: entry.departure.terminal,
-    scheduledGateArrival: toDateOrNull(entry.arrival.scheduledTimeUtc)!,
-    scheduledGateDeparture: toDateOrNull(entry.departure.scheduledTimeUtc)!,
+    originUtcHourOffset: departureDate.utcOffset() / 60,
+    scheduledGateArrival: arrivalDate.toDate(),
+    scheduledGateDeparture: departureDate.toDate(),
     status:
       entry.status === 'Arrived'
         ? FlightStatus.ARRIVED

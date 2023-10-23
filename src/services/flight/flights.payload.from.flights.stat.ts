@@ -4,6 +4,7 @@ import { FlightVendor, Prisma } from '@prisma/client';
 import { Logger } from '@app/lib/logger';
 import { toDateOrNull } from '@app/lib/date.or.null';
 import { FlightQueryParam } from '@app/types/flight';
+import { timezoneToUtcOffset } from '@app/lib/timezone';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { toFlightStatus } from '@app/flight.vendors/flight.stats/utils';
 
@@ -64,6 +65,9 @@ export function flightStatFlightToFlightPayload(
     destinationBaggageClaim: flight.arrivalAirport.baggage,
     destinationGate: flight.arrivalAirport.gate,
     destinationTerminal: flight.arrivalAirport.terminal,
+    destinationUtcHourOffset: timezoneToUtcOffset(
+      flight.arrivalAirport.timeZoneRegionName,
+    ),
     estimatedGateArrival: estimatedGateArrival!,
     estimatedGateDeparture: estimatedGateDeparture!,
     flightDate: flight.flightDate,
@@ -73,6 +77,9 @@ export function flightStatFlightToFlightPayload(
     id: uuid.v4(),
     originGate: flight.departureAirport.gate,
     originTerminal: flight.departureAirport.terminal,
+    originUtcHourOffset: timezoneToUtcOffset(
+      flight.departureAirport.timeZoneRegionName,
+    ),
     scheduledGateArrival: scheduledGateArrival!,
     scheduledGateDeparture: scheduledGateDeparture!,
     status: status,

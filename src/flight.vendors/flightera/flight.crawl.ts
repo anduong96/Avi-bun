@@ -1,7 +1,10 @@
+import moment from 'moment';
+import { format } from 'sys';
 import * as Cheerio from 'cheerio';
 import { compact, fromPairs } from 'lodash';
 
 import { toNumber } from '@app/lib/to.number';
+import { FlightQueryParam } from '@app/types/flight';
 
 /**
  * The function `getFlightDistanceKm` extracts the direct distance in kilometers from a Cheerio object.
@@ -41,10 +44,95 @@ function getCo2EmissionKg($: Cheerio.CheerioAPI) {
   return emissions as Result;
 }
 
-export function getFlightFromCrawl(html: string) {
+function getDepartureTime($: Cheerio.CheerioAPI) {
+  const labelElement = $('span:contains("Departure")');
+  const departureTime = labelElement.next().text().trim();
+  const [time, timezone] = departureTime.split('\n');
+  return {
+    time,
+    timezone,
+  };
+}
+
+function getArrivalTime($: Cheerio.CheerioAPI) {
+  const labelElement = $('span:contains("Arrival")');
+  const departureTime = labelElement.next().text().trim();
+  const [time, timezone] = departureTime.split('\n');
+  return {
+    time,
+    timezone,
+  };
+}
+
+function getFlightDate(
+  $: Cheerio.CheerioAPI,
+  params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
+) {
+  const flightIata = format(
+    '%s%s',
+    params.airlineIata.toUpperCase(),
+    params.flightNumber,
+  );
+
+  const query = format('h1:contains("%s")', flightIata);
+  const flightIataLabel = $(query);
+  const dateElement = flightIataLabel.next();
+  const dateStr = dateElement.text().trim();
+  const date = moment(dateStr, 'DD. MMM YYYY').toDate();
+  return date;
+}
+
+function getFlightTime(
+  $: Cheerio.CheerioAPI,
+  params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
+) {
+  const DATE_FORMAT = 'YYYY-MM-DD';
+  const TIME_FORMAT = 'HH:mm Z';
+  const DATE_TIME_FORMAT = format('%s %s', DATE_FORMAT, TIME_FORMAT);
+  const flightDate = getFlightDate($, params);
+  const flightDateStr = moment(flightDate).format(DATE_FORMAT);
+  const departure = getDepartureTime($);
+  const arrival = getArrivalTime($);
+  const departureTimeStr = format(
+    '%s %s %s',
+    flightDateStr,
+    departure.time,
+    departure.timezone,
+  );
+  const arrivalTimeStr = format(
+    '%s %s %s',
+    flightDateStr,
+    arrival.time,
+    arrival.timezone,
+  );
+  const departureTime = moment(departureTimeStr, DATE_TIME_FORMAT);
+  const arrivalTime = moment(arrivalTimeStr, DATE_TIME_FORMAT);
+
+  /**
+   * Flights with more than 24 hours is extremely rare
+   */
+  if (arrivalTime.isBefore(departureTime, 'minutes')) {
+    arrivalTime.add(1, 'days');
+  }
+
+  const duration = arrivalTime.diff(departureTime);
+
+  return {
+    arrivalTime,
+    departureTime,
+    duration,
+    flightDate,
+  };
+}
+
+export function getFlightFromCrawl(
+  html: string,
+  params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
+) {
   const $ = Cheerio.load(html);
   return {
     co2EmissionKg: getCo2EmissionKg($),
     distanceKm: getFlightDistanceKm($),
+    ...getFlightTime($, params),
   };
 }

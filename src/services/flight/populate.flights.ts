@@ -40,6 +40,16 @@ function getFlights(params: FlightQueryParam) {
   }
 }
 
+/**
+ * The function `patchFlightsWithFlightera` retrieves flight details from Flightera and updates the co2
+ * emission and total distance properties of the flights.
+ * @param {FlightQueryParam} params - The `params` parameter is an object that contains the following
+ * properties:
+ * @param {Prisma.FlightCreateInput[]} flights - An array of flight objects that need to be patched
+ * with data from Flightera.
+ * @returns The function `patchFlightsWithFlightera` returns a Promise that resolves to an array of
+ * `Prisma.FlightCreateInput` objects.
+ */
 async function patchFlightsWithFlightera(
   params: FlightQueryParam,
   flights: Prisma.FlightCreateInput[],
@@ -56,7 +66,7 @@ async function patchFlightsWithFlightera(
       co2EmissionKgEcoPlus: flighteraFlight.co2EmissionKg['Eco+'],
       co2EmissionKgEconomy: flighteraFlight.co2EmissionKg.Economy,
       co2EmissionKgFirst: flighteraFlight.co2EmissionKg.First,
-      totalDistanceKm: flighteraFlight.distanceKm,
+      totalDistanceKm: flighteraFlight.distanceKm || flight.totalDistanceKm,
     }));
   } catch (error) {
     Logger.error('Unable to get flight details from Flightera', error);

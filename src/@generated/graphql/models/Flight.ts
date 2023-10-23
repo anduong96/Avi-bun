@@ -2,6 +2,7 @@ import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { GQL_FlightStatus } from '../enums/FlightStatus';
 import { GQL_Airport } from './Airport';
 import { GQL_Airline } from './Airline';
+import { Field, ObjectType, ID, Int, Float } from 'type-graphql';
 
 @ObjectType('Flight')
 export class GQL_Flight {
@@ -76,6 +77,18 @@ export class GQL_Flight {
 
   @Field({ nullable: true })
   actualGateArrival?: Date;
+
+  @Field(() => Float, { nullable: true })
+  co2EmissionKgEconnomy?: number;
+
+  @Field(() => Float, { nullable: true })
+  co2EmissionKgFirst?: number;
+
+  @Field(() => Float, { nullable: true })
+  co2EmissionKgBusiness?: number;
+
+  @Field(() => Float, { nullable: true })
+  co2EmissionKgEco?: number;
 
   @Field(() => Int, { nullable: true })
   reconAttempt?: number;

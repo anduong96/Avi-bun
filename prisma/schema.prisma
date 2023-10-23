@@ -147,6 +147,10 @@ model Flight {
   scheduledGateArrival     DateTime
   estimatedGateArrival     DateTime
   actualGateArrival        DateTime?
+  co2EmissionKgEconnomy    Float?
+  co2EmissionKgFirst       Float?
+  co2EmissionKgBusiness    Float?
+  co2EmissionKgEco         Float?
   reconAttempt             Int?         @default(0)
 
   Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: NoAction, onUpdate: NoAction)

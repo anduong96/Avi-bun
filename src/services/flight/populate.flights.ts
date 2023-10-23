@@ -1,10 +1,12 @@
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import { Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
 import { Sentry } from '@app/lib/sentry';
 import { FlightQueryParam } from '@app/types/flight';
+import { Flightera } from '@app/flight.vendors/flightera';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 
@@ -38,12 +40,38 @@ function getFlights(params: FlightQueryParam) {
   }
 }
 
+async function patchFlightsWithFlightera(
+  params: FlightQueryParam,
+  flights: Prisma.FlightCreateInput[],
+): Promise<Prisma.FlightCreateInput[]> {
+  try {
+    const flighteraFlight = await Flightera.getFlightFromCrawl({
+      airlineIata: params.airlineIata,
+      flightNumber: params.flightNumber,
+    });
+
+    return flights.map(flight => ({
+      ...flight,
+      co2EmissionKgBusiness: flighteraFlight.co2EmissionKg.Business,
+      co2EmissionKgEcoPlus: flighteraFlight.co2EmissionKg['Eco+'],
+      co2EmissionKgEconomy: flighteraFlight.co2EmissionKg.Economy,
+      co2EmissionKgFirst: flighteraFlight.co2EmissionKg.First,
+      totalDistanceKm: flighteraFlight.distanceKm,
+    }));
+  } catch (error) {
+    Logger.error('Unable to get flight details from Flightera', error);
+    Sentry.captureException(error);
+    return flights;
+  }
+}
+
 /**
  * The `populateFlights` function populates flight data based on the provided parameters and creates
  * flight records in the database.
  */
 export async function populateFlights(params: FlightQueryParam) {
-  const flights = await getFlights(params);
+  const initialPayload = await getFlights(params);
+  const flights = await patchFlightsWithFlightera(params, initialPayload);
 
   if (isEmpty(flights)) {
     throw new Error('Flight(s) not found!');

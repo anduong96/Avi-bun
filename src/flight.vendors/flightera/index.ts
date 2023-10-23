@@ -2,6 +2,7 @@ import ky from 'ky';
 import moment from 'moment';
 import { format } from 'util';
 
+import { getAuthToken } from './token.crawl';
 import { getAircraftFromHtml } from './plane.crawl';
 import { getFlightFromCrawl } from './flight.crawl';
 
@@ -46,6 +47,11 @@ export class Flightera {
     return getAircraftFromHtml(html);
   }
 
+  static async getAuthToken() {
+    const request = await this.client.get(this.BASE_URL + '/en/');
+    const html = await request.text();
+    return getAuthToken(html);
+  }
   static getDirectFlightUrl(params: {
     airlineIata: string;
     airlineName: string;
@@ -79,6 +85,7 @@ export class Flightera {
     return encodeURI(url);
     // https://www.flightera.net/en/flight_details/American+Airlines-New+York-London/AA100/KJFK/2023-10-19
   }
+
   static async getFlightFromCrawl(params: {
     airlineIata: string;
     flightNumber: string;
@@ -88,7 +95,6 @@ export class Flightera {
     const html = await request.text();
     return getFlightFromCrawl(html, params);
   }
-
   static getFlightUrl(params: { airlineIata: string; flightNumber: string }) {
     const route = format(
       '%s/en/flight/%s%s',
@@ -99,6 +105,7 @@ export class Flightera {
 
     return encodeURI(route);
   }
+
   static getPlaneUrl(tailNumber: string) {
     return encodeURI(this.BASE_URL + `/en/planes/${tailNumber}`);
   }

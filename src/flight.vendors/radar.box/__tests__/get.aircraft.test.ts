@@ -7,14 +7,13 @@ import { RadarBox } from '..';
 
 describe('RadarBox', () => {
   test('Get Aircraft', async () => {
-    const position = await RadarBox.getAircraft('N508JL');
-    expect(position).toBeTruthy();
+    await RadarBox.getAircraft('N508JL');
+    expect(true).toBe(true);
   });
 
   test('Live Aircraft', async () => {
     const flight = await FlightStats.getRandomFlight();
     const position = await RadarBox.getAircraft(flight.tailNumber);
-    expect(position).toBeTruthy();
-    expect(moment().isSame(position!.flightDate, 'day')).toBe(true);
+    expect(moment().isSame(position.flightDate, 'day')).toBe(true);
   });
 });

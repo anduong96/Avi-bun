@@ -1,9 +1,10 @@
-import moment from 'moment';
 import { describe, expect, test } from 'bun:test';
+
+import { Logger } from '@app/lib/logger';
 
 import { FlightStats } from '..';
 
-describe('Flight Stats', () => {
+describe('Vendor::Flight Stats', () => {
   test('Search Flights', async () => {
     const departureDate = new Date();
     const flight = await FlightStats.getRandomFlight();
@@ -14,15 +15,15 @@ describe('Flight Stats', () => {
 
     expect(result).toBeArray();
     expect(result.length).toBeGreaterThan(0);
-    const found = result.find(entry =>
-      moment({
-        date: entry.flightDate,
-        month: entry.flightMonth,
-        year: entry.flightYear,
-      }).isSame(departureDate, 'date'),
+    const found = result.find(
+      entry =>
+        entry.flightDate === departureDate.getDate() &&
+        entry.flightMonth === departureDate.getMonth() &&
+        entry.flightYear === departureDate.getFullYear(),
     );
 
     if (!found) {
+      Logger.error(`Flight not found`, { departureDate, flight, result });
       expect().fail();
       return;
     }
@@ -43,12 +44,11 @@ describe('Flight Stats', () => {
     expect(result).toBeArray();
     expect(result.length).toBeGreaterThan(0);
 
-    const matches = result.filter(entry =>
-      moment({
-        date: entry.flightDate,
-        month: entry.flightMonth,
-        year: entry.flightYear,
-      }).isSame(departureDate, 'date'),
+    const matches = result.filter(
+      entry =>
+        entry.flightDate === departureDate.getDate() &&
+        entry.flightMonth === departureDate.getMonth() &&
+        entry.flightYear === departureDate.getFullYear(),
     );
 
     expect(matches.length).toBe(2);

@@ -3,11 +3,14 @@ type FlightData = {
   apdsttz: number /** Arrival UTC offset in hours */;
   apdsttzns: string;
   apdsttzns: string /** Arrival Timezone */;
-  aplngtz: number /** Deparuture UTC offset in hours */;
+  aplngtz: number /** Departure UTC offset in hours */;
   aplngtzns: string /** Departure Timezone */;
   aporgia: string /** Departure Airport IATA */;
-  aporgtzns: string;
+  arrdate_utc: string /** Arrival Date UTC */;
+  arrs_utc: string /** Arrival Time UTC */;
   depdate: string /** Departure Date */;
+  depdate_utc: string /** Departure Date UTC */;
+  deps_utc: string /** Departure Time UTC */;
   fid: number;
   fnia: string;
   svd: number;

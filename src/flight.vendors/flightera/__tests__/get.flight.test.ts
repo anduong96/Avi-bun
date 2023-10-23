@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 import { Flightera } from '..';
 
 describe('Vendor::Flightera', () => {
-  test('getFlightFromHtml', async () => {
+  test('getFlightFromHtml: AA100', async () => {
     const flight = await Flightera.getFlightFromCrawl({
       airlineIata: 'AA',
       flightNumber: '100',
@@ -11,8 +11,6 @@ describe('Vendor::Flightera', () => {
 
     expect(flight).toBeTruthy();
     expect(flight.distanceKm).toBe(5545);
-    expect(flight.arrivalTimezone).toBe('BST');
-    expect(flight.departureTimezone).toBe('EDT');
     expect(flight.co2EmissionKg).toMatchObject({
       Business: 2707,
       'Eco+': 1170,

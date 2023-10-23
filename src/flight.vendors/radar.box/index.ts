@@ -1,5 +1,6 @@
 import ky from 'ky';
 import moment from 'moment';
+import { format } from 'sys';
 import * as Cheerio from 'cheerio';
 
 import { Logger } from '@app/lib/logger';
@@ -7,7 +8,7 @@ import { Logger } from '@app/lib/logger';
 import { RadarBoxCrawlData } from './types';
 
 export class RadarBox {
-  private static DATE_FORMAT = 'dddd, MMMM D, YYYY';
+  private static DATE_FORMAT = 'dddd, MMMM D, YYYY HH:mm';
   private static client = ky.create({
     prefixUrl: 'https://www.radarbox.com',
   });
@@ -37,14 +38,28 @@ export class RadarBox {
     const request = await this.client.get(`data/registration/${tailNumber}`);
     const html = await request.text();
     const data = this.crawlAircraftHtml(html);
+
     if (!data.current.firstlalot) {
-      return null;
+      return {
+        altitude: null,
+        destinationIata: null,
+        flightDate: null,
+        flightNumberIata: null,
+        latitude: null,
+        longitude: null,
+        originIata: null,
+        updatedAt: null,
+      };
     }
 
-    const flightDateMoment = moment(data.current.depdate, this.DATE_FORMAT);
+    const departureDate = moment(
+      format('%s %s', data.current.depdate_utc, data.current.deps_utc),
+      this.DATE_FORMAT,
+    );
+
     const updatedAtMoment = moment(data.current.lastlalot);
     const updatedAt = updatedAtMoment.toDate();
-    const flightDate = flightDateMoment.toDate();
+    const flightDate = departureDate.toDate();
     const originIata = data.current.aporgia;
     const destinationIata = data.current.apdstia;
     const longitude = data.current.lastlo;

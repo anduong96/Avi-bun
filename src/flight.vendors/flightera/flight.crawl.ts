@@ -44,26 +44,6 @@ function getCo2EmissionKg($: Cheerio.CheerioAPI) {
   return emissions as Result;
 }
 
-function getDepartureTime($: Cheerio.CheerioAPI) {
-  const labelElement = $('span:contains("Departure")');
-  const departureTime = labelElement.next().text().trim();
-  const [time, timezone] = departureTime.split('\n');
-  return {
-    time,
-    timezone,
-  };
-}
-
-function getArrivalTime($: Cheerio.CheerioAPI) {
-  const labelElement = $('span:contains("Arrival")');
-  const departureTime = labelElement.next().text().trim();
-  const [time, timezone] = departureTime.split('\n');
-  return {
-    time,
-    timezone,
-  };
-}
-
 function getFlightDate(
   $: Cheerio.CheerioAPI,
   params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
@@ -82,47 +62,17 @@ function getFlightDate(
   return date;
 }
 
-function getFlightTime(
-  $: Cheerio.CheerioAPI,
-  params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,
-) {
-  const DATE_FORMAT = 'YYYY-MM-DD';
-  const TIME_FORMAT = 'HH:mm Z';
-  const DATE_TIME_FORMAT = format('%s %s', DATE_FORMAT, TIME_FORMAT);
-  const flightDate = getFlightDate($, params);
-  const flightDateStr = moment(flightDate).format(DATE_FORMAT);
-  const departure = getDepartureTime($);
-  const arrival = getArrivalTime($);
-  const departureTimeStr = format(
-    '%s %s %s',
-    flightDateStr,
-    departure.time,
-    departure.timezone,
-  );
-  const arrivalTimeStr = format(
-    '%s %s %s',
-    flightDateStr,
-    arrival.time,
-    arrival.timezone,
-  );
-  const departureTime = moment(departureTimeStr, DATE_TIME_FORMAT);
-  const arrivalTime = moment(arrivalTimeStr, DATE_TIME_FORMAT);
+function getTrackUrl($: Cheerio.CheerioAPI) {
+  const html = $.html();
+  const urlPattern =
+    /buildTrackMap\(\s*map\s*,\s*["'](\/[a-z]+\/[a-z]+\/[a-z]+\/\d+)["']\s*\);/;
 
-  /**
-   * Flights with more than 24 hours is extremely rare
-   */
-  if (arrivalTime.isBefore(departureTime, 'minutes')) {
-    arrivalTime.add(1, 'days');
+  const match = html.match(urlPattern);
+  if (!match) {
+    return null;
   }
 
-  const duration = arrivalTime.diff(departureTime);
-
-  return {
-    arrivalTime,
-    departureTime,
-    duration,
-    flightDate,
-  };
+  return match[1];
 }
 
 export function getFlightFromCrawl(
@@ -132,7 +82,8 @@ export function getFlightFromCrawl(
   const $ = Cheerio.load(html);
   return {
     co2EmissionKg: getCo2EmissionKg($),
+    departureDate: getFlightDate($, params),
     distanceKm: getFlightDistanceKm($),
-    ...getFlightTime($, params),
+    trackURL: getTrackUrl($),
   };
 }

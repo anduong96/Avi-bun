@@ -57,6 +57,12 @@ enum FlightStatus {
   LANDED
 }
 
+enum MeasurementType {
+  AMERICAN
+  METRIC
+  IMPERIAL
+}
+
 model Airline {
   id String @id @default(uuid())
 
@@ -131,7 +137,7 @@ model Flight {
   flightNumber             String
   aircraftTailNumber       String?
   status                   FlightStatus
-  totalDistanceKm          Int?         @default(0)
+  totalDistanceKm          Int?
   originUtcHourOffset      Int
   originIata               String
   originGate               String?
@@ -147,7 +153,7 @@ model Flight {
   scheduledGateArrival     DateTime
   estimatedGateArrival     DateTime
   actualGateArrival        DateTime?
-  co2EmissionKgEconnomy    Float?
+  co2EmissionKgEconomy     Float?
   co2EmissionKgFirst       Float?
   co2EmissionKgBusiness    Float?
   co2EmissionKgEco         Float?
@@ -320,6 +326,7 @@ model User {
   avatarURL       String?
   lastSignInAt    DateTime             @default(now())
   Authentications UserAuthentication[]
+  UserPreference  UserPreference[]
 }
 
 model UserAuthentication {
@@ -349,6 +356,16 @@ model UserFlight {
   Flight Flight @relation(fields: [flightID], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([flightID, userID])
+}
+
+model UserPreference {
+  id     String @id @default(uuid())
+  userID String
+
+  measurement MeasurementType @default(AMERICAN)
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
 }
 
 model ScheduledJob {

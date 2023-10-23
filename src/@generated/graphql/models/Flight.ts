@@ -79,7 +79,7 @@ export class GQL_Flight {
   actualGateArrival?: Date;
 
   @Field(() => Float, { nullable: true })
-  co2EmissionKgEconnomy?: number;
+  co2EmissionKgEconomy?: number;
 
   @Field(() => Float, { nullable: true })
   co2EmissionKgFirst?: number;

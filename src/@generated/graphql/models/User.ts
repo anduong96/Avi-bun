@@ -1,5 +1,6 @@
 import { Field, ObjectType, ID } from 'type-graphql';
 import { GQL_UserAuthentication } from './UserAuthentication';
+import { GQL_UserPreference } from './UserPreference';
 
 @ObjectType('User')
 export class GQL_User {
@@ -23,6 +24,9 @@ export class GQL_User {
 
   @Field(() => [GQL_UserAuthentication])
   Authentications: GQL_UserAuthentication[];
+
+  @Field(() => [GQL_UserPreference])
+  UserPreference: GQL_UserPreference[];
 
   // skip overwrite 👇
 }

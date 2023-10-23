@@ -21,6 +21,7 @@ import { AirportResolver } from './resolvers/airport.resolver';
 import { createApolloContext } from './_context/create.context';
 import { AircraftResolver } from './resolvers/aircraft.resolver';
 import { UserFlightResolver } from './resolvers/user.flights.resolver';
+import { UserPreferenceResolver } from './resolvers/user.preference.resolver';
 import { FlightPromptnessResolver } from './resolvers/flight.promptness.resolver';
 import { AircraftPositionResolver } from './resolvers/aircraft.position.resolver';
 
@@ -40,6 +41,7 @@ const gqlSchema = await buildSchema({
     AircraftResolver,
     AircraftPositionResolver,
     UserFlightResolver,
+    UserPreferenceResolver,
     UserResolver,
   ],
 });
@@ -87,6 +89,8 @@ export const GraphqlMiddleware = new Elysia()
       }
 
       return new Response(result.body.string, {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         headers: result.headers as unknown as HeadersInit,
         status: result.status ?? 200,
       });

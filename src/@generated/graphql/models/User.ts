@@ -11,6 +11,9 @@ export class GQL_User {
   displayName?: string;
 
   @Field()
+  isAnonymous: boolean;
+
+  @Field()
   createdAt: Date;
 
   @Field()

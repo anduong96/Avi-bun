@@ -1,6 +1,6 @@
 import assert from 'assert';
 import moment from 'moment';
-import { omit } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 
 import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
@@ -19,6 +19,8 @@ import { UserCreatedTopic } from '@app/topics/defined.topics/user.created.topic'
 export async function syncAuthProviderForUser(userID: string) {
   const firebaseUser = await firebase.auth().getUser(userID);
   assert(firebaseUser, 'User not found');
+  Logger.debug('Syncing user', firebaseUser);
+  const isAnonymous = isEmpty(firebaseUser.providerData);
   const authPayload = firebaseUser.providerData.map(entry => ({
     avatarURL: entry.photoURL,
     email: entry.email,
@@ -39,6 +41,7 @@ export async function syncAuthProviderForUser(userID: string) {
       createdAt: createdAt.toDate(),
       displayName: firebaseUser.displayName?.trim(),
       id: userID,
+      isAnonymous,
     },
     update: {
       Authentications: {
@@ -48,7 +51,11 @@ export async function syncAuthProviderForUser(userID: string) {
           where: { id: entry.id },
         })),
       },
-      lastSignInAt: moment(firebaseUser.metadata.lastSignInTime).toDate(),
+
+      isAnonymous,
+      lastSignInAt: firebaseUser.metadata.lastSignInTime
+        ? moment(firebaseUser.metadata.lastSignInTime).toDate()
+        : new Date(),
     },
     where: {
       id: userID,

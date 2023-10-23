@@ -187,6 +187,7 @@ type User {
   createdAt: DateTimeISO!
   displayName: String
   id: ID!
+  isAnonymous: Boolean!
   lastSignInAt: DateTimeISO!
   updatedAt: DateTimeISO!
 }

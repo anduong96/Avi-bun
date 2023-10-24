@@ -187,7 +187,6 @@ input UpdateUserPreferenceInput {
 
 type User {
   Authentications: [UserAuthentication!]!
-  UserPreference: [UserPreference!]!
   avatarURL: String
   createdAt: DateTimeISO!
   displayName: String

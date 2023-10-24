@@ -160,6 +160,7 @@ type Mutation {
   addUserFlight(flightID: String!): String!
   deleteUserFlight(flightID: String!): String!
   syncUser: Boolean!
+  updateUserPreference(data: UpdateUserPreferenceInput!): Boolean!
 }
 
 type Query {
@@ -178,6 +179,10 @@ type Query {
   userFlight(flightID: String!): UserFlight
   userHasFlights: Boolean!
   userPreference: UserPreference!
+}
+
+input UpdateUserPreferenceInput {
+  measurement: MeasurementType
 }
 
 type User {

@@ -1,0 +1,10 @@
+diff --git a/node_modules/type-graphql/build/typings/index.d.ts b/node_modules/type-graphql/build/typings/index.d.ts
+index 7c013a3..3947187 100644
+--- a/node_modules/type-graphql/build/typings/index.d.ts
++++ b/node_modules/type-graphql/build/typings/index.d.ts
+@@ -4,4 +4,5 @@ export * from "./typings/index.js";
+ export * from "./metadata/index.js";
+ export * from "./scalars/index.js";
+ export * from "./utils/index.js";
++export * from './metadata/definitions/field-metadata.js'
+ export { PubSubEngine } from "graphql-subscriptions";

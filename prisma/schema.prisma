@@ -367,6 +367,8 @@ model UserPreference {
 
   // @skip
   User User @relation(fields: [userID], references: [id])
+
+  @@unique([userID])
 }
 
 model ScheduledJob {

@@ -28,8 +28,5 @@ export class GQL_User {
   @Field(() => [GQL_UserAuthentication])
   Authentications: GQL_UserAuthentication[];
 
-  @Field(() => [GQL_UserPreference])
-  UserPreference: GQL_UserPreference[];
-
   // skip overwrite 👇
 }

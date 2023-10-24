@@ -327,7 +327,6 @@ model User {
   avatarURL       String?
   lastSignInAt    DateTime             @default(now())
   Authentications UserAuthentication[]
-  UserPreference  UserPreference[]
 }
 
 model UserAuthentication {
@@ -364,9 +363,6 @@ model UserPreference {
   userID String
 
   measurement MeasurementType @default(AMERICAN)
-
-  // @skip
-  User User @relation(fields: [userID], references: [id])
 
   @@unique([userID])
 }

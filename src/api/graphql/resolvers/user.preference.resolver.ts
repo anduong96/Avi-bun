@@ -32,12 +32,24 @@ export class UserPreferenceResolver {
   @Authorized()
   @Query(() => GQL_UserPreference)
   async userPreference(@CurrentUserID() userID: string) {
-    const preference = await prisma.userPreference.findFirstOrThrow({
-      where: {
-        userID,
-      },
+    const result = await prisma.$transaction(async tx => {
+      let preference = await tx.userPreference.findFirst({
+        where: {
+          userID,
+        },
+      });
+
+      if (!preference) {
+        preference = await tx.userPreference.create({
+          data: {
+            userID,
+          },
+        });
+      }
+
+      return preference;
     });
 
-    return preference;
+    return result;
   }
 }

@@ -6,6 +6,7 @@ import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 
+import { patchFlightPayloadWithFlightera } from './patch.payload.from.flightera';
 import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
 
 /**
@@ -41,8 +42,13 @@ export async function getRandomFlight(): Promise<Flight> {
 
   try {
     const data = flightStatFlightToFlightPayload(remoteFlight);
-    Logger.debug('Creating flight', data);
-    const flight = await prisma.flight.create({ data });
+    const patchedData = await patchFlightPayloadWithFlightera(data, {
+      airlineIata: randFlight.carrierIata,
+      flightNumber: randFlight.flightNumber,
+    });
+
+    Logger.debug('Creating flight', patchedData);
+    const flight = await prisma.flight.create({ data: patchedData });
     TopicPublisher.broadcast(new FlightCreatedTopic(flight.id));
     return flight;
   } catch (error) {

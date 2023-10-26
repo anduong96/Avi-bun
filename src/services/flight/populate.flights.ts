@@ -63,7 +63,7 @@ async function patchFlightsWithFlightera(
     return flights.map(flight => ({
       ...flight,
       co2EmissionKgBusiness: flighteraFlight.co2EmissionKg.Business,
-      co2EmissionKgEcoPlus: flighteraFlight.co2EmissionKg['Eco+'],
+      co2EmissionKgEco: flighteraFlight.co2EmissionKg['Eco+'],
       co2EmissionKgEconomy: flighteraFlight.co2EmissionKg.Economy,
       co2EmissionKgFirst: flighteraFlight.co2EmissionKg.First,
       totalDistanceKm: flighteraFlight.distanceKm || flight.totalDistanceKm,

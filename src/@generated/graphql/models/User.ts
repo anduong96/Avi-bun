@@ -1,5 +1,5 @@
 import { Field, ObjectType, ID } from 'type-graphql';
-import { GQL_UserAuthentication } from './UserAuthentication';
+import { GQL_UserFlight } from './UserFlight';
 import { GQL_UserPreference } from './UserPreference';
 
 @ObjectType('User')
@@ -25,8 +25,11 @@ export class GQL_User {
   @Field()
   lastSignInAt: Date;
 
-  @Field(() => [GQL_UserAuthentication])
-  Authentications: GQL_UserAuthentication[];
+  @Field(() => [GQL_UserFlight])
+  UserFlight: GQL_UserFlight[];
+
+  @Field(() => GQL_UserPreference, { nullable: true })
+  UserPreference?: GQL_UserPreference;
 
   // skip overwrite 👇
 }

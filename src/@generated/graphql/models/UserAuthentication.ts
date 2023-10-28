@@ -1,5 +1,4 @@
 import { Field, ObjectType, ID } from 'type-graphql';
-import { GQL_User } from './User';
 
 @ObjectType('UserAuthentication')
 export class GQL_UserAuthentication {

@@ -1,4 +1,3 @@
-import { Field, ObjectType, Int } from 'type-graphql';
 import { Field, ObjectType, Int, Float } from 'type-graphql';
 
 @ObjectType('AircraftPosition')

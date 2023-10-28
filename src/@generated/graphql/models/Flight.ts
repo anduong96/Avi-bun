@@ -1,8 +1,7 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { Field, ObjectType, ID, Int, Float } from 'type-graphql';
 import { GQL_FlightStatus } from '../enums/FlightStatus';
 import { GQL_Airport } from './Airport';
 import { GQL_Airline } from './Airline';
-import { Field, ObjectType, ID, Int, Float } from 'type-graphql';
 
 @ObjectType('Flight')
 export class GQL_Flight {

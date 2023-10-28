@@ -23,7 +23,7 @@ generator PrismaTypeGraphQLTypesGenerator {
 
 // generator gql {
 //   provider = "bun ./prisma/generators/graphql/index.ts"
-//   output   = "../src/@generated/gql"
+//   output   = "../@generated/gql"
 // }
 
 enum ImageType {
@@ -94,6 +94,8 @@ model Airport {
   latitude    Float
   longitude   Float
 
+  City               City     @relation(fields: [cityCode], references: [code])
+  Country            Country  @relation(fields: [countryCode], references: [isoCode])
   // @skip
   OriginFlights      Flight[] @relation("origin")
   // @skip
@@ -111,6 +113,11 @@ model City {
   latitude    Float
   longitude   Float
 
+  Country Country @relation(fields: [countryCode], references: [isoCode])
+
+  // @skip
+  Airport Airport[]
+
   @@unique([code])
 }
 
@@ -121,6 +128,12 @@ model Country {
   dialCode      String
   flagImageURL  String
   flagImageType ImageType
+
+  // @skip
+  Airport Airport[]
+
+  // @skip
+  City City[]
 
   @@unique([isoCode])
   @@index([name])
@@ -169,10 +182,54 @@ model Flight {
   FlightPlan             FlightPlan[]
   // @skip
   FlightVendorConnection FlightVendorConnection[]
+  // @skip
+  Aircraft               Aircraft?                @relation(references: [tailNumber], fields: [aircraftTailNumber])
+  // @skip
+  FlightPromptness       FlightPromptness?        @relation(references: [airlineIata, flightNumber, originIata, destinationIata], fields: [airlineIata, flightNumber, originIata, destinationIata])
+  // @skip
+  FlightEvent            FlightEvent[]
+  // @skip
+  FlightTimeline         FlightTimeline[]
+  // @skip
+  FlightAlert            FlightAlert[]
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata, flightYear, flightMonth, flightDate])
   @@index([originIata])
   @@index([destinationIata])
+}
+
+model FlightPromptness {
+  id              String       @id @default(uuid())
+  airlineIata     String
+  flightNumber    String
+  originIata      String
+  destinationIata String
+  vendor          FlightVendor
+
+  rating             Int?
+  onTimePercent      Int?
+  averageDelayTimeMs Int?
+
+  daysObserved    Int?
+  flightsObserved Int?
+
+  onTimeCount    Int?
+  lateCount      Int?
+  veryLateCount  Int?
+  excessiveCount Int?
+  cancelledCount Int?
+  divertedCount  Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+
+  // @skip
+  Flights Flight[]
+
+  @@unique([airlineIata, flightNumber, originIata, destinationIata])
+  @@index([expiresAt])
+  @@index([vendor])
 }
 
 model FlightVendorConnection {
@@ -203,6 +260,7 @@ model Aircraft {
 
   // @skip
   AircraftPositions AircraftPosition[]
+  Flight            Flight[]
 
   @@unique([tailNumber])
   @@index([icao])
@@ -247,6 +305,11 @@ model FlightEvent {
   prevValue        Json?
   timestamp        DateTime
 
+  //@skip
+  Flight   Flight         @relation(fields: [flightID], references: [id])
+  //@skip
+  Timeline FlightTimeline @relation(fields: [flightTimelineID], references: [id])
+
   @@unique([flightID, flightTimelineID, index])
   @@index([flightTimelineID])
 }
@@ -260,6 +323,12 @@ model FlightTimeline {
   timestamp  DateTime
   hasAlerted Boolean  @default(false)
 
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
+
+  // @skip
+  FlightEvents FlightEvent[]
+
   @@unique([flightID, index])
 }
 
@@ -270,7 +339,8 @@ model FlightPlan {
   latitude  Float
   longitude Float
 
-  Flight Flight? @relation(fields: [flightID], references: [id])
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
 
   @@index([flightID])
 }
@@ -284,49 +354,25 @@ model FlightAlert {
   receiptID String
   createdAt DateTime       @default(now())
 
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
+
   @@index([flightID])
 }
 
-model FlightPromptness {
-  id              String       @id @default(uuid())
-  airlineIata     String
-  flightNumber    String
-  originIata      String
-  destinationIata String
-  vendor          FlightVendor
-
-  rating             Int?
-  onTimePercent      Int?
-  averageDelayTimeMs Int?
-
-  daysObserved    Int?
-  flightsObserved Int?
-
-  onTimeCount    Int?
-  lateCount      Int?
-  veryLateCount  Int?
-  excessiveCount Int?
-  cancelledCount Int?
-  divertedCount  Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  expiresAt DateTime
-
-  @@unique([airlineIata, flightNumber, originIata, destinationIata])
-  @@index([expiresAt])
-  @@index([vendor])
-}
-
 model User {
-  id              String               @id
-  displayName     String?
-  isAnonymous     Boolean              @default(true)
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  avatarURL       String?
-  lastSignInAt    DateTime             @default(now())
+  id           String   @id
+  displayName  String?
+  isAnonymous  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  avatarURL    String?
+  lastSignInAt DateTime @default(now())
+
+  // @skip
   Authentications UserAuthentication[]
+  UserFlight      UserFlight[]
+  UserPreference  UserPreference?
 }
 
 model UserAuthentication {
@@ -353,6 +399,8 @@ model UserFlight {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // @skip
+  User   User   @relation(fields: [userID], references: [id])
   Flight Flight @relation(fields: [flightID], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([flightID, userID])
@@ -363,6 +411,9 @@ model UserPreference {
   userID String
 
   measurement MeasurementType @default(AMERICAN)
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
 
   @@unique([userID])
 }

@@ -1,5 +1,6 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { Field, ObjectType, ID, Int, Float } from 'type-graphql';
+import { GQL_City } from './City';
+import { GQL_Country } from './Country';
 
 @ObjectType('Airport')
 export class GQL_Airport {
@@ -38,6 +39,12 @@ export class GQL_Airport {
 
   @Field(() => Float)
   longitude: number;
+
+  @Field(() => GQL_City)
+  City: GQL_City;
+
+  @Field(() => GQL_Country)
+  Country: GQL_Country;
 
   // skip overwrite 👇
 }

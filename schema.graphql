@@ -5,6 +5,7 @@
 
 type Aircraft {
   AircraftPositions: [AircraftPosition!]!
+  Flight: [Flight!]!
   airlineIata: String!
   createdAt: DateTimeISO!
   description: String
@@ -47,6 +48,8 @@ type Airline {
 }
 
 type Airport {
+  City: City!
+  Country: Country!
   cityCode: String!
   cityName: String!
   countryCode: String!
@@ -59,6 +62,26 @@ type Airport {
   name: String!
   state: String
   timezone: String!
+}
+
+type City {
+  Country: Country!
+  code: String!
+  countryCode: String!
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  timezone: String!
+}
+
+type Country {
+  dialCode: String!
+  flagImageType: ImageType!
+  flagImageURL: String!
+  id: ID!
+  isoCode: String!
+  name: String!
 }
 
 """
@@ -186,7 +209,8 @@ input UpdateUserPreferenceInput {
 }
 
 type User {
-  Authentications: [UserAuthentication!]!
+  UserFlight: [UserFlight!]!
+  UserPreference: UserPreference
   avatarURL: String
   createdAt: DateTimeISO!
   displayName: String
@@ -194,16 +218,6 @@ type User {
   isAnonymous: Boolean!
   lastSignInAt: DateTimeISO!
   updatedAt: DateTimeISO!
-}
-
-type UserAuthentication {
-  avatarURL: String
-  createdAt: DateTimeISO!
-  email: String
-  id: ID!
-  phone: String
-  provider: String!
-  userID: String!
 }
 
 type UserFlight {

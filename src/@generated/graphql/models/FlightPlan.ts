@@ -1,5 +1,3 @@
-import { Field, ObjectType, Int } from 'type-graphql';
-import { GQL_Flight } from './Flight';
 import { Field, ObjectType, Int, Float } from 'type-graphql';
 
 @ObjectType('FlightPlan')
@@ -18,9 +16,6 @@ export class GQL_FlightPlan {
 
   @Field(() => Float)
   longitude: number;
-
-  @Field(() => GQL_Flight, { nullable: true })
-  Flight?: GQL_Flight;
 
   // skip overwrite 👇
 }

@@ -13,6 +13,9 @@ CREATE TYPE "ValueType" AS ENUM ('NUMBER', 'STRING', 'DATE', 'BOOLEAN');
 -- CreateEnum
 CREATE TYPE "FlightStatus" AS ENUM ('SCHEDULED', 'DEPARTED', 'DELAYED', 'ARRIVED', 'CANCELED', 'ARCHIVED', 'LANDED');
 
+-- CreateEnum
+CREATE TYPE "MeasurementType" AS ENUM ('AMERICAN', 'METRIC', 'IMPERIAL');
+
 -- CreateTable
 CREATE TABLE "Airline" (
     "id" TEXT NOT NULL,
@@ -64,8 +67,8 @@ CREATE TABLE "Country" (
     "name" TEXT NOT NULL,
     "isoCode" TEXT NOT NULL,
     "dialCode" TEXT NOT NULL,
-    "flagImageURL" TEXT NOT NULL,
-    "flagImageType" "ImageType" NOT NULL,
+    "flagImageURL" TEXT,
+    "flagImageType" "ImageType",
 
     CONSTRAINT "Country_pkey" PRIMARY KEY ("id")
 );
@@ -80,7 +83,7 @@ CREATE TABLE "Flight" (
     "flightNumber" TEXT NOT NULL,
     "aircraftTailNumber" TEXT,
     "status" "FlightStatus" NOT NULL,
-    "totalDistanceKm" INTEGER DEFAULT 0,
+    "totalDistanceKm" INTEGER,
     "originUtcHourOffset" INTEGER NOT NULL,
     "originIata" TEXT NOT NULL,
     "originGate" TEXT,
@@ -96,9 +99,39 @@ CREATE TABLE "Flight" (
     "scheduledGateArrival" TIMESTAMP(3) NOT NULL,
     "estimatedGateArrival" TIMESTAMP(3) NOT NULL,
     "actualGateArrival" TIMESTAMP(3),
+    "co2EmissionKgEconomy" DOUBLE PRECISION,
+    "co2EmissionKgFirst" DOUBLE PRECISION,
+    "co2EmissionKgBusiness" DOUBLE PRECISION,
+    "co2EmissionKgEco" DOUBLE PRECISION,
     "reconAttempt" INTEGER DEFAULT 0,
 
     CONSTRAINT "Flight_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FlightPromptness" (
+    "id" TEXT NOT NULL,
+    "airlineIata" TEXT NOT NULL,
+    "flightNumber" TEXT NOT NULL,
+    "originIata" TEXT NOT NULL,
+    "destinationIata" TEXT NOT NULL,
+    "vendor" "FlightVendor" NOT NULL,
+    "rating" INTEGER,
+    "onTimePercent" INTEGER,
+    "averageDelayTimeMs" INTEGER,
+    "daysObserved" INTEGER,
+    "flightsObserved" INTEGER,
+    "onTimeCount" INTEGER,
+    "lateCount" INTEGER,
+    "veryLateCount" INTEGER,
+    "excessiveCount" INTEGER,
+    "cancelledCount" INTEGER,
+    "divertedCount" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "FlightPromptness_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -203,35 +236,10 @@ CREATE TABLE "FlightAlert" (
 );
 
 -- CreateTable
-CREATE TABLE "FlightPromptness" (
-    "id" TEXT NOT NULL,
-    "airlineIata" TEXT NOT NULL,
-    "flightNumber" TEXT NOT NULL,
-    "originIata" TEXT NOT NULL,
-    "destinationIata" TEXT NOT NULL,
-    "vendor" "FlightVendor" NOT NULL,
-    "rating" INTEGER,
-    "onTimePercent" INTEGER,
-    "averageDelayTimeMs" INTEGER,
-    "daysObserved" INTEGER,
-    "flightsObserved" INTEGER,
-    "onTimeCount" INTEGER,
-    "lateCount" INTEGER,
-    "veryLateCount" INTEGER,
-    "excessiveCount" INTEGER,
-    "cancelledCount" INTEGER,
-    "divertedCount" INTEGER,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "expiresAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "FlightPromptness_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "displayName" TEXT,
+    "isAnonymous" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "avatarURL" TEXT,
@@ -263,6 +271,15 @@ CREATE TABLE "UserFlight" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UserFlight_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserPreference" (
+    "id" TEXT NOT NULL,
+    "userID" TEXT NOT NULL,
+    "measurement" "MeasurementType" NOT NULL DEFAULT 'AMERICAN',
+
+    CONSTRAINT "UserPreference_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -308,6 +325,15 @@ CREATE INDEX "Flight_destinationIata_idx" ON "Flight"("destinationIata");
 CREATE UNIQUE INDEX "Flight_airlineIata_flightNumber_originIata_destinationIata__key" ON "Flight"("airlineIata", "flightNumber", "originIata", "destinationIata", "flightYear", "flightMonth", "flightDate");
 
 -- CreateIndex
+CREATE INDEX "FlightPromptness_expiresAt_idx" ON "FlightPromptness"("expiresAt");
+
+-- CreateIndex
+CREATE INDEX "FlightPromptness_vendor_idx" ON "FlightPromptness"("vendor");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "FlightPromptness_airlineIata_flightNumber_originIata_destin_key" ON "FlightPromptness"("airlineIata", "flightNumber", "originIata", "destinationIata");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "FlightVendorConnection_flightID_vendor_key" ON "FlightVendorConnection"("flightID", "vendor");
 
 -- CreateIndex
@@ -344,22 +370,25 @@ CREATE INDEX "FlightPlan_flightID_idx" ON "FlightPlan"("flightID");
 CREATE INDEX "FlightAlert_flightID_idx" ON "FlightAlert"("flightID");
 
 -- CreateIndex
-CREATE INDEX "FlightPromptness_expiresAt_idx" ON "FlightPromptness"("expiresAt");
-
--- CreateIndex
-CREATE INDEX "FlightPromptness_vendor_idx" ON "FlightPromptness"("vendor");
-
--- CreateIndex
-CREATE UNIQUE INDEX "FlightPromptness_airlineIata_flightNumber_originIata_destin_key" ON "FlightPromptness"("airlineIata", "flightNumber", "originIata", "destinationIata");
-
--- CreateIndex
 CREATE UNIQUE INDEX "UserAuthentication_provider_userID_key" ON "UserAuthentication"("provider", "userID");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserFlight_flightID_userID_key" ON "UserFlight"("flightID", "userID");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "UserPreference_userID_key" ON "UserPreference"("userID");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ScheduledJob_name_key" ON "ScheduledJob"("name");
+
+-- AddForeignKey
+ALTER TABLE "Airport" ADD CONSTRAINT "Airport_cityCode_fkey" FOREIGN KEY ("cityCode") REFERENCES "City"("code") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Airport" ADD CONSTRAINT "Airport_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "City" ADD CONSTRAINT "City_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Flight" ADD CONSTRAINT "Flight_originIata_fkey" FOREIGN KEY ("originIata") REFERENCES "Airport"("iata") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -371,16 +400,40 @@ ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationIata_fkey" FOREIGN KEY ("
 ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_fkey" FOREIGN KEY ("airlineIata") REFERENCES "Airline"("iata") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_aircraftTailNumber_fkey" FOREIGN KEY ("aircraftTailNumber") REFERENCES "Aircraft"("tailNumber") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_flightNumber_originIata_destinationIata_fkey" FOREIGN KEY ("airlineIata", "flightNumber", "originIata", "destinationIata") REFERENCES "FlightPromptness"("airlineIata", "flightNumber", "originIata", "destinationIata") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "FlightVendorConnection" ADD CONSTRAINT "FlightVendorConnection_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE "AircraftPosition" ADD CONSTRAINT "AircraftPosition_aircraftID_fkey" FOREIGN KEY ("aircraftID") REFERENCES "Aircraft"("id") ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
+ALTER TABLE "FlightEvent" ADD CONSTRAINT "FlightEvent_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FlightEvent" ADD CONSTRAINT "FlightEvent_flightTimelineID_fkey" FOREIGN KEY ("flightTimelineID") REFERENCES "FlightTimeline"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FlightTimeline" ADD CONSTRAINT "FlightTimeline_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "FlightPlan" ADD CONSTRAINT "FlightPlan_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FlightAlert" ADD CONSTRAINT "FlightAlert_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserAuthentication" ADD CONSTRAINT "UserAuthentication_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "UserFlight" ADD CONSTRAINT "UserFlight_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "UserFlight" ADD CONSTRAINT "UserFlight_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+
+-- AddForeignKey
+ALTER TABLE "UserPreference" ADD CONSTRAINT "UserPreference_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

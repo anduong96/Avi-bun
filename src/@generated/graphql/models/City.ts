@@ -24,8 +24,8 @@ export class GQL_City {
   @Field(() => Float)
   longitude: number;
 
-  @Field(() => GQL_Country)
-  Country: GQL_Country;
+  @Field(() => GQL_Country, { nullable: true })
+  Country?: GQL_Country;
 
   // skip overwrite 👇
 }

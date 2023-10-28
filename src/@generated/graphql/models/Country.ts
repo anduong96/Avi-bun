@@ -15,11 +15,11 @@ export class GQL_Country {
   @Field()
   dialCode: string;
 
-  @Field()
-  flagImageURL: string;
+  @Field({ nullable: true })
+  flagImageURL?: string;
 
-  @Field(() => GQL_ImageType)
-  flagImageType: GQL_ImageType;
+  @Field(() => GQL_ImageType, { nullable: true })
+  flagImageType?: GQL_ImageType;
 
   // skip overwrite 👇
 }

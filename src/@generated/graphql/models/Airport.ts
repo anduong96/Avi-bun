@@ -40,9 +40,6 @@ export class GQL_Airport {
   @Field(() => Float)
   longitude: number;
 
-  @Field(() => GQL_City)
-  City: GQL_City;
-
   @Field(() => GQL_Country)
   Country: GQL_Country;
 

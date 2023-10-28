@@ -94,7 +94,6 @@ model Airport {
   latitude    Float
   longitude   Float
 
-  City               City     @relation(fields: [cityCode], references: [code])
   Country            Country  @relation(fields: [countryCode], references: [isoCode])
   // @skip
   OriginFlights      Flight[] @relation("origin")
@@ -113,21 +112,18 @@ model City {
   latitude    Float
   longitude   Float
 
-  Country Country @relation(fields: [countryCode], references: [isoCode])
-
-  // @skip
-  Airport Airport[]
+  Country Country? @relation(fields: [countryCode], references: [isoCode])
 
   @@unique([code])
 }
 
 model Country {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
   isoCode       String
   dialCode      String
-  flagImageURL  String
-  flagImageType ImageType
+  flagImageURL  String?
+  flagImageType ImageType?
 
   // @skip
   Airport Airport[]

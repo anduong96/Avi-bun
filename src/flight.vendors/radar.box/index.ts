@@ -8,10 +8,9 @@ import { Logger } from '@app/lib/logger';
 import { RadarBoxCrawlData } from './types';
 
 export class RadarBox {
+  private static BASE_URL = 'https://www.radarbox.com';
   private static DATE_FORMAT = 'dddd, MMMM D, YYYY HH:mm';
-  private static client = ky.create({
-    prefixUrl: 'https://www.radarbox.com',
-  });
+  private static client = ky.create({ prefixUrl: this.BASE_URL });
   private static readonly logger = Logger.getSubLogger({
     name: this.name,
   });
@@ -21,10 +20,9 @@ export class RadarBox {
     // Find the script tag containing "window.init" and get its contents
     const initScript = $('script:contains("window.init")').html();
     if (!initScript) {
-      this.logger.warn(
-        'No script tag containing "window.init" found\n%s',
+      this.logger.warn('No script tag containing "window.init" found\n%o', {
         html,
-      );
+      });
 
       throw new Error('No script tag containing "window.init" found');
     }
@@ -38,8 +36,15 @@ export class RadarBox {
     const request = await this.client.get(`data/registration/${tailNumber}`);
     const html = await request.text();
     const data = this.crawlAircraftHtml(html);
+    this.logger.debug(
+      'RadarBox request[%s/%s] status[%s]',
+      request.url,
+      request.statusText,
+    );
 
     if (!data.current.firstlalot) {
+      this.logger.debug('Position not found for tailNumber[%s]', tailNumber);
+
       return {
         altitude: null,
         destinationIata: null,
@@ -65,13 +70,16 @@ export class RadarBox {
     const longitude = data.current.lastlo;
     const latitude = data.current.lastla;
     const altitude = data.current.alt;
-    const flightNumberIata = data.current.fnia;
+    const flightNumber = data.current.fnic.replace(data.current.csalic, '');
+    const airlineIata = data.current.csalic;
+    this.logger.debug('RadarBox plane position', data.current);
 
     return {
+      airlineIata,
       altitude,
       destinationIata,
       flightDate,
-      flightNumberIata,
+      flightNumber,
       latitude,
       longitude,
       originIata,

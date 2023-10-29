@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
+import { Logger } from '@app/lib/logger';
 import { Skybrary } from '@app/flight.vendors/skybrary';
 import { Flightera } from '@app/flight.vendors/flightera';
 import { TopicPublisher } from '@app/topics/topic.publisher';
@@ -16,12 +17,7 @@ import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.create
 export async function getOrCreateAircraft(tailNumber: string) {
   const [created, data] = await prisma.$transaction(
     async tx => {
-      const aircraft = await tx.aircraft.findFirst({
-        where: {
-          tailNumber,
-        },
-      });
-
+      const aircraft = await tx.aircraft.findFirst({ where: { tailNumber } });
       if (aircraft) {
         return [false, aircraft];
       }
@@ -54,6 +50,7 @@ export async function getOrCreateAircraft(tailNumber: string) {
   );
 
   if (created) {
+    Logger.debug('Aircraft created', data);
     TopicPublisher.broadcast(new AircraftCreatedTopic(data));
   }
 

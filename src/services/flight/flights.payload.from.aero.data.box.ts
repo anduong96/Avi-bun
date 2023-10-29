@@ -6,26 +6,16 @@ import { FlightQueryParam } from '@app/types/flight';
 import { AeroDataBox } from '@app/flight.vendors/aero.data.box';
 import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
 
-function toFlightPayload(entry: AeroDataBoxFlight): Prisma.FlightCreateInput {
+function toFlightPayload(
+  entry: AeroDataBoxFlight,
+): Prisma.FlightUncheckedCreateInput {
   const departureDate = moment.parseZone(entry.departure.actualTimeLocal);
   const arrivalDate = moment.parseZone(entry.arrival.actualTimeLocal);
 
   return {
-    Airline: {
-      connect: {
-        iata: entry.airline.iata,
-      },
-    },
-    Destination: {
-      connect: {
-        iata: entry.arrival.airport.iata,
-      },
-    },
-    Origin: {
-      connect: {
-        iata: entry.departure.airport.iata,
-      },
-    },
+    airlineIata: entry.airline.iata,
+    destinationIata: entry.arrival.airport.iata,
+    originIata: entry.departure.airport.iata,
     aircraftTailNumber: entry.aircraft.reg,
     destinationBaggageClaim: entry.arrival.baggageBelt,
     destinationTerminal: entry.arrival.terminal,

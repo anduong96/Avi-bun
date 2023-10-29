@@ -47,6 +47,11 @@ export class SyncActiveFlightsJob extends Job {
       return;
     }
 
+    this.logger.debug(
+      'FlightStats result for flight[%s]\n%o',
+      flight.id,
+      result,
+    );
     const payload = flightStatFlightToFlightPayload(result);
     const updateData: Prisma.FlightUpdateInput = {
       actualGateArrival: payload.actualGateArrival,

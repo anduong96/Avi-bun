@@ -1,2 +1,2 @@
-import './flight.created.listener';
+import './flight.created';
 import './user.created.listener';

@@ -6,7 +6,11 @@ import { FlightQueryParam } from '@app/types/flight';
 import { Flightera } from '@app/flight.vendors/flightera';
 
 export async function patchFlightPayloadWithFlightera<
-  P extends Prisma.FlightCreateInput | Prisma.FlightCreateInput[],
+  P extends
+    | Prisma.FlightCreateInput
+    | Prisma.FlightCreateInput[]
+    | Prisma.FlightUncheckedCreateInput
+    | Prisma.FlightUncheckedCreateInput[],
 >(payload: P, params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>) {
   type Result = P extends Array<unknown>
     ? Prisma.FlightCreateInput[]
@@ -20,7 +24,9 @@ export async function patchFlightPayloadWithFlightera<
       flightNumber: params.flightNumber,
     });
 
-    function updatePayload(entry: Prisma.FlightCreateInput) {
+    function updatePayload<
+      E extends Prisma.FlightCreateInput | Prisma.FlightUncheckedCreateInput,
+    >(entry: E): E {
       return {
         ...entry,
         co2EmissionKgBusiness: flighteraFlight.co2EmissionKg.Business,
@@ -31,11 +37,11 @@ export async function patchFlightPayloadWithFlightera<
       };
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    result = Array.isArray(payload)
-      ? payload.map(updatePayload)
-      : updatePayload(payload);
+    result = (
+      Array.isArray(payload)
+        ? payload.map(updatePayload)
+        : updatePayload(payload)
+    ) as typeof result;
   } catch (error) {
     Logger.error('Unable to get flight details from Flightera', error);
     Sentry.captureException(error);

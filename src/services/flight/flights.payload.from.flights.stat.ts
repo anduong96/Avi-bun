@@ -10,7 +10,7 @@ import { toFlightStatus } from '@app/flight.vendors/flight.stats/utils';
 
 export function flightStatFlightToFlightPayload(
   flight: Awaited<ReturnType<(typeof FlightStats)['getFlightDetails']>>,
-): Prisma.FlightCreateInput {
+): Prisma.FlightUncheckedCreateInput {
   const info = flight.additionalFlightInfo;
   const schedule = flight.schedule;
   const aircraftTailNumber = info.equipment?.tailNumber;
@@ -38,32 +38,19 @@ export function flightStatFlightToFlightPayload(
   );
 
   return {
-    Airline: {
-      connect: {
-        iata: flight.airlineIata,
-      },
-    },
-    Destination: {
-      connect: {
-        iata: flight.arrivalAirport.iata,
-      },
-    },
     FlightVendorConnection: {
       create: {
         vendor: FlightVendor.FLIGHT_STATS,
         vendorResourceID: flight.flightId.toString(),
       },
     },
-    Origin: {
-      connect: {
-        iata: flight.departureAirport.iata,
-      },
-    },
     actualGateArrival: toDateOrNull(actualGateArrivalUTC),
     actualGateDeparture: toDateOrNull(actualGateDepartureUTC),
     aircraftTailNumber: aircraftTailNumber,
+    airlineIata: flight.airlineIata,
     destinationBaggageClaim: flight.arrivalAirport.baggage,
     destinationGate: flight.arrivalAirport.gate,
+    destinationIata: flight.arrivalAirport.iata,
     destinationTerminal: flight.arrivalAirport.terminal,
     destinationUtcHourOffset: timezoneToUtcOffset(
       flight.arrivalAirport.timeZoneRegionName,
@@ -76,6 +63,7 @@ export function flightStatFlightToFlightPayload(
     flightYear: flight.flightYear,
     id: uuid.v4(),
     originGate: flight.departureAirport.gate,
+    originIata: flight.departureAirport.iata,
     originTerminal: flight.departureAirport.terminal,
     originUtcHourOffset: timezoneToUtcOffset(
       flight.departureAirport.timeZoneRegionName,
@@ -107,7 +95,7 @@ export async function getFlightsPayloadFromFlightStats(
     ),
   );
 
-  const flightsPayload: Prisma.FlightCreateInput[] = [];
+  const flightsPayload: Prisma.FlightUncheckedCreateInput[] = [];
 
   for (const item of detailFlights) {
     if (item.status !== 'fulfilled') {

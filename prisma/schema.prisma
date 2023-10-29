@@ -179,9 +179,9 @@ model Flight {
   // @skip
   FlightVendorConnection FlightVendorConnection[]
   // @skip
-  Aircraft               Aircraft?                @relation(references: [tailNumber], fields: [aircraftTailNumber])
+  // Aircraft               Aircraft?                @relation(references: [tailNumber], fields: [aircraftTailNumber], onDelete: NoAction, onUpdate: NoAction)
   // @skip
-  FlightPromptness       FlightPromptness?        @relation(references: [airlineIata, flightNumber, originIata, destinationIata], fields: [airlineIata, flightNumber, originIata, destinationIata])
+  // FlightPromptness       FlightPromptness?        @relation(references: [airlineIata, flightNumber, originIata, destinationIata], fields: [airlineIata, flightNumber, originIata, destinationIata])
   // @skip
   FlightEvent            FlightEvent[]
   // @skip
@@ -221,7 +221,7 @@ model FlightPromptness {
   expiresAt DateTime
 
   // @skip
-  Flights Flight[]
+  // Flights Flight[]
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata])
   @@index([expiresAt])
@@ -256,7 +256,7 @@ model Aircraft {
 
   // @skip
   AircraftPositions AircraftPosition[]
-  Flight            Flight[]
+  // Flight            Flight[]
 
   @@unique([tailNumber])
   @@index([icao])

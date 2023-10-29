@@ -5,12 +5,8 @@ import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.to
 
 TopicPublisher.subscribe(FlightCreatedTopic, async topic => {
   const flight = await prisma.flight.findFirstOrThrow({
-    select: {
-      aircraftTailNumber: true,
-    },
-    where: {
-      id: topic.flightID,
-    },
+    select: { aircraftTailNumber: true },
+    where: { id: topic.flightID },
   });
 
   if (flight.aircraftTailNumber) {

@@ -8,11 +8,13 @@ type FlightData = {
   aporgia: string /** Departure Airport IATA */;
   arrdate_utc: string /** Arrival Date UTC */;
   arrs_utc: string /** Arrival Time UTC */;
+  cs: string;
+  csalic: string;
   depdate: string /** Departure Date */;
   depdate_utc: string /** Departure Date UTC */;
   deps_utc: string /** Departure Time UTC */;
   fid: number;
-  fnia: string;
+  fnic: string;
   svd: number;
 } & (
   | {

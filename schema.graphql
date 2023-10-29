@@ -5,7 +5,6 @@
 
 type Aircraft {
   AircraftPositions: [AircraftPosition!]!
-  Flight: [Flight!]!
   airlineIata: String!
   createdAt: DateTimeISO!
   description: String
@@ -48,7 +47,6 @@ type Airline {
 }
 
 type Airport {
-  City: City!
   Country: Country!
   cityCode: String!
   cityName: String!
@@ -64,21 +62,10 @@ type Airport {
   timezone: String!
 }
 
-type City {
-  Country: Country!
-  code: String!
-  countryCode: String!
-  id: ID!
-  latitude: Float!
-  longitude: Float!
-  name: String!
-  timezone: String!
-}
-
 type Country {
   dialCode: String!
-  flagImageType: ImageType!
-  flagImageURL: String!
+  flagImageType: ImageType
+  flagImageURL: String
   id: ID!
   isoCode: String!
   name: String!

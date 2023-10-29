@@ -12,8 +12,9 @@ export class SyncActivePlaneLocationJob extends Job {
   override cronTime = CronTime.every(7).minutes();
 
   private async getTailNumbers() {
-    const ceil = moment().endOf('day').add(10, 'hours').toDate();
-    const floor = moment().startOf('day').subtract(12, 'hours').toDate();
+    const ceil = moment().add(10, 'hours').toDate();
+    const floor = moment().subtract(12, 'hours').toDate();
+
     this.logger.debug(
       'Syncing planes from [%s] to [%s]',
       floor.toISOString(),

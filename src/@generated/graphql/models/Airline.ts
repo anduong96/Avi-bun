@@ -12,20 +12,23 @@ export class GQL_Airline {
   @Field()
   iata: string;
 
-  @Field()
-  logoFullImageURL: string;
+  @Field({ nullable: true })
+  icao?: string;
 
-  @Field(() => GQL_ImageType)
-  logoFullImageType: GQL_ImageType;
+  @Field({ nullable: true })
+  logoFullImageURL?: string;
 
-  @Field()
-  logoCompactImageURL: string;
+  @Field(() => GQL_ImageType, { nullable: true })
+  logoFullImageType?: GQL_ImageType;
 
-  @Field(() => GQL_ImageType)
-  logoCompactImageType: GQL_ImageType;
+  @Field({ nullable: true })
+  logoCompactImageURL?: string;
 
-  @Field()
-  isLowCost: boolean;
+  @Field(() => GQL_ImageType, { nullable: true })
+  logoCompactImageType?: GQL_ImageType;
+
+  @Field({ nullable: true })
+  isLowCost?: boolean;
 
   // skip overwrite 👇
 }

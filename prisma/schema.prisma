@@ -68,15 +68,17 @@ model Airline {
 
   name                 String
   iata                 String
-  logoFullImageURL     String
-  logoFullImageType    ImageType
-  logoCompactImageURL  String
-  logoCompactImageType ImageType
-  isLowCost            Boolean
+  icao                 String?
+  logoFullImageURL     String?
+  logoFullImageType    ImageType?
+  logoCompactImageURL  String?
+  logoCompactImageType ImageType?
+  isLowCost            Boolean?
 
   // @skip
   Flight Flight[]
 
+  @@unique([icao])
   @@unique([iata])
 }
 
@@ -101,6 +103,23 @@ model Airport {
   DestinationFlights Flight[] @relation("destination")
 
   @@unique([iata])
+}
+
+model AirportCondition {
+  id                       String @id @default(uuid())
+  airportIata              String
+  departureDelayPercent    Int
+  departureCanceledPercent Int
+  departureAverageDelayMs  Int
+  arrivalDelayPercent      Int
+  arrivalCanceledPercent   Int
+  arrivalAverageDelayMs    Int
+}
+
+model AirportWeather {
+  id           String @id @default(uuid())
+  airportIata  String
+  tempuratureC Int
 }
 
 model City {

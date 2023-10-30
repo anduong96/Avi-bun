@@ -21,7 +21,7 @@
     "ext:services:down": "sh ./scripts/down.services.sh"
   },
   "prisma": {
-    "seed": "bun ./prisma/seed.ts"
+    "seed": "bun ./prisma/seed/index.ts"
   },
   "devDependencies": {
     "@prisma/generator-helper": "^5.5.2",

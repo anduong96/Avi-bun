@@ -82,10 +82,21 @@ model Airline {
   @@unique([iata])
 }
 
+model Timezone {
+  id          String @id @default(uuid())
+  name        String
+  gmt         Int
+  dst         Int
+  countryCode String
+
+  @@unique([name])
+}
+
 model Airport {
   id          String  @id @default(uuid())
   name        String
-  iata        String
+  iata        String?
+  icao        String?
   timezone    String
   cityName    String
   cityCode    String

@@ -54,7 +54,8 @@ type Airport {
   countryCode: String!
   countyName: String
   elevation: Int
-  iata: String!
+  iata: String
+  icao: String
   id: ID!
   latitude: Float!
   longitude: Float!

@@ -21,20 +21,33 @@ CREATE TABLE "Airline" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "iata" TEXT NOT NULL,
-    "logoFullImageURL" TEXT NOT NULL,
-    "logoFullImageType" "ImageType" NOT NULL,
-    "logoCompactImageURL" TEXT NOT NULL,
-    "logoCompactImageType" "ImageType" NOT NULL,
-    "isLowCost" BOOLEAN NOT NULL,
+    "icao" TEXT,
+    "logoFullImageURL" TEXT,
+    "logoFullImageType" "ImageType",
+    "logoCompactImageURL" TEXT,
+    "logoCompactImageType" "ImageType",
+    "isLowCost" BOOLEAN,
 
     CONSTRAINT "Airline_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Timezone" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "gmt" INTEGER NOT NULL,
+    "dst" INTEGER NOT NULL,
+    "countryCode" TEXT NOT NULL,
+
+    CONSTRAINT "Timezone_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Airport" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "iata" TEXT NOT NULL,
+    "iata" TEXT,
+    "icao" TEXT,
     "timezone" TEXT NOT NULL,
     "cityName" TEXT NOT NULL,
     "cityCode" TEXT NOT NULL,
@@ -46,6 +59,29 @@ CREATE TABLE "Airport" (
     "longitude" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "Airport_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AirportCondition" (
+    "id" TEXT NOT NULL,
+    "airportIata" TEXT NOT NULL,
+    "departureDelayPercent" INTEGER NOT NULL,
+    "departureCanceledPercent" INTEGER NOT NULL,
+    "departureAverageDelayMs" INTEGER NOT NULL,
+    "arrivalDelayPercent" INTEGER NOT NULL,
+    "arrivalCanceledPercent" INTEGER NOT NULL,
+    "arrivalAverageDelayMs" INTEGER NOT NULL,
+
+    CONSTRAINT "AirportCondition_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AirportWeather" (
+    "id" TEXT NOT NULL,
+    "airportIata" TEXT NOT NULL,
+    "tempuratureC" INTEGER NOT NULL,
+
+    CONSTRAINT "AirportWeather_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -301,7 +337,13 @@ CREATE TABLE "ScheduledJob" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Airline_icao_key" ON "Airline"("icao");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Airline_iata_key" ON "Airline"("iata");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Timezone_name_key" ON "Timezone"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Airport_iata_key" ON "Airport"("iata");
@@ -382,9 +424,6 @@ CREATE UNIQUE INDEX "UserPreference_userID_key" ON "UserPreference"("userID");
 CREATE UNIQUE INDEX "ScheduledJob_name_key" ON "ScheduledJob"("name");
 
 -- AddForeignKey
-ALTER TABLE "Airport" ADD CONSTRAINT "Airport_cityCode_fkey" FOREIGN KEY ("cityCode") REFERENCES "City"("code") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Airport" ADD CONSTRAINT "Airport_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -398,12 +437,6 @@ ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationIata_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_fkey" FOREIGN KEY ("airlineIata") REFERENCES "Airline"("iata") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "Flight" ADD CONSTRAINT "Flight_aircraftTailNumber_fkey" FOREIGN KEY ("aircraftTailNumber") REFERENCES "Aircraft"("tailNumber") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_flightNumber_originIata_destinationIata_fkey" FOREIGN KEY ("airlineIata", "flightNumber", "originIata", "destinationIata") REFERENCES "FlightPromptness"("airlineIata", "flightNumber", "originIata", "destinationIata") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FlightVendorConnection" ADD CONSTRAINT "FlightVendorConnection_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE RESTRICT;

@@ -10,8 +10,11 @@ export class GQL_Airport {
   @Field()
   name: string;
 
-  @Field()
-  iata: string;
+  @Field({ nullable: true })
+  iata?: string;
+
+  @Field({ nullable: true })
+  icao?: string;
 
   @Field()
   timezone: string;

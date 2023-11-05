@@ -1,7 +1,9 @@
+import moment from 'moment';
 import {
   Arg,
   Authorized,
   FieldResolver,
+  Int,
   Query,
   Resolver,
   Root,
@@ -43,6 +45,13 @@ export class FlightResolver {
     });
   }
 
+  @FieldResolver()
+  durationMs(@Root() root: GQL_Flight) {
+    const gateDeparture = moment(root.estimatedGateDeparture);
+    const gateArrival = moment(root.estimatedGateArrival);
+    return gateArrival.diff(gateDeparture);
+  }
+
   @Authorized()
   @Query(() => GQL_Flight)
   async flight(@Arg('flightID') flightID: string) {
@@ -75,10 +84,22 @@ export class FlightResolver {
     return result;
   }
 
+  @FieldResolver()
+  progressPercent(@Root() root: GQL_Flight) {
+    return 1 - this.remainingDurationMs(root) / this.durationMs(root);
+  }
+
   @Authorized()
   @Query(() => GQL_Flight)
   async randomFlight() {
     const flight = await getRandomFlight();
     return flight;
+  }
+
+  @FieldResolver(() => Int)
+  remainingDurationMs(@Root() root: GQL_Flight) {
+    const now = moment();
+    const gateArrival = moment(root.estimatedGateArrival);
+    return gateArrival.diff(now);
   }
 }

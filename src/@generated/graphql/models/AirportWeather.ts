@@ -9,7 +9,7 @@ export class GQL_AirportWeather {
   airportIata: string;
 
   @Field(() => Int)
-  tempuratureC: number;
+  temperatureCelsius: number;
 
   // skip overwrite 👇
 }

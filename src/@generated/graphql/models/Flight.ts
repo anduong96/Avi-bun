@@ -101,5 +101,20 @@ export class GQL_Flight {
   @Field(() => GQL_Airline)
   Airline: GQL_Airline;
 
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+
   // skip overwrite 👇
+
+  @Field()
+  durationMs: number;
+
+  @Field()
+  remainingDurationMs: number;
+
+  @Field()
+  progressPercent: number;
 }

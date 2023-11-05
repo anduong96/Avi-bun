@@ -8,6 +8,7 @@ export async function updateAircraftPosition(
   aircraft: Pick<Aircraft, 'airlineIata' | 'id' | 'tailNumber'>,
 ) {
   const position = await RadarBox.getAircraft(aircraft.tailNumber);
+
   Logger.debug('Plane position', position);
 
   if (!position || !position?.destinationIata || !position.originIata) {

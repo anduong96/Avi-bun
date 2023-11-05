@@ -90,11 +90,13 @@ type Flight {
   co2EmissionKgEco: Float
   co2EmissionKgEconomy: Float
   co2EmissionKgFirst: Float
+  createdAt: DateTimeISO!
   destinationBaggageClaim: String
   destinationGate: String
   destinationIata: String!
   destinationTerminal: String
   destinationUtcHourOffset: Int!
+  durationMs: Float!
   estimatedGateArrival: DateTimeISO!
   estimatedGateDeparture: DateTimeISO!
   flightDate: Int!
@@ -106,11 +108,14 @@ type Flight {
   originIata: String!
   originTerminal: String
   originUtcHourOffset: Int!
+  progressPercent: Float!
   reconAttempt: Int
+  remainingDurationMs: Float!
   scheduledGateArrival: DateTimeISO!
   scheduledGateDeparture: DateTimeISO!
   status: FlightStatus!
   totalDistanceKm: Int
+  updatedAt: DateTimeISO!
 }
 
 type FlightPromptness {

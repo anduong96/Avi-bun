@@ -128,9 +128,9 @@ model AirportCondition {
 }
 
 model AirportWeather {
-  id           String @id @default(uuid())
-  airportIata  String
-  tempuratureC Int
+  id                 String @id @default(uuid())
+  airportIata        String
+  temperatureCelsius Int
 }
 
 model City {
@@ -209,15 +209,14 @@ model Flight {
   // @skip
   FlightVendorConnection FlightVendorConnection[]
   // @skip
-  // Aircraft               Aircraft?                @relation(references: [tailNumber], fields: [aircraftTailNumber], onDelete: NoAction, onUpdate: NoAction)
-  // @skip
-  // FlightPromptness       FlightPromptness?        @relation(references: [airlineIata, flightNumber, originIata, destinationIata], fields: [airlineIata, flightNumber, originIata, destinationIata])
-  // @skip
   FlightEvent            FlightEvent[]
   // @skip
   FlightTimeline         FlightTimeline[]
   // @skip
   FlightAlert            FlightAlert[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([airlineIata, flightNumber, originIata, destinationIata, flightYear, flightMonth, flightDate])
   @@index([originIata])

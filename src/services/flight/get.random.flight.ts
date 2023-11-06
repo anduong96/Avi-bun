@@ -5,6 +5,7 @@ import { Logger } from '@app/lib/logger';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
+import { FlightStatsFlightDetailTopic } from '@app/topics/defined.topics/flight.stats.flight.detail.topic';
 
 import { patchFlightPayloadWithFlightera } from './patch.payload.from.flightera';
 import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
@@ -49,7 +50,10 @@ export async function getRandomFlight(): Promise<Flight> {
 
     Logger.debug('Creating flight', patchedData);
     const flight = await prisma.flight.create({ data: patchedData });
-    TopicPublisher.broadcast(new FlightCreatedTopic(flight.id));
+    TopicPublisher.broadcastAll([
+      new FlightCreatedTopic(flight.id),
+      new FlightStatsFlightDetailTopic(flight.id, remoteFlight),
+    ]);
     return flight;
   } catch (error) {
     Logger.error('Unable to create flight in getRandomFlight', error);

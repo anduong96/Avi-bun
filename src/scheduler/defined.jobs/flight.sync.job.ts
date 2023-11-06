@@ -4,8 +4,11 @@ import CronTime from 'cron-time-generator';
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
+import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { FlightUpdatedTopic } from '@app/topics/defined.topics/flight.updated.topic';
 import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';
+import { FlightStatsFlightDetailTopic } from '@app/topics/defined.topics/flight.stats.flight.detail.topic';
 
 import { Job } from '../job';
 
@@ -50,6 +53,11 @@ export class SyncActiveFlightsJob extends Job {
       flight.id,
       result,
     );
+
+    TopicPublisher.broadcast(
+      new FlightStatsFlightDetailTopic(flight.id, result),
+    );
+
     const payload = flightStatFlightToFlightPayload(result);
     const updateData: Prisma.FlightUpdateInput = {
       actualGateArrival: payload.actualGateArrival,
@@ -81,6 +89,8 @@ export class SyncActiveFlightsJob extends Job {
         flight.id,
         writeResult,
       );
+
+      TopicPublisher.broadcast(new FlightUpdatedTopic(flight.id));
     }
   }
 

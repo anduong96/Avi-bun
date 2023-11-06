@@ -285,6 +285,16 @@ export type FlightDetails = {
           newDate: boolean;
         }
       | {
+          changed: string;
+          newDate: boolean;
+          toAMPM0: string;
+          toAMPM1: string;
+          toMonth0: string;
+          toMonth1: string;
+          toTime0: string;
+          toTime1: string;
+        }
+      | {
           eventText: string;
           noAdjustment: boolean;
         }

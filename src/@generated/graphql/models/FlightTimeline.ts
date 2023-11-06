@@ -1,4 +1,5 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { Field, ObjectType, ID } from 'type-graphql';
 
 @ObjectType('FlightTimeline')
 export class GQL_FlightTimeline {
@@ -11,9 +12,6 @@ export class GQL_FlightTimeline {
   @Field()
   title: string;
 
-  @Field(() => Int)
-  index: number;
-
   @Field()
   source: string;
 
@@ -22,6 +20,9 @@ export class GQL_FlightTimeline {
 
   @Field()
   hasAlerted: boolean;
+
+  @Field()
+  updatedAt: Date;
 
   // skip overwrite 👇
 }

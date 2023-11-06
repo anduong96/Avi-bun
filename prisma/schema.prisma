@@ -332,10 +332,10 @@ model FlightTimeline {
   id         String   @id
   flightID   String
   title      String
-  index      Int
   source     String
   timestamp  DateTime
   hasAlerted Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
 
   // @skip
   Flight Flight @relation(fields: [flightID], references: [id])
@@ -343,7 +343,7 @@ model FlightTimeline {
   // @skip
   FlightEvents FlightEvent[]
 
-  @@unique([flightID, index])
+  @@unique([flightID, timestamp])
 }
 
 model FlightPlan {

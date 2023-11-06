@@ -13,11 +13,10 @@ function toFlightPayload(
   const arrivalDate = moment.parseZone(entry.arrival.actualTimeLocal);
 
   return {
-    airlineIata: entry.airline.iata,
-    destinationIata: entry.arrival.airport.iata,
-    originIata: entry.departure.airport.iata,
     aircraftTailNumber: entry.aircraft.reg,
+    airlineIata: entry.airline.iata,
     destinationBaggageClaim: entry.arrival.baggageBelt,
+    destinationIata: entry.arrival.airport.iata,
     destinationTerminal: entry.arrival.terminal,
     destinationUtcHourOffset: arrivalDate.utcOffset() / 60,
     estimatedGateArrival: arrivalDate.toDate(),
@@ -27,6 +26,7 @@ function toFlightPayload(
     flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
     flightYear: departureDate.year(),
     id: uuid.v4(),
+    originIata: entry.departure.airport.iata,
     originTerminal: entry.departure.terminal,
     originUtcHourOffset: departureDate.utcOffset() / 60,
     scheduledGateArrival: arrivalDate.toDate(),

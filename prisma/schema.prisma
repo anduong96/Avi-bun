@@ -75,9 +75,6 @@ model Airline {
   logoCompactImageType ImageType?
   isLowCost            Boolean?
 
-  // @skip
-  Flight Flight[]
-
   @@unique([icao])
   @@unique([iata])
 }
@@ -107,11 +104,7 @@ model Airport {
   latitude    Float
   longitude   Float
 
-  Country            Country  @relation(fields: [countryCode], references: [isoCode])
-  // @skip
-  OriginFlights      Flight[] @relation("origin")
-  // @skip
-  DestinationFlights Flight[] @relation("destination")
+  Country Country @relation(fields: [countryCode], references: [isoCode])
 
   @@unique([iata])
 }
@@ -197,10 +190,6 @@ model Flight {
   co2EmissionKgBusiness    Float?
   co2EmissionKgEco         Float?
   reconAttempt             Int?         @default(0)
-
-  Origin      Airport @relation(references: [iata], fields: [originIata], name: "origin", onDelete: NoAction, onUpdate: NoAction)
-  Destination Airport @relation(references: [iata], fields: [destinationIata], name: "destination", onDelete: NoAction, onUpdate: NoAction)
-  Airline     Airline @relation(fields: [airlineIata], references: [iata], onDelete: NoAction, onUpdate: NoAction)
 
   // @skip
   UserFlight             UserFlight[]

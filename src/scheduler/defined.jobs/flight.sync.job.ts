@@ -5,8 +5,6 @@ import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
-import { sendFlightAlert } from '@app/services/alerts/flight.alert';
-import { FlightStats_Status } from '@app/flight.vendors/flight.stats/enums';
 import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';
 
 import { Job } from '../job';
@@ -84,45 +82,6 @@ export class SyncActiveFlightsJob extends Job {
         writeResult,
       );
     }
-
-    const destination = await prisma.airport.findFirstOrThrow({
-      select: { cityCode: true, cityName: true },
-      where: { iata: flight.destinationIata },
-    });
-
-    const destinationName = destination.cityName || destination.cityCode;
-    const flightTitle = result.airlineIata + payload.flightNumber;
-    //TODO: build logic engine
-
-    if (
-      result.status.status === FlightStats_Status.CANCELED &&
-      flight.status !== FlightStatus.CANCELED
-    ) {
-      await this.notifyFlightGroup({
-        body: `Your flight to ${destinationName} was cancelled`,
-        flight,
-        title: `${flightTitle}: Cancelled`,
-      });
-    }
-
-    const delayDiff = moment(payload.scheduledGateDeparture).diff(
-      flight.estimatedGateDeparture,
-    );
-    const delayDiffDur = moment.duration(delayDiff);
-
-    this.logger.info(`Flight[%s] diff[%s]`, flight.id, delayDiffDur);
-
-    if (delayDiffDur.minutes() > 0) {
-      const title = `${flightTitle}: Delayed`;
-      const delayedTimeAt = moment(payload.estimatedGateDeparture).format('L');
-      const body = `Your flight to ${destinationName} is delayed. Expected departure at ${delayedTimeAt}`;
-
-      await this.notifyFlightGroup({
-        body,
-        flight,
-        title,
-      });
-    }
   }
 
   private async getFlights() {
@@ -158,27 +117,6 @@ export class SyncActiveFlightsJob extends Job {
     });
 
     return candidates;
-  }
-
-  /**
-   * The function `notifyFlightGroup` sends a notification to a group of devices subscribed to a
-   * specific flight.
-   * @param args - The parameters for the `notifyFlightGroup` function are:
-   */
-  private async notifyFlightGroup(args: {
-    body: string;
-    flight: Flight;
-    title: string;
-  }) {
-    const response = await sendFlightAlert(args.flight.id, {
-      body: args.body,
-      title: args.title,
-    });
-
-    this.logger.warn(
-      `Sent notification to subscribers for flight: ${args.flight.id}`,
-      response,
-    );
   }
 
   override async onProcess() {

@@ -94,6 +94,7 @@ export class FlightStats {
     }
 
     const response = await request.json<FlightDetails>();
+    this.logger.debug('Flight Detail\n args=%0\nresponse:%o', args, response);
 
     return {
       ...response,
@@ -117,7 +118,8 @@ export class FlightStats {
     });
 
     const response = await request.json<FlightStatResp<FlightProgress>>();
-    return response.data;
+    const data = response.data;
+    return data;
   }
 
   /**

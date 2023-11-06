@@ -12,10 +12,6 @@ export async function patchFlightPayloadWithFlightera<
     | Prisma.FlightUncheckedCreateInput
     | Prisma.FlightUncheckedCreateInput[],
 >(payload: P, params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>) {
-  type Result = P extends Array<unknown>
-    ? Prisma.FlightCreateInput[]
-    : Prisma.FlightCreateInput;
-
   let result = payload;
 
   try {
@@ -47,5 +43,5 @@ export async function patchFlightPayloadWithFlightera<
     Sentry.captureException(error);
   }
 
-  return result as unknown as Result;
+  return result as unknown as P;
 }

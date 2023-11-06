@@ -12,9 +12,9 @@ export function flightStatFlightToFlightPayload(
   flight: Awaited<ReturnType<(typeof FlightStats)['getFlightDetails']>>,
 ): Prisma.FlightUncheckedCreateInput {
   const info = flight.additionalFlightInfo;
-  const schedule = flight.schedule;
   const aircraftTailNumber = info.equipment?.tailNumber;
   const status = toFlightStatus(flight.status.status);
+  const { arrivalAirport, departureAirport, schedule } = flight;
   const {
     actualGateArrivalUTC,
     actualGateDepartureUTC,
@@ -24,17 +24,21 @@ export function flightStatFlightToFlightPayload(
     scheduledGateDepartureUTC,
   } = schedule;
 
-  const scheduledGateDeparture = toDateOrNull(
-    scheduledGateDepartureUTC || estimatedGateDepartureUTC,
-  );
-  const scheduledGateArrival = toDateOrNull(
-    scheduledGateArrivalUTC || estimatedGateArrivalUTC,
-  );
+  const scheduledGateDeparture = toDateOrNull(scheduledGateDepartureUTC);
+  const scheduledGateArrival = toDateOrNull(scheduledGateArrivalUTC);
+  const actualGateArrival = toDateOrNull(actualGateArrivalUTC);
+  const actualGateDeparture = toDateOrNull(actualGateDepartureUTC);
   const estimatedGateArrival = toDateOrNull(
-    estimatedGateArrivalUTC || scheduledGateArrivalUTC,
+    estimatedGateArrivalUTC ?? actualGateArrival ?? scheduledGateArrival,
   );
   const estimatedGateDeparture = toDateOrNull(
-    estimatedGateDepartureUTC || scheduledGateDepartureUTC,
+    estimatedGateDepartureUTC ?? actualGateDeparture ?? scheduledGateDeparture,
+  );
+  const originUtcHourOffset = timezoneToUtcOffset(
+    departureAirport.timeZoneRegionName,
+  );
+  const destinationUtcHourOffset = timezoneToUtcOffset(
+    arrivalAirport.timeZoneRegionName,
   );
 
   return {
@@ -44,17 +48,15 @@ export function flightStatFlightToFlightPayload(
         vendorResourceID: flight.flightId.toString(),
       },
     },
-    actualGateArrival: toDateOrNull(actualGateArrivalUTC),
-    actualGateDeparture: toDateOrNull(actualGateDepartureUTC),
+    actualGateArrival,
+    actualGateDeparture,
     aircraftTailNumber: aircraftTailNumber,
     airlineIata: flight.airlineIata,
     destinationBaggageClaim: flight.arrivalAirport.baggage,
     destinationGate: flight.arrivalAirport.gate,
     destinationIata: flight.arrivalAirport.iata,
     destinationTerminal: flight.arrivalAirport.terminal,
-    destinationUtcHourOffset: timezoneToUtcOffset(
-      flight.arrivalAirport.timeZoneRegionName,
-    ),
+    destinationUtcHourOffset,
     estimatedGateArrival: estimatedGateArrival!,
     estimatedGateDeparture: estimatedGateDeparture!,
     flightDate: flight.flightDate,
@@ -65,9 +67,7 @@ export function flightStatFlightToFlightPayload(
     originGate: flight.departureAirport.gate,
     originIata: flight.departureAirport.iata,
     originTerminal: flight.departureAirport.terminal,
-    originUtcHourOffset: timezoneToUtcOffset(
-      flight.departureAirport.timeZoneRegionName,
-    ),
+    originUtcHourOffset,
     scheduledGateArrival: scheduledGateArrival!,
     scheduledGateDeparture: scheduledGateDeparture!,
     status: status,

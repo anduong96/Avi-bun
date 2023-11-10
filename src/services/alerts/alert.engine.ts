@@ -112,7 +112,11 @@ export async function handleFlightChangesForAlert(
   current: Flight,
   previous: Flight,
 ) {
+  const flightID = current.id;
+  Logger.debug('Handling Flight[%s] changes for alert', flightID);
   const difference = findAlertableFlightDiff(current, previous);
+  Logger.debug('%s changes for Flight[%s]', difference.length, flightID);
+
   const [createdTimeline, sentAlerts] = await Promise.allSettled([
     createFlightChangeTimeline(current, difference),
     difference.length > 0
@@ -120,8 +124,10 @@ export async function handleFlightChangesForAlert(
       : null,
   ]);
 
-  Logger.debug('Flight changes handled', {
-    createdTimeline: createdTimeline.status,
-    sentAlerts: sentAlerts.status,
-  });
+  Logger.debug(
+    'Flight[%s] changes handled createdTimeline=%s sentAlerts=%s',
+    flightID,
+    createdTimeline.status,
+    sentAlerts.status,
+  );
 }

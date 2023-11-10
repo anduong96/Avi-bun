@@ -19,6 +19,16 @@ type AlertableFlight = {
   DepartureTime: Date;
 };
 
+/**
+ * The function `findAlertableFlightDiff` compares the scheduled and estimated flight details and
+ * returns the differences between them.
+ * @param {Flight} current - The `current` parameter represents the current flight information,
+ * including the estimated gate arrival and departure times, as well as the gate and terminal
+ * information for both the origin and destination airports.
+ * @param {Flight} previous - The `previous` parameter is an object representing the previous flight.
+ * It contains the following properties:
+ * @returns the difference between the scheduled flight details and the estimated flight details.
+ */
 function findAlertableFlightDiff(current: Flight, previous: Flight) {
   const scheduled: AlertableFlight = {
     ArrivalGate: previous.destinationGate,
@@ -40,6 +50,15 @@ function findAlertableFlightDiff(current: Flight, previous: Flight) {
   return getObjectDifference(scheduled, estimated);
 }
 
+/**
+ * The function creates and sends a flight alert with information about changes made to a flight.
+ * @param {Flight} flight - The `flight` parameter is an object that represents a flight. It contains
+ * properties such as `airlineIata` (the airline's IATA code) and `flightNumber` (the flight number).
+ * @param {DiffEntry[]} changes - An array of DiffEntry objects representing the changes made to the
+ * flight. Each DiffEntry object has a key property representing the changed attribute.
+ * @returns the result of calling the `sendFlightAlert` function with the `flight.id` and an object
+ * containing the `body` and `title` properties.
+ */
 function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
   const maxDisplay = 3;
   const hasOverMax = changes.length > maxDisplay;
@@ -62,6 +81,14 @@ function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
   });
 }
 
+/**
+ * The function creates a flight timeline with specified changes for a given flight.
+ * @param {Flight} flight - The `flight` parameter is an object that represents a flight. It likely has
+ * properties such as `id`, `origin`, `destination`, `departureTime`, etc. This object is used to
+ * identify the flight for which the timeline is being created.
+ * @param {DiffEntry[]} changes - The `changes` parameter is an array of `DiffEntry` objects. Each
+ * `DiffEntry` object represents a change made to the flight. It has the following properties:
+ */
 async function createFlightChangeTimeline(
   flight: Flight,
   changes: DiffEntry[],
@@ -108,6 +135,15 @@ async function createFlightChangeTimeline(
   );
 }
 
+/**
+ * The function `handleFlightChangesForAlert` handles flight changes by creating a timeline of the
+ * changes and sending alerts if there are any differences between the current and previous flight.
+ * @param {Flight} current - The `current` parameter represents the current state of a flight. It is an
+ * object that contains information about the flight, such as its ID, departure time, arrival time, and
+ * any other relevant details.
+ * @param {Flight} previous - The `previous` parameter is the previous state of the flight, which
+ * represents the flight information before any changes occurred.
+ */
 export async function handleFlightChangesForAlert(
   current: Flight,
   previous: Flight,

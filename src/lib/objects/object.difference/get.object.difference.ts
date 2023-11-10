@@ -8,6 +8,22 @@ import { castAsPrimitiveValue } from '@app/lib/casts/cast.as.primitive.value';
 import { DiffEntry } from './types';
 import { getValueType } from './get.value.type';
 
+/**
+ * The `_getObjectDifferenceWithOpts` function compares two objects and returns an array of differences
+ * between them, including added, removed, and modified properties.
+ * @param {T} current - The current object that you want to compare with the previous object.
+ * @param {T} previous - The `previous` parameter is the previous version of the object that you want
+ * to compare with the current version.
+ * @param {DiffEntry[]} diffs - An array of objects representing the differences between the current
+ * and previous objects. Each object in the array has the following properties:
+ * @param [rootPath] - The `rootPath` parameter is a string that represents the current path of the
+ * object being compared. It is used to keep track of nested object properties.
+ * @param [onDescription] - The `onDescription` parameter is a callback function that takes three
+ * arguments: `key`, `value`, and `changeType`. It is optional and can be used to provide a custom
+ * description for each difference entry in the result. If provided, the callback function should
+ * return a string that represents the description
+ * @returns an array of `DiffEntry` objects.
+ */
 export function _getObjectDifferenceWithOpts<
   T extends object,
   K extends ObjectPaths<T>,
@@ -89,6 +105,20 @@ export function _getObjectDifferenceWithOpts<
   return diffs;
 }
 
+/**
+ * The function `getObjectDifference` compares two objects and returns the differences between them,
+ * optionally providing a description for each difference.
+ * @param {T} current - The `current` parameter is the current object that you want to compare with the
+ * previous object.
+ * @param {T} previous - The `previous` parameter is the object that represents the previous state or
+ * version of the object. It is used to compare against the `current` object and determine the
+ * differences between them.
+ * @param [onDescription] - The `onDescription` parameter is an optional callback function that can be
+ * provided to customize the description of the differences between the `current` and `previous`
+ * objects. It takes three parameters:
+ * @returns the result of calling the `_getObjectDifferenceWithOpts` function with the provided
+ * arguments.
+ */
 export function getObjectDifference<T extends object>(
   current: T,
   previous: T,

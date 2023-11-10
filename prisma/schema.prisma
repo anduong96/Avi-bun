@@ -47,6 +47,12 @@ enum ValueType {
   BOOLEAN
 }
 
+enum ChangeType {
+  ADDED
+  REMOVED
+  MODIFIED
+}
+
 enum FlightStatus {
   SCHEDULED
   DEPARTED
@@ -308,16 +314,16 @@ model AircraftPosition {
 model FlightEvent {
   id               String  @id
   flightTimelineID String
-  index            Int
+  index            Int     @default(0)
   flightID         String
   description      String
   requireAlert     Boolean
 
-  changedValueType ValueType?
-  prevValueType    ValueType?
-  changedValue     Json?
-  prevValue        Json?
-  timestamp        DateTime
+  valueType     ValueType?
+  changeType    ChangeType?
+  currentValue  Json?
+  previousValue Json?
+  timestamp     DateTime
 
   //@skip
   Flight   Flight         @relation(fields: [flightID], references: [id])

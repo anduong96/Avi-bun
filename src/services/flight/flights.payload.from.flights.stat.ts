@@ -1,20 +1,20 @@
 import * as uuid from 'uuid';
-import { isEmpty } from 'lodash';
+import { omit } from 'lodash';
 import { FlightVendor, Prisma } from '@prisma/client';
 
 import { Logger } from '@app/lib/logger';
-import { Topic } from '@app/topics/topic';
 import { toDateOrNull } from '@app/lib/date.or.null';
 import { FlightQueryParam } from '@app/types/flight';
 import { timezoneToUtcOffset } from '@app/lib/timezone';
-import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { toFlightStatus } from '@app/flight.vendors/flight.stats/utils';
-import { FlightStatsFlightDetailTopic } from '@app/topics/defined.topics/flight.stats.flight.detail.topic';
+
+import { getFlightTimelinePayload } from '../flight.timeline/get.flight.timeline.payload';
 
 export function flightStatFlightToFlightPayload(
   flight: Awaited<ReturnType<(typeof FlightStats)['getFlightDetails']>>,
-): Prisma.FlightUncheckedCreateInput {
+): RequiredKeys<Prisma.FlightUncheckedCreateInput, 'id'> {
+  const flightID = uuid.v4();
   const info = flight.additionalFlightInfo;
   const aircraftTailNumber = info.equipment?.tailNumber;
   const status = toFlightStatus(flight.status.status);
@@ -46,6 +46,13 @@ export function flightStatFlightToFlightPayload(
   );
 
   return {
+    FlightTimeline: {
+      createMany: {
+        data: getFlightTimelinePayload(flightID, flight).map(entry =>
+          omit(entry, ['flightID']),
+        ),
+      },
+    },
     FlightVendorConnection: {
       create: {
         vendor: FlightVendor.FLIGHT_STATS,
@@ -67,7 +74,7 @@ export function flightStatFlightToFlightPayload(
     flightMonth: flight.flightMonth,
     flightNumber: flight.flightNumber,
     flightYear: flight.flightYear,
-    id: uuid.v4(),
+    id: flightID,
     originGate: flight.departureAirport.gate,
     originIata: flight.departureAirport.iata,
     originTerminal: flight.departureAirport.terminal,
@@ -99,8 +106,8 @@ export async function getFlightsPayloadFromFlightStats(
     ),
   );
 
-  const flightsPayload: Prisma.FlightUncheckedCreateInput[] = [];
-  const topics: Topic[] = [];
+  const flightsPayload: ReturnType<typeof flightStatFlightToFlightPayload>[] =
+    [];
 
   for (const item of detailFlights) {
     if (item.status !== 'fulfilled') {
@@ -108,13 +115,7 @@ export async function getFlightsPayloadFromFlightStats(
       continue;
     }
 
-    const payload = flightStatFlightToFlightPayload(item.value);
-    topics.push(new FlightStatsFlightDetailTopic(payload.id!, item.value));
-    flightsPayload.push(payload);
-  }
-
-  if (!isEmpty(topics)) {
-    TopicPublisher.broadcastAll(topics);
+    flightsPayload.push(flightStatFlightToFlightPayload(item.value));
   }
 
   return flightsPayload;

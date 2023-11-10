@@ -2,6 +2,7 @@ import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { GQL_ValueType } from '../enums/ValueType';
 import { Prisma } from '@prisma/client';
 import GraphQLScalars from 'graphql-scalars';
+import { GQL_ChangeType } from '../enums/ChangeType';
 
 @ObjectType('FlightEvent')
 export class GQL_FlightEvent {
@@ -24,16 +25,16 @@ export class GQL_FlightEvent {
   requireAlert: boolean;
 
   @Field(() => GQL_ValueType, { nullable: true })
-  changedValueType?: GQL_ValueType;
+  valueType?: GQL_ValueType;
 
-  @Field(() => GQL_ValueType, { nullable: true })
-  prevValueType?: GQL_ValueType;
-
-  @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
-  changedValue?: Prisma.JsonValue;
+  @Field(() => GQL_ChangeType, { nullable: true })
+  changeType?: GQL_ChangeType;
 
   @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
-  prevValue?: Prisma.JsonValue;
+  currentValue?: Prisma.JsonValue;
+
+  @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
+  previousValue?: Prisma.JsonValue;
 
   @Field()
   timestamp: Date;

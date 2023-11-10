@@ -8,7 +8,7 @@ import { FlightQueryParam } from '@app/types/flight';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 
-import { patchFlightPayloadWithFlightera } from './patch.payload.from.flightera';
+import { getFlightEmissions } from './get.flight.emissions';
 import { getFlightsPayloadFromFlightStats } from './flights.payload.from.flights.stat';
 import { getFlightsPayloadFromAeroDataBox } from './flights.payload.from.aero.data.box';
 
@@ -44,8 +44,10 @@ function getFlights(params: FlightQueryParam) {
  * flight records in the database.
  */
 export async function populateFlights(params: FlightQueryParam) {
-  const initialPayload = await getFlights(params);
-  const flights = await patchFlightPayloadWithFlightera(initialPayload, params);
+  const [flights, emissions] = await Promise.all([
+    getFlights(params),
+    getFlightEmissions(params),
+  ]);
 
   if (isEmpty(flights)) {
     throw new Error('Flight(s) not found!');
@@ -53,21 +55,12 @@ export async function populateFlights(params: FlightQueryParam) {
 
   try {
     Logger.debug('Creating flights for param[%o]', params);
-
-    const result = await prisma.$transaction(
-      flights.map(entry =>
-        prisma.flight.create({
-          data: entry,
-          select: {
-            id: true,
-          },
-        }),
-      ),
-    );
+    const data = flights.map(flight => Object.assign(flight, emissions));
+    const result = await prisma.flight.createMany({ data });
 
     Logger.warn(
       'Created %d for Flight[%s%s] on %s/%s/%s',
-      result.length,
+      result.count,
       params.airlineIata,
       params.flightNumber,
       params.flightYear,
@@ -76,7 +69,7 @@ export async function populateFlights(params: FlightQueryParam) {
     );
 
     TopicPublisher.broadcastAll(
-      result.map(flight => new FlightCreatedTopic(flight.id)),
+      flights.map(flight => new FlightCreatedTopic(flight.id!)),
     );
   } catch (error) {
     Logger.error('Unable to create flight(s) in populateFlights', error);

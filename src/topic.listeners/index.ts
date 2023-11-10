@@ -1,3 +1,3 @@
 import './flight.created';
+import './flight.updated';
 import './user.created.listener';
-import './flight.stats.flight.detail.listener';

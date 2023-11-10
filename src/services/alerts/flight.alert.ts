@@ -27,6 +27,13 @@ export async function sendFlightAlert(
   { body, data, title }: Payload,
 ) {
   try {
+    Logger.debug('Sending flight alert', {
+      body,
+      data,
+      flightID,
+      title,
+    });
+
     /**
      * Not working right now
      * @see https://github.com/oven-sh/bun/issues/2036

@@ -8,7 +8,6 @@ import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { FlightUpdatedTopic } from '@app/topics/defined.topics/flight.updated.topic';
 import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';
-import { FlightStatsFlightDetailTopic } from '@app/topics/defined.topics/flight.stats.flight.detail.topic';
 
 import { Job } from '../job';
 
@@ -54,10 +53,6 @@ export class SyncActiveFlightsJob extends Job {
       result,
     );
 
-    TopicPublisher.broadcast(
-      new FlightStatsFlightDetailTopic(flight.id, result),
-    );
-
     const payload = flightStatFlightToFlightPayload(result);
     const updateData: Prisma.FlightUpdateInput = {
       actualGateArrival: payload.actualGateArrival,
@@ -79,18 +74,12 @@ export class SyncActiveFlightsJob extends Job {
 
     const writeResult = await prisma.flight.update({
       data: updateData,
-      select: { id: true },
       where: { id: flight.id },
     });
 
     if (writeResult) {
-      this.logger.debug(
-        `Updated flight[%s] result[%o]`,
-        flight.id,
-        writeResult,
-      );
-
-      TopicPublisher.broadcast(new FlightUpdatedTopic(flight.id));
+      this.logger.debug(`Updated flight[%s]`, flight.id);
+      TopicPublisher.broadcast(new FlightUpdatedTopic(flight, writeResult));
     }
   }
 

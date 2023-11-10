@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { Flight } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -5,10 +6,10 @@ import { Logger } from '@app/lib/logger';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/flight.vendors/flight.stats';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
-import { FlightStatsFlightDetailTopic } from '@app/topics/defined.topics/flight.stats.flight.detail.topic';
 
-import { patchFlightPayloadWithFlightera } from './patch.payload.from.flightera';
+import { getFlightEmissions } from './get.flight.emissions';
 import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
+import { getFlightTimelinePayload } from '../flight.timeline/get.flight.timeline.payload';
 
 /**
  * The function `getRandomFlight` retrieves a random flight from FlightStats API, checks if it already
@@ -32,28 +33,36 @@ export async function getRandomFlight(): Promise<Flight> {
     return exists;
   }
 
-  const remoteFlight = await FlightStats.getFlightDetails({
-    airlineIata: randFlight.carrierIata,
-    flightDate: randFlight.flightDate,
-    flightID: randFlight.flightId.toString(),
-    flightMonth: randFlight.flightMonth,
-    flightNumber: randFlight.flightNumber,
-    flightYear: randFlight.flightYear,
-  });
+  const [remoteFlight, emission] = await Promise.all([
+    FlightStats.getFlightDetails({
+      airlineIata: randFlight.carrierIata,
+      flightDate: randFlight.flightDate,
+      flightID: randFlight.flightId.toString(),
+      flightMonth: randFlight.flightMonth,
+      flightNumber: randFlight.flightNumber,
+      flightYear: randFlight.flightYear,
+    }),
+    getFlightEmissions({
+      airlineIata: randFlight.carrierIata,
+      flightNumber: randFlight.flightNumber,
+    }),
+  ]);
 
   try {
     const data = flightStatFlightToFlightPayload(remoteFlight);
-    const patchedData = await patchFlightPayloadWithFlightera(data, {
-      airlineIata: randFlight.carrierIata,
-      flightNumber: randFlight.flightNumber,
+    const timeline = getFlightTimelinePayload(data.id!, remoteFlight);
+    const timelineData = timeline.map(entry => omit(entry, ['flightID']));
+
+    const payload = Object.assign(data, emission, {
+      FlightTimeline: {
+        createMany: {
+          data: timelineData,
+        },
+      },
     });
 
-    Logger.debug('Creating flight', patchedData);
-    const flight = await prisma.flight.create({ data: patchedData });
-    TopicPublisher.broadcastAll([
-      new FlightCreatedTopic(flight.id),
-      new FlightStatsFlightDetailTopic(flight.id, remoteFlight),
-    ]);
+    const flight = await prisma.flight.create({ data: payload });
+    TopicPublisher.broadcastAll([new FlightCreatedTopic(flight.id)]);
     return flight;
   } catch (error) {
     Logger.error('Unable to create flight in getRandomFlight', error);

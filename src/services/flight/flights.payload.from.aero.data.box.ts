@@ -8,7 +8,7 @@ import { AeroDataBoxFlight } from '@app/flight.vendors/aero.data.box/types';
 
 function toFlightPayload(
   entry: AeroDataBoxFlight,
-): Prisma.FlightUncheckedCreateInput {
+): RequiredKeys<Prisma.FlightUncheckedCreateInput, 'id'> {
   const departureDate = moment.parseZone(entry.departure.actualTimeLocal);
   const arrivalDate = moment.parseZone(entry.arrival.actualTimeLocal);
 

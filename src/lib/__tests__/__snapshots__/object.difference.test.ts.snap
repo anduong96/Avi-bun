@@ -1,0 +1,46 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib::object.difference should return an empty object when the current and previous objects are the same 1`] = `[]`;
+
+exports[`lib::object.difference should return an object with the keys and values that have changed between the current and previous objects 1`] = `
+[
+  {
+    "changeType": "MODIFIED",
+    "currentValue": 2,
+    "description": "b was changed to 2",
+    "originalValue": 3,
+    "valueType": "NUMBER",
+  },
+]
+`;
+
+exports[`lib::object.difference should return an object with the keys and values that have changed between the current and previous objects, using a key transform function 1`] = `
+[
+  {
+    "changeType": "MODIFIED",
+    "currentValue": 2,
+    "description": "b was changed to 2",
+    "originalValue": 3,
+    "valueType": "NUMBER",
+  },
+]
+`;
+
+exports[`lib::object.difference should return an object with the keys and values that have been removed between the current and previous objects 1`] = `
+[
+  {
+    "changeType": "ADDED",
+    "current": 2,
+    "description": "B was added as 2",
+    "previous": null,
+    "valueType": "NUMBER",
+  },
+  {
+    "changeType": "REMOVED",
+    "currentValue": undefined,
+    "description": "D was removed",
+    "originalValue": 4,
+    "valueType": "NUMBER",
+  },
+]
+`;

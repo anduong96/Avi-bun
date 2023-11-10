@@ -2,7 +2,7 @@ import { format } from 'sys';
 import { ChangeType } from '@prisma/client';
 import { describe, expect, test } from 'bun:test';
 
-import { getObjectDifference } from '../objects/object.difference/get.object.difference';
+import { getObjectDifference } from '../get.object.difference';
 
 describe('lib::object.difference', () => {
   test('should return an empty object when the current and previous objects are the same', () => {

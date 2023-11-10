@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 
-import { removeNilProp } from './remove.nil.props';
+import { removeNilProp } from '../remove.nil.props';
 
 describe('lib::remove.nil.prop', () => {
   test('should remove null and undefined values from an object', () => {

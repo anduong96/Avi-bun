@@ -2,7 +2,7 @@ import { describe, expect, it, test } from 'bun:test';
 
 import { parseFlightIdFromUrl } from '../utils';
 
-describe('Flight Stats', () => {
+describe('Vendor::Flight Stats', () => {
   test('parseFlightIdFromUrl', () => {
     it('should return the flightId when it is present in the URL', () => {
       const url =

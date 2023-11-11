@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { FlightStats } from '..';
 
-describe('Flight Stats', () => {
+describe('Vendor::Flight Stats', () => {
   test('getFlightPromptness', async () => {
     const airlineIata = 'AA';
     const flightNumber = '100';
@@ -14,6 +14,11 @@ describe('Flight Stats', () => {
       flightNumber,
       originIata,
     });
+
+    if (!result) {
+      expect().fail();
+      return;
+    }
 
     expect(result.airline.iata).toBe(airlineIata);
     expect(result.arrivalAirport.iata).toBe(destinationIata);

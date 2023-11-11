@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { TSA } from '..';
 
-describe('TSA', () => {
+describe('Vendor::TSA', () => {
   test('getAirportWaitTimes: USA Airports', async () => {
     const airports = [
       ['LAX', 'Los Angeles International'],

@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { FlightStats } from '..';
 
-describe('Flight Stats', () => {
+describe('Vendor::Flight Stats', () => {
   type Item = {
     airlineIata: string;
     date: Date;

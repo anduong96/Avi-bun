@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { FlightStats } from '..';
 
-describe('Flight Stats', () => {
+describe('Vendor::Flight Stats', () => {
   test('getFlightDetails', async () => {
     const airlineIata = 'AA';
     const flightNumber = '100';

@@ -4,7 +4,7 @@ import { describe, expect, it, test } from 'bun:test';
 import { toFlightStatus } from '../utils';
 import { FlightStats_Status } from '../enums';
 
-describe('Flight Stats', () => {
+describe('Vendor::Flight Stats', () => {
   test('toFlightStatus', () => {
     it('should return ARCHIVED when flight status is ARRIVED', () => {
       expect(toFlightStatus(FlightStats_Status.ARRIVED)).toBe(

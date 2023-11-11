@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { describe, expect, test } from 'bun:test';
 
-describe('TSA::sanity tests', () => {
+describe('Vendor::TSA::sanity tests', () => {
   test('Convert Day', () => {
     const weekdays = [
       ['Monday', 1],

@@ -5,7 +5,7 @@ import { FlightStats } from '@app/vendors/flights/flight.stats';
 
 import { RadarBox } from '..';
 
-describe('RadarBox', () => {
+describe('Vendor::RadarBox', () => {
   test('Get Aircraft', async () => {
     await RadarBox.getAircraft('N508JL');
     expect(true).toBe(true);

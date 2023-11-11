@@ -4,7 +4,7 @@ import { Flight } from '@prisma/client';
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
 import { TopicPublisher } from '@app/topics/topic.publisher';
-import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { FlightStats } from '@app/api.vendors/flight.stats';
 import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.topic';
 
 import { getFlightEmissions } from './get.flight.emissions';

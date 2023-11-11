@@ -2,8 +2,8 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
-import { Skybrary } from '@app/flight.vendors/skybrary';
-import { Flightera } from '@app/flight.vendors/flightera';
+import { Skybrary } from '@app/api.vendors/skybrary';
+import { Flightera } from '@app/api.vendors/flightera';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.created.topic';
 

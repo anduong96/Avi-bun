@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { describe, expect, test } from 'bun:test';
 
-import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { FlightStats } from '@app/api.vendors/flight.stats';
 
 import { RadarBox } from '..';
 

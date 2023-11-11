@@ -2,7 +2,7 @@ import { isEmpty, pick } from 'lodash';
 import { Flight, FlightVendor } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
-import { FlightStats } from '@app/flight.vendors/flight.stats';
+import { FlightStats } from '@app/api.vendors/flight.stats';
 
 import { Logger } from '../../lib/logger';
 

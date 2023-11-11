@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { Logger } from '@app/lib/logger';
 import { Sentry } from '@app/lib/sentry';
 import { FlightQueryParam } from '@app/types/flight';
-import { Flightera } from '@app/api.vendors/flightera';
+import { Flightera } from '@app/vendors/flights/flightera';
 
 export async function getFlightEmissions(
   params: Pick<FlightQueryParam, 'airlineIata' | 'flightNumber'>,

@@ -4,7 +4,7 @@ import CronTime from 'cron-time-generator';
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
-import { FlightStats } from '@app/api.vendors/flight.stats';
+import { FlightStats } from '@app/vendors/flights/flight.stats';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightUpdatedTopic } from '@app/topics/defined.topics/flight.updated.topic';
 import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.payload.from.flights.stat';

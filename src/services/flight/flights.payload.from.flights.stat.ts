@@ -6,8 +6,8 @@ import { Logger } from '@app/lib/logger';
 import { toDateOrNull } from '@app/lib/date.or.null';
 import { FlightQueryParam } from '@app/types/flight';
 import { timezoneToUtcOffset } from '@app/lib/timezone';
-import { FlightStats } from '@app/api.vendors/flight.stats';
-import { toFlightStatus } from '@app/api.vendors/flight.stats/utils';
+import { FlightStats } from '@app/vendors/flights/flight.stats';
+import { toFlightStatus } from '@app/vendors/flights/flight.stats/utils';
 
 import { getFlightTimelinePayload } from '../flight.timeline/get.flight.timeline.payload';
 

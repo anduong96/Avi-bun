@@ -6,7 +6,7 @@ import { Prisma, ValueType } from '@prisma/client';
 
 import { Logger } from '@app/lib/logger';
 import { timezoneToUtcOffset } from '@app/lib/timezone';
-import { FlightDetails } from '@app/api.vendors/flight.stats/types';
+import { FlightDetails } from '@app/vendors/flights/flight.stats/types';
 
 type FlightStatsTimeline = FlightDetails['eventTimeline'][number];
 type FlightStatsEvent = FlightStatsTimeline['events'][number];

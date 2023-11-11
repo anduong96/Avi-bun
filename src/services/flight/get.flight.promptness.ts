@@ -3,7 +3,7 @@ import { Flight, FlightPromptness, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
-import { FlightStats } from '@app/api.vendors/flight.stats';
+import { FlightStats } from '@app/vendors/flights/flight.stats';
 import { fractionToPercent } from '@app/lib/fraction.to.percent';
 
 /**

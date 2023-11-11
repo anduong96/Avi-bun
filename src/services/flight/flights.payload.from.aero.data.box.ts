@@ -3,8 +3,8 @@ import moment from 'moment-timezone';
 import { FlightStatus, Prisma } from '@prisma/client';
 
 import { FlightQueryParam } from '@app/types/flight';
-import { AeroDataBox } from '@app/api.vendors/aero.data.box';
-import { AeroDataBoxFlight } from '@app/api.vendors/aero.data.box/types';
+import { AeroDataBox } from '@app/vendors/aero.data.box';
+import { AeroDataBoxFlight } from '@app/vendors/aircrafts/aero.data.box/types';
 
 function toFlightPayload(
   entry: AeroDataBoxFlight,

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { TSA } from '..';
 
-describe('Api Vendor:: TSA', () => {
+describe('TSA', () => {
   test('getAirportCheckpointsStatus', async () => {
     const airports = [
       ['LAX', 'Los Angeles International'],

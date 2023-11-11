@@ -80,6 +80,7 @@ model Airline {
   logoCompactImageURL  String?
   logoCompactImageType ImageType?
   isLowCost            Boolean?
+  Flight               Flight[]
 
   @@unique([icao])
   @@unique([iata])
@@ -110,22 +111,11 @@ model Airport {
   latitude    Float
   longitude   Float
 
-  Country            Country              @relation(fields: [countryCode], references: [isoCode])
-  AirportTsaWaitTime AirportTsaWaitTime[]
+  Country          Country  @relation(fields: [countryCode], references: [isoCode])
+  DepartureFlights Flight[] @relation(name: "DepartureFlights")
+  ArrivalFlights   Flight[] @relation(name: "ArrivalFlights")
 
   @@unique([iata])
-}
-
-model AirportTsaWaitTime {
-  id             String @id @default(uuid())
-  dayOfWeek      Int
-  averageMinWait Int
-
-  airportID String
-  airport   Airport  @relation(fields: [airportID], references: [id])
-  updatedAt DateTime @updatedAt
-
-  @@index([airportID])
 }
 
 model AirportCondition {
@@ -222,6 +212,10 @@ model Flight {
   FlightTimeline         FlightTimeline[]
   // @skip
   FlightAlert            FlightAlert[]
+
+  Origin      Airport @relation(fields: [originIata], references: [iata], name: "DepartureFlights")
+  Destination Airport @relation(fields: [destinationIata], references: [iata], name: "ArrivalFlights")
+  Airline     Airline @relation(fields: [airlineIata], references: [iata])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -467,4 +461,12 @@ model ScheduledJob {
   updatedAt        DateTime  @updatedAt
 
   @@unique([name])
+}
+
+model JsonCache {
+  id        String   @id
+  data      Json
+  expiresAt DateTime
+
+  @@index([expiresAt])
 }

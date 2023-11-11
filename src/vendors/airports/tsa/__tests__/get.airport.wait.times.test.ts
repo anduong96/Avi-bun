@@ -18,6 +18,7 @@ describe('Vendor::TSA', () => {
       expect(response.data[0].dayOfWeek).toBeWithin(0, 6);
       expect(response.data[0].hour).toBeWithin(0, 23);
       expect(response.data[0].maxWaitMinute).toBeWithin(0, 60);
+      expect(response.data[0].updatedAt).toBeInstanceOf(Date);
     }
   });
 

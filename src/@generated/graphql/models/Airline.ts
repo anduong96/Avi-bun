@@ -1,5 +1,6 @@
 import { Field, ObjectType, ID } from 'type-graphql';
 import { GQL_ImageType } from '../enums/ImageType';
+import { GQL_Flight } from './Flight';
 
 @ObjectType('Airline')
 export class GQL_Airline {
@@ -29,6 +30,9 @@ export class GQL_Airline {
 
   @Field({ nullable: true })
   isLowCost?: boolean;
+
+  @Field(() => [GQL_Flight])
+  Flight: GQL_Flight[];
 
   // skip overwrite 👇
 }

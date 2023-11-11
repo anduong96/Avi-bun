@@ -45,11 +45,11 @@ export class TSA {
     return {
       airportIata: result.airport_code,
       airportName: result.airport_name,
-      data: result.data.map(item => ({
+      data: result.data?.map(item => ({
         dayOfWeek: moment().day(item.day).day(),
         hour: Number(item.hour),
         maxWaitMinute: Number(item.max_standard_wait),
-        updatedAt: Number(item.updated),
+        updatedAt: new Date(Number(item.updated) * 1000),
       })),
     };
   }

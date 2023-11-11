@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
-import { Skybrary } from '@app/vendors/aircrafts/skybrary';
+import { Skybrary } from '@app/vendors/aircraft/skybrary';
 import { Flightera } from '@app/vendors/flights/flightera';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { AircraftCreatedTopic } from '@app/topics/defined.topics/aircraft.created.topic';

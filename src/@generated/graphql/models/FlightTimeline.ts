@@ -1,4 +1,3 @@
-import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { Field, ObjectType, ID } from 'type-graphql';
 
 @ObjectType('FlightTimeline')

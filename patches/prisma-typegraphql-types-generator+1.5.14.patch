@@ -1,5 +1,5 @@
 diff --git a/node_modules/prisma-typegraphql-types-generator/dist/generator.js b/node_modules/prisma-typegraphql-types-generator/dist/generator.js
-index 796d0f0..7635fc4 100644
+index 796d0f0..9e194f3 100644
 --- a/node_modules/prisma-typegraphql-types-generator/dist/generator.js
 +++ b/node_modules/prisma-typegraphql-types-generator/dist/generator.js
 @@ -49,6 +49,10 @@ const { version } = require('../package.json');
@@ -13,7 +13,13 @@ index 796d0f0..7635fc4 100644
          const extractedData = (0, extractFieldsModifications_1.ExtractFieldsModifications)(options.datamodel);
          const splitScalars = !!options.generator.config.splitScalarAndObjectTypeFields;
          const exportedNameSuffix = options.generator.config.exportedNameSuffix || '';
-@@ -227,7 +231,7 @@ const { version } = require('../package.json');
+@@ -222,12 +226,12 @@ const { version } = require('../package.json');
+             }
+             if (scalarFields.join('\n').includes('GraphQLScalars.')) {
+                 installPackage(options.generator.config.useYarn, 'graphql-scalars');
+-                imports.push((0, import_1.IMPORT_TEMPLATE)(`GraphQLScalars`, `graphql-scalars`));
++                imports.push((0, import_1.IMPORT_TEMPLATE)(`* as GraphQLScalars`, `graphql-scalars`));
+             }
              const classChanges = (0, restoreClassChanges_1.restoreClassChanges)(writeLocation);
              const importsChanges = (0, restoreImportsSection_1.restoreImportsChanges)(writeLocation, modelName);
              if (!importsChanges) {
@@ -23,7 +29,7 @@ index 796d0f0..7635fc4 100644
              const actualImportsThatChanged = importsChanges
                  ? (await (0, format_1.format)(importsChanges
 diff --git a/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js b/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js
-index 10a3ecb..3e04f1c 100644
+index 10a3ecb..4dd023e 100644
 --- a/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js
 +++ b/node_modules/prisma-typegraphql-types-generator/dist/templates/model.js
 @@ -2,7 +2,7 @@
@@ -35,3 +41,28 @@ index 10a3ecb..3e04f1c 100644
  ${FIELDS}
  ${CUSTOMFIELDS}`;
  };
+diff --git a/node_modules/prisma-typegraphql-types-generator/dist/utils/extractFieldsModifications.js b/node_modules/prisma-typegraphql-types-generator/dist/utils/extractFieldsModifications.js
+index ae9c747..40d9a01 100644
+--- a/node_modules/prisma-typegraphql-types-generator/dist/utils/extractFieldsModifications.js
++++ b/node_modules/prisma-typegraphql-types-generator/dist/utils/extractFieldsModifications.js
+@@ -4,10 +4,11 @@ exports.ExtractFieldsModifications = void 0;
+ const ExtractFieldsModifications = (dataModel) => {
+     let hideField = false;
+     let privateField = false;
++    let relationField = false;
+     let currentCodeBlock;
+     const extractedData = [];
+     dataModel.split('\n').forEach((line) => {
+-        if (line.includes('@skip')) {
++        if (line.includes('@skip') ) {
+             return (hideField = true);
+         }
+         else if (line.includes('@nullable')) {
+@@ -23,6 +24,7 @@ const ExtractFieldsModifications = (dataModel) => {
+             .split(' ')
+             .filter((e) => e !== '')
+             .map((e) => e.replace('\r', ''))[0];
++
+         if (hideField) {
+             extractedData.push({
+                 fieldName,

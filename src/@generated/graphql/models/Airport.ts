@@ -1,6 +1,6 @@
 import { Field, ObjectType, ID, Int, Float } from 'type-graphql';
-import { GQL_City } from './City';
 import { GQL_Country } from './Country';
+import { GQL_Flight } from './Flight';
 
 @ObjectType('Airport')
 export class GQL_Airport {
@@ -45,6 +45,12 @@ export class GQL_Airport {
 
   @Field(() => GQL_Country)
   Country: GQL_Country;
+
+  @Field(() => [GQL_Flight])
+  DepartureFlights: GQL_Flight[];
+
+  @Field(() => [GQL_Flight])
+  ArrivalFlights: GQL_Flight[];
 
   // skip overwrite 👇
 }

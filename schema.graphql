@@ -36,6 +36,7 @@ type AircraftPosition {
 }
 
 type Airline {
+  Flight: [Flight!]!
   iata: String!
   icao: String
   id: ID!
@@ -48,7 +49,9 @@ type Airline {
 }
 
 type Airport {
+  ArrivalFlights: [Flight!]!
   Country: Country!
+  DepartureFlights: [Flight!]!
   cityCode: String!
   cityName: String!
   countryCode: String!
@@ -186,6 +189,8 @@ type Query {
   airline(iata: String!): Airline!
   airlines: [Airline!]!
   airport(iata: String!): Airport!
+  airportTsaCheckpointsStatus(dayOfWeek: Float!, iata: String!): JSON
+  airportTsaWaitTime(iata: String!): JSON
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!

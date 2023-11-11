@@ -2,7 +2,7 @@ import { Aircraft } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
-import { RadarBox } from '@app/vendors/flights/radar.box';
+import { RadarBox } from '@app/vendors/aircraft/radar.box';
 
 export async function updateAircraftPosition(
   aircraft: Pick<Aircraft, 'airlineIata' | 'id' | 'tailNumber'>,

@@ -110,9 +110,22 @@ model Airport {
   latitude    Float
   longitude   Float
 
-  Country Country @relation(fields: [countryCode], references: [isoCode])
+  Country            Country              @relation(fields: [countryCode], references: [isoCode])
+  AirportTsaWaitTime AirportTsaWaitTime[]
 
   @@unique([iata])
+}
+
+model AirportTsaWaitTime {
+  id             String @id @default(uuid())
+  dayOfWeek      Int
+  averageMinWait Int
+
+  airportID String
+  airport   Airport  @relation(fields: [airportID], references: [id])
+  updatedAt DateTime @updatedAt
+
+  @@index([airportID])
 }
 
 model AirportCondition {

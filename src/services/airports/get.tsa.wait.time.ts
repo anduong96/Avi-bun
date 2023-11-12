@@ -21,7 +21,7 @@ export async function createTsaWaitTimeForAirport(
   });
 
   Logger.warn('TSA wait time for airport %s created', airport.iata);
-  return entry;
+  return entry.data as unknown as (typeof result)['data'];
 }
 
 export async function createTsaCheckpointsForAirport(
@@ -37,7 +37,7 @@ export async function createTsaCheckpointsForAirport(
     },
   });
 
-  return entry;
+  return entry.data as (typeof result)['terminals'];
 }
 
 export async function getTsaWaitTimeForFlight(airportIata: string) {
@@ -57,16 +57,17 @@ export async function getTsaWaitTimeForFlight(airportIata: string) {
     },
   });
 
-  return (
-    waitTime ??
-    createTsaWaitTimeForAirport({
+  const result =
+    waitTime?.data ??
+    (await createTsaWaitTimeForAirport({
       iata: airport.iata!,
       id: airport.id,
-    })
-  );
+    }));
+
+  return result as unknown as ReturnType<typeof createTsaWaitTimeForAirport>;
 }
 
-export async function getTsaAirportCheckpoints(
+export async function getTsaAirportCheckpointsStatus(
   airportIata: string,
   dayOfWeek: number,
 ) {
@@ -86,5 +87,9 @@ export async function getTsaAirportCheckpoints(
     },
   });
 
-  return checkpoints ?? createTsaCheckpointsForAirport(airportIata, dayOfWeek);
+  const result =
+    checkpoints?.data ??
+    (await createTsaCheckpointsForAirport(airportIata, dayOfWeek));
+
+  return result as unknown as ReturnType<typeof createTsaCheckpointsForAirport>;
 }

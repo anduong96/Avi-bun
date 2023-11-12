@@ -1,12 +1,14 @@
-import * as GraphQLScalars from 'graphql-scalars';
 import { Arg, Authorized, Query, Resolver } from 'type-graphql';
 
 import { prisma } from '@app/prisma';
 import { GQL_Airport } from '@app/@generated/graphql/models/Airport';
 import {
-  getTsaAirportCheckpoints,
+  getTsaAirportCheckpointsStatus,
   getTsaWaitTimeForFlight,
 } from '@app/services/airports/get.tsa.wait.time';
+
+import { GQL_AirportTsaWaitTime } from '../_responses/airport.tsa.wait.time';
+import { GQL_AirportTsaCheckPointTerminal } from '../_responses/airport.tsa.checkpoints';
 
 @Resolver(() => GQL_Airport)
 export class AirportResolver {
@@ -21,19 +23,19 @@ export class AirportResolver {
   }
 
   @Authorized()
-  @Query(() => GraphQLScalars.JSONResolver, { nullable: true })
+  @Query(() => [GQL_AirportTsaCheckPointTerminal], { nullable: true })
   async airportTsaCheckpointsStatus(
     @Arg('iata') iata: string,
     @Arg('dayOfWeek') dayOfWeek: number,
   ) {
-    const entry = await getTsaAirportCheckpoints(iata, dayOfWeek);
-    return entry?.data;
+    const entry = await getTsaAirportCheckpointsStatus(iata, dayOfWeek);
+    return entry;
   }
 
   @Authorized()
-  @Query(() => GraphQLScalars.JSONResolver, { nullable: true })
+  @Query(() => [GQL_AirportTsaWaitTime], { nullable: true })
   async airportTsaWaitTime(@Arg('iata') iata: string) {
     const entry = await getTsaWaitTimeForFlight(iata);
-    return entry?.data;
+    return entry;
   }
 }

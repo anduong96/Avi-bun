@@ -67,6 +67,33 @@ type Airport {
   timezone: String!
 }
 
+type AirportTsaCheckPointHour {
+  hour: Float!
+  status: CheckPointStatus!
+}
+
+type AirportTsaCheckPointTerminal {
+  checkpoints: [AirportTsaCheckPoints!]!
+  terminalName: String!
+}
+
+type AirportTsaCheckPoints {
+  checkPointName: String!
+  hours: [AirportTsaCheckPointHour!]!
+}
+
+type AirportTsaWaitTime {
+  dayOfWeek: Float!
+  hour: Float!
+  maxWaitMinute: Float!
+  updatedAt: DateTimeISO!
+}
+
+enum CheckPointStatus {
+  CLOSE
+  OPEN
+}
+
 type Country {
   dialCode: String!
   flagImageType: ImageType
@@ -189,8 +216,8 @@ type Query {
   airline(iata: String!): Airline!
   airlines: [Airline!]!
   airport(iata: String!): Airport!
-  airportTsaCheckpointsStatus(dayOfWeek: Float!, iata: String!): JSON
-  airportTsaWaitTime(iata: String!): JSON
+  airportTsaCheckpointsStatus(dayOfWeek: Float!, iata: String!): [AirportTsaCheckPointTerminal!]
+  airportTsaWaitTime(iata: String!): [AirportTsaWaitTime!]
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!

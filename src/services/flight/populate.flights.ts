@@ -56,11 +56,21 @@ export async function populateFlights(params: FlightQueryParam) {
   try {
     Logger.debug('Creating flights for param[%o]', params);
     const data = flights.map(flight => Object.assign(flight, emissions));
-    const result = await prisma.flight.createMany({ data });
+    // create many is having issue with validation
+    const result = await prisma.$transaction(
+      data.map(entry =>
+        prisma.flight.create({
+          data: entry,
+          select: {
+            id: true,
+          },
+        }),
+      ),
+    );
 
     Logger.warn(
       'Created %d for Flight[%s%s] on %s/%s/%s',
-      result.count,
+      result.length,
       params.airlineIata,
       params.flightNumber,
       params.flightYear,

@@ -135,9 +135,7 @@ export function getFlightTimelinePayload(
 
     payloads.push({
       FlightEvents: {
-        createMany: {
-          data: events.map(event => omit(event, ['flightTimelineID'])),
-        },
+        create: events.map(event => omit(event, ['flightTimelineID'])),
       },
       flightID,
       id: timelineID,

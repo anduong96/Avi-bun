@@ -11,6 +11,9 @@ CREATE TYPE "FlightVendor" AS ENUM ('FLIGHT_STATS', 'AERO_DATA_BOX');
 CREATE TYPE "ValueType" AS ENUM ('NUMBER', 'STRING', 'DATE', 'BOOLEAN');
 
 -- CreateEnum
+CREATE TYPE "ChangeType" AS ENUM ('ADDED', 'REMOVED', 'MODIFIED');
+
+-- CreateEnum
 CREATE TYPE "FlightStatus" AS ENUM ('SCHEDULED', 'DEPARTED', 'DELAYED', 'ARRIVED', 'CANCELED', 'ARCHIVED', 'LANDED');
 
 -- CreateEnum
@@ -79,7 +82,7 @@ CREATE TABLE "AirportCondition" (
 CREATE TABLE "AirportWeather" (
     "id" TEXT NOT NULL,
     "airportIata" TEXT NOT NULL,
-    "tempuratureC" INTEGER NOT NULL,
+    "temperatureCelsius" INTEGER NOT NULL,
 
     CONSTRAINT "AirportWeather_pkey" PRIMARY KEY ("id")
 );
@@ -140,6 +143,8 @@ CREATE TABLE "Flight" (
     "co2EmissionKgBusiness" DOUBLE PRECISION,
     "co2EmissionKgEco" DOUBLE PRECISION,
     "reconAttempt" INTEGER DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Flight_pkey" PRIMARY KEY ("id")
 );
@@ -221,14 +226,14 @@ CREATE TABLE "AircraftPosition" (
 CREATE TABLE "FlightEvent" (
     "id" TEXT NOT NULL,
     "flightTimelineID" TEXT NOT NULL,
-    "index" INTEGER NOT NULL,
+    "index" INTEGER NOT NULL DEFAULT 0,
     "flightID" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "requireAlert" BOOLEAN NOT NULL,
-    "changedValueType" "ValueType",
-    "prevValueType" "ValueType",
-    "changedValue" JSONB,
-    "prevValue" JSONB,
+    "valueType" "ValueType",
+    "changeType" "ChangeType",
+    "currentValue" JSONB,
+    "previousValue" JSONB,
     "timestamp" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "FlightEvent_pkey" PRIMARY KEY ("id")
@@ -239,10 +244,10 @@ CREATE TABLE "FlightTimeline" (
     "id" TEXT NOT NULL,
     "flightID" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "index" INTEGER NOT NULL,
     "source" TEXT NOT NULL,
     "timestamp" TIMESTAMP(3) NOT NULL,
     "hasAlerted" BOOLEAN NOT NULL DEFAULT false,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "FlightTimeline_pkey" PRIMARY KEY ("id")
 );
@@ -336,6 +341,15 @@ CREATE TABLE "ScheduledJob" (
     CONSTRAINT "ScheduledJob_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "JsonCache" (
+    "id" TEXT NOT NULL,
+    "data" JSONB NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "JsonCache_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Airline_icao_key" ON "Airline"("icao");
 
@@ -403,7 +417,7 @@ CREATE INDEX "FlightEvent_flightTimelineID_idx" ON "FlightEvent"("flightTimeline
 CREATE UNIQUE INDEX "FlightEvent_flightID_flightTimelineID_index_key" ON "FlightEvent"("flightID", "flightTimelineID", "index");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "FlightTimeline_flightID_index_key" ON "FlightTimeline"("flightID", "index");
+CREATE UNIQUE INDEX "FlightTimeline_flightID_timestamp_key" ON "FlightTimeline"("flightID", "timestamp");
 
 -- CreateIndex
 CREATE INDEX "FlightPlan_flightID_idx" ON "FlightPlan"("flightID");
@@ -423,6 +437,9 @@ CREATE UNIQUE INDEX "UserPreference_userID_key" ON "UserPreference"("userID");
 -- CreateIndex
 CREATE UNIQUE INDEX "ScheduledJob_name_key" ON "ScheduledJob"("name");
 
+-- CreateIndex
+CREATE INDEX "JsonCache_expiresAt_idx" ON "JsonCache"("expiresAt");
+
 -- AddForeignKey
 ALTER TABLE "Airport" ADD CONSTRAINT "Airport_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -430,13 +447,13 @@ ALTER TABLE "Airport" ADD CONSTRAINT "Airport_countryCode_fkey" FOREIGN KEY ("co
 ALTER TABLE "City" ADD CONSTRAINT "City_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Flight" ADD CONSTRAINT "Flight_originIata_fkey" FOREIGN KEY ("originIata") REFERENCES "Airport"("iata") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_originIata_fkey" FOREIGN KEY ("originIata") REFERENCES "Airport"("iata") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationIata_fkey" FOREIGN KEY ("destinationIata") REFERENCES "Airport"("iata") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationIata_fkey" FOREIGN KEY ("destinationIata") REFERENCES "Airport"("iata") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_fkey" FOREIGN KEY ("airlineIata") REFERENCES "Airline"("iata") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airlineIata_fkey" FOREIGN KEY ("airlineIata") REFERENCES "Airline"("iata") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FlightVendorConnection" ADD CONSTRAINT "FlightVendorConnection_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE RESTRICT;

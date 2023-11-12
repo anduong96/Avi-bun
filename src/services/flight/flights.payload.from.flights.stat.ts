@@ -47,11 +47,9 @@ export function flightStatFlightToFlightPayload(
 
   return {
     FlightTimeline: {
-      createMany: {
-        data: getFlightTimelinePayload(flightID, flight).map(entry =>
-          omit(entry, ['flightID']),
-        ),
-      },
+      create: getFlightTimelinePayload(flightID, flight).map(entry =>
+        omit(entry, ['flightID']),
+      ),
     },
     FlightVendorConnection: {
       create: {

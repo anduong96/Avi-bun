@@ -27,3 +27,24 @@ exports[`lib::object.difference should return an object with the keys and values
   },
 ]
 `;
+
+exports[`lib::object.difference should return an object with the keys and values that have been removed between the current and previous objects 1`] = `
+[
+  {
+    "changeType": "ADDED",
+    "currentValue": 2,
+    "description": "B was added as 2",
+    "key": "b",
+    "previousValue": null,
+    "valueType": "NUMBER",
+  },
+  {
+    "changeType": "REMOVED",
+    "currentValue": undefined,
+    "description": "D was removed",
+    "key": "d",
+    "previousValue": 4,
+    "valueType": "NUMBER",
+  },
+]
+`;

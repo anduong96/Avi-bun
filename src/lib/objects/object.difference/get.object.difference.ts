@@ -56,23 +56,28 @@ export function _getObjectDifferenceWithOpts<
         onDescription,
       );
     } else if (current[key] !== previous[key]) {
-      const currentValue = castAsPrimitiveValue(current[key], currentType);
-      const previousValue = castAsPrimitiveValue(previous[key], currentType);
+      const currentValue = isNil(current[key])
+        ? undefined
+        : castAsPrimitiveValue(current[key], currentType);
 
-      if (isNil(previous[key])) {
+      const previousValue = isNil(previous[key])
+        ? undefined
+        : castAsPrimitiveValue(previous[key], currentType);
+
+      if (isNil(previousValue) && !isNil(currentValue)) {
         const description =
           onDescription?.(currentKey, currentValue, ChangeType.ADDED) ??
           format('%s was added', currentPath);
 
         diffs.push({
           changeType: ChangeType.ADDED,
-          currentValue: currentValue,
+          currentValue,
           description,
           key: currentPath,
           previousValue: null,
           valueType: currentType,
         });
-      } else if (isNil(current[key])) {
+      } else if (isNil(currentValue) && !isNil(previousValue)) {
         const description =
           onDescription?.(currentKey, currentValue, ChangeType.REMOVED) ??
           format('% was unset', currentPath);
@@ -85,17 +90,17 @@ export function _getObjectDifferenceWithOpts<
           previousValue: previousValue,
           valueType: currentType,
         });
-      } else if (current[key] !== previous[key]) {
+      } else if (currentValue !== previousValue) {
         const description =
           onDescription?.(currentKey, currentValue, ChangeType.MODIFIED) ??
           format('%s was changed to %s', currentPath, currentValue);
 
         diffs.push({
           changeType: ChangeType.MODIFIED,
-          currentValue,
+          currentValue: currentValue!,
           description,
           key: currentPath,
-          previousValue,
+          previousValue: previousValue!,
           valueType: currentType,
         });
       }

@@ -1,5 +1,7 @@
 import { $Enums, ValueType } from '@prisma/client';
 
+import { Logger } from '../logger';
+
 /**
  * The function `castAsPrimitiveValue` is a TypeScript function that takes an unknown value and a value
  * type, and returns the value casted to the specified type if it matches, otherwise it throws an
@@ -14,8 +16,8 @@ import { $Enums, ValueType } from '@prisma/client';
  * `STRING`, or `DATE`. The return type of the function is determined by the `Result` type, which is a
  * conditional type that maps each `ValueType` enum value to
  */
-export function castAsPrimitiveValue<T extends ValueType>(
-  value: unknown,
+export function castAsPrimitiveValue<T extends ValueType, V>(
+  value: V,
   type: T,
 ) {
   type Result = T extends typeof $Enums.ValueType.BOOLEAN
@@ -38,5 +40,6 @@ export function castAsPrimitiveValue<T extends ValueType>(
     return value as Result;
   }
 
+  Logger.warn('Unsupported value: value=%s type=%s', value, type);
   throw new Error('Unsupported value type');
 }

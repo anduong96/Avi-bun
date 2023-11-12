@@ -1,5 +1,4 @@
-import { get } from 'lodash';
-import * as firebaseAdmin from 'firebase-admin';
+import firebaseAdmin from 'firebase-admin';
 
 import { ENV } from '@app/env';
 
@@ -11,8 +10,7 @@ const credential = firebaseAdmin.credential.cert({
   projectId: ENV.FIREBASE_PROJECT_ID,
 });
 
-const admin = get(firebaseAdmin, 'default') as unknown as typeof firebaseAdmin;
-export const firebase = admin.initializeApp({
+export const firebase = firebaseAdmin.initializeApp({
   credential,
 });
 

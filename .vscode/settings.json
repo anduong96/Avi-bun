@@ -27,7 +27,8 @@
     "Elysia",
     "Flightera",
     "gitops",
-    "skybrary"
+    "skybrary",
+    "tslog"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "always"

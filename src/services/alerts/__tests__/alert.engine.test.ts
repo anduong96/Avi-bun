@@ -1,5 +1,23 @@
-import { describe, test } from 'bun:test';
+import { beforeEach, describe, it, mock } from 'bun:test';
 
-describe('Service::Alerts', () => {
-  test.todo('findAlertableFlightDiff');
+const mockSendToTopic = mock(() => {
+  return {
+    messageId: 1,
+  };
+});
+
+mock.module('../../../firebase.ts', () => ({
+  firebase: {
+    messaging: () => ({
+      sendToTopic: mockSendToTopic,
+    }),
+  },
+}));
+
+describe('services::alerts::alert.engine', () => {
+  beforeEach(() => {
+    mockSendToTopic.mockReset();
+  });
+
+  it.todo('handleFlightChangesForAlerts', async () => {});
 });

@@ -215,9 +215,9 @@ type Query {
   aircraftPosition(aircraftID: Float!): AircraftPosition
   airline(iata: String!): Airline!
   airlines: [Airline!]!
-  airport(iata: String!): Airport!
-  airportTsaCheckpointsStatus(dayOfWeek: Float!, iata: String!): [AirportTsaCheckPointTerminal!]
-  airportTsaWaitTime(iata: String!): [AirportTsaWaitTime!]
+  airport(airportIata: String!): Airport!
+  airportTsaCheckpointsStatus(airportIata: String!, dayOfWeek: Float!): [AirportTsaCheckPointTerminal!]
+  airportTsaWaitTime(airportIata: String!): [AirportTsaWaitTime!]
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!

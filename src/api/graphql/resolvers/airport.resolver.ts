@@ -14,7 +14,7 @@ import { GQL_AirportTsaCheckPointTerminal } from '../_responses/airport.tsa.chec
 export class AirportResolver {
   @Authorized()
   @Query(() => GQL_Airport)
-  airport(@Arg('iata') iata: string) {
+  airport(@Arg('airportIata') iata: string) {
     return prisma.airport.findFirstOrThrow({
       where: {
         iata,
@@ -25,7 +25,7 @@ export class AirportResolver {
   @Authorized()
   @Query(() => [GQL_AirportTsaCheckPointTerminal], { nullable: true })
   async airportTsaCheckpointsStatus(
-    @Arg('iata') iata: string,
+    @Arg('airportIata') iata: string,
     @Arg('dayOfWeek') dayOfWeek: number,
   ) {
     const entry = await getTsaAirportCheckpointsStatus(iata, dayOfWeek);
@@ -34,7 +34,7 @@ export class AirportResolver {
 
   @Authorized()
   @Query(() => [GQL_AirportTsaWaitTime], { nullable: true })
-  async airportTsaWaitTime(@Arg('iata') iata: string) {
+  async airportTsaWaitTime(@Arg('airportIata') iata: string) {
     const entry = await getTsaWaitTimeForFlight(iata);
     return entry;
   }

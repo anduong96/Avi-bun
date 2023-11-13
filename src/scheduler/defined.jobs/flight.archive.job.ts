@@ -19,7 +19,7 @@ export class ArchiveFlightJob extends Job {
           lte: moment().subtract(60, 'minutes').toDate(),
         },
         status: {
-          not: FlightStatus.ARCHIVED,
+          notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
         },
       },
     });

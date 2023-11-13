@@ -1,5 +1,6 @@
 import * as uuid from 'uuid';
 import { format } from 'sys';
+import { startCase } from 'lodash';
 import { Flight } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -71,7 +72,7 @@ function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
       : '%s were changed',
     changes
       .slice(0, maxDisplay)
-      .map(entry => entry.key)
+      .map(entry => startCase(entry.key))
       .join(', '),
   );
 

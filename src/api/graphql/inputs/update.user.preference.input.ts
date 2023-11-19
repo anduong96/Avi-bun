@@ -5,5 +5,5 @@ import { GQL_UserPreference } from '@app/@generated/graphql/models/UserPreferenc
 
 @InputType()
 export class UpdateUserPreferenceInput extends Partial(
-  Pick(GQL_UserPreference, ['measurement']),
+  Pick(GQL_UserPreference, ['measurement', 'dateFormat']),
 ) {}

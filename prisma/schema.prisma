@@ -69,6 +69,11 @@ enum MeasurementType {
   IMPERIAL
 }
 
+enum DateFormatType {
+  AMERICAN
+  WORLD
+}
+
 model Airline {
   id String @id @default(uuid())
 
@@ -438,6 +443,7 @@ model UserPreference {
   userID String
 
   measurement MeasurementType @default(AMERICAN)
+  dateFormat  DateFormatType  @default(AMERICAN)
 
   // @skip
   User User @relation(fields: [userID], references: [id])

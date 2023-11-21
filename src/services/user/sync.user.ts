@@ -51,7 +51,6 @@ export async function syncAuthProviderForUser(userID: string) {
           where: { id: entry.id },
         })),
       },
-
       isAnonymous,
       lastSignInAt: firebaseUser.metadata.lastSignInTime
         ? moment(firebaseUser.metadata.lastSignInTime).toDate()

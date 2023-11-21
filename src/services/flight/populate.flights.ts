@@ -50,32 +50,51 @@ export async function populateFlights(params: FlightQueryParam) {
   ]);
 
   if (isEmpty(flights)) {
+    Logger.error('No flights found! %o', { params });
     throw new Error('Flight(s) not found!');
   }
 
   try {
     Logger.debug('Creating flights for param[%o]', params);
     const data = flights.map(flight => Object.assign(flight, emissions));
-    // create many is having issue with validation
     const result = await prisma.$transaction(
-      data.map(entry =>
-        prisma.flight.create({
-          data: entry,
+      data.map(entry => {
+        Logger.debug(
+          'Creating flight=%s%s on date=%s-%s-%s',
+          entry.airlineIata,
+          entry.flightNumber,
+          entry.flightYear,
+          entry.flightMonth,
+          entry.flightDate,
+        );
+
+        return prisma.flight.upsert({
+          create: entry,
           select: {
             id: true,
           },
-        }),
-      ),
+          update: {},
+          where: {
+            airlineIata_flightNumber_originIata_destinationIata_flightYear_flightMonth_flightDate:
+              {
+                airlineIata: entry.airlineIata,
+                destinationIata: entry.destinationIata,
+                flightDate: entry.flightDate,
+                flightMonth: entry.flightMonth,
+                flightNumber: entry.flightNumber,
+                flightYear: entry.flightYear,
+                originIata: entry.originIata,
+              },
+          },
+        });
+      }),
     );
 
     Logger.warn(
-      'Created %d for Flight[%s%s] on %s/%s/%s',
+      'Created %d for Flight[%s%s]',
       result.length,
       params.airlineIata,
       params.flightNumber,
-      params.flightYear,
-      params.flightMonth,
-      params.flightDate,
     );
 
     TopicPublisher.broadcastAll(

@@ -1,5 +1,4 @@
-import { omit } from 'lodash';
-import { Flight } from '@prisma/client';
+import { Flight, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
@@ -9,7 +8,6 @@ import { FlightCreatedTopic } from '@app/topics/defined.topics/flight.created.to
 
 import { getFlightEmissions } from './get.flight.emissions';
 import { flightStatFlightToFlightPayload } from './flights.payload.from.flights.stat';
-import { getFlightTimelinePayload } from '../flight.timeline/get.flight.timeline.payload';
 
 /**
  * The function `getRandomFlight` retrieves a random flight from FlightStats API, checks if it already
@@ -50,18 +48,28 @@ export async function getRandomFlight(): Promise<Flight> {
 
   try {
     const data = flightStatFlightToFlightPayload(remoteFlight);
-    const timeline = getFlightTimelinePayload(data.id!, remoteFlight);
-    const timelineData = timeline.map(entry => omit(entry, ['flightID']));
+    const payload: Prisma.FlightUncheckedCreateInput = Object.assign(
+      data,
+      emission,
+    );
 
-    const payload = Object.assign(data, emission, {
-      FlightTimeline: {
-        createMany: {
-          data: timelineData,
-        },
+    const flight = await prisma.flight.upsert({
+      create: payload,
+      update: {},
+      where: {
+        airlineIata_flightNumber_originIata_destinationIata_flightYear_flightMonth_flightDate:
+          {
+            airlineIata: payload.airlineIata,
+            destinationIata: payload.destinationIata,
+            flightDate: payload.flightDate,
+            flightMonth: payload.flightMonth,
+            flightNumber: payload.flightNumber,
+            flightYear: payload.flightYear,
+            originIata: payload.originIata,
+          },
       },
     });
 
-    const flight = await prisma.flight.create({ data: payload });
     TopicPublisher.broadcastAll([new FlightCreatedTopic(flight.id)]);
     return flight;
   } catch (error) {

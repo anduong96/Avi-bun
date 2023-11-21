@@ -39,6 +39,7 @@ export async function getFlights(
     Logger.debug('%s Flights found for param[%o]', flights.length, param);
     return flights;
   } else if (isEmpty(flights) && throwIfNotFound) {
+    Logger.error('No flights found! param=%o', param);
     throw new Error('Flight(s) not found!');
   }
 

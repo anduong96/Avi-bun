@@ -45,11 +45,13 @@ export function flightStatFlightToFlightPayload(
     arrivalAirport.timeZoneRegionName,
   );
 
+  const flightTimelinePayload = getFlightTimelinePayload(flightID, flight).map(
+    entry => omit(entry, ['flightID']),
+  );
+
   return {
     FlightTimeline: {
-      create: getFlightTimelinePayload(flightID, flight).map(entry =>
-        omit(entry, ['flightID']),
-      ),
+      create: flightTimelinePayload,
     },
     FlightVendorConnection: {
       create: {

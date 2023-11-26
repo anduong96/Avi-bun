@@ -1,4 +1,3 @@
-import { FlightStatus } from '@prisma/client';
 import {
   Arg,
   Authorized,
@@ -12,6 +11,9 @@ import {
 import { prisma } from '@app/prisma';
 import { GQL_Flight } from '@app/@generated/graphql/models/Flight';
 import { GQL_UserFlight } from '@app/@generated/graphql/models/UserFlight';
+import { saveFlightToUser } from '@app/services/user.flight/save.flight.to.user';
+import { getUserActiveFlights } from '@app/services/user.flight/get.user.active.flights';
+import { getUserArchivedFlights } from '@app/services/user.flight/get.user.archived.flights';
 
 import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 
@@ -36,20 +38,7 @@ export class UserFlightResolver {
     @CurrentUserID() userID: string,
     @Arg('flightID') flightID: string,
   ): Promise<string> {
-    const record = await prisma.userFlight.upsert({
-      create: {
-        flightID,
-        userID,
-      },
-      update: {},
-      where: {
-        flightID_userID: {
-          flightID,
-          userID,
-        },
-      },
-    });
-
+    const record = await saveFlightToUser(flightID, userID);
     return record.id;
   }
 
@@ -74,45 +63,15 @@ export class UserFlightResolver {
   @Authorized()
   @Query(() => [GQL_UserFlight])
   async userActiveFlights(@CurrentUserID() userID: string) {
-    const result = await prisma.userFlight.findMany({
-      orderBy: {
-        Flight: {
-          estimatedGateDeparture: 'asc',
-        },
-      },
-      where: {
-        Flight: {
-          status: {
-            notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
-          },
-        },
-        userID,
-      },
-    });
-
-    return result;
+    const flights = await getUserActiveFlights(userID);
+    return flights;
   }
 
   @Authorized()
   @Query(() => [GQL_UserFlight])
   async userArchivedFlights(@CurrentUserID() userID: string) {
-    const result = await prisma.userFlight.findMany({
-      orderBy: {
-        Flight: {
-          estimatedGateDeparture: 'desc',
-        },
-      },
-      where: {
-        Flight: {
-          status: {
-            in: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
-          },
-        },
-        userID,
-      },
-    });
-
-    return result;
+    const flights = await getUserArchivedFlights(userID);
+    return flights;
   }
 
   @Authorized()

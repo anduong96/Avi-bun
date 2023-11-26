@@ -14,4 +14,8 @@ export const firebase = firebaseAdmin.initializeApp({
   credential,
 });
 
-Logger.getSubLogger({ name: 'Firebase' }).debug('initialized');
+Logger.getSubLogger({ name: 'Firebase' }).debug(
+  'initialized projectID=%s clientEmail=%s',
+  ENV.FIREBASE_PROJECT_ID,
+  ENV.FIREBASE_CLIENT_EMAIL,
+);

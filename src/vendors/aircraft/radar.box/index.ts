@@ -37,7 +37,7 @@ export class RadarBox {
     const html = await request.text();
     const data = this.crawlAircraftHtml(html);
     this.logger.debug(
-      'RadarBox request[%s/%s] status[%s]',
+      'RadarBox request[%s] status[%s]',
       request.url,
       request.statusText,
     );

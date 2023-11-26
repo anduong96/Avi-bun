@@ -19,6 +19,9 @@ CREATE TYPE "FlightStatus" AS ENUM ('SCHEDULED', 'DEPARTED', 'DELAYED', 'ARRIVED
 -- CreateEnum
 CREATE TYPE "MeasurementType" AS ENUM ('AMERICAN', 'METRIC', 'IMPERIAL');
 
+-- CreateEnum
+CREATE TYPE "DateFormatType" AS ENUM ('AMERICAN', 'WORLD');
+
 -- CreateTable
 CREATE TABLE "Airline" (
     "id" TEXT NOT NULL,
@@ -319,6 +322,7 @@ CREATE TABLE "UserPreference" (
     "id" TEXT NOT NULL,
     "userID" TEXT NOT NULL,
     "measurement" "MeasurementType" NOT NULL DEFAULT 'AMERICAN',
+    "dateFormat" "DateFormatType" NOT NULL DEFAULT 'AMERICAN',
 
     CONSTRAINT "UserPreference_pkey" PRIMARY KEY ("id")
 );

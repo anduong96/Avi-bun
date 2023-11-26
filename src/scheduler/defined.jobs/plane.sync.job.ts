@@ -11,6 +11,11 @@ import { Job } from '../job';
 export class SyncActivePlaneLocationJob extends Job {
   override cronTime = CronTime.every(7).minutes();
 
+  constructor() {
+    super();
+    this.onProcess();
+  }
+
   private async getTailNumbers() {
     const ceil = moment().add(10, 'hours').toDate();
     const floor = moment().subtract(12, 'hours').toDate();

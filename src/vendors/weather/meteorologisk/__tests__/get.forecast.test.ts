@@ -1,7 +1,7 @@
 import moment from 'moment';
+import { last } from 'lodash';
 import { describe, expect, it } from 'bun:test';
 
-import { Logger } from '@app/lib/logger';
 import { Coordinates } from '@app/types/coordinates';
 
 import { MetNoApi } from '..';
@@ -22,8 +22,11 @@ describe('Vendor::Weather::Meteorologisk', () => {
       expect(latitude).toBe(location.latitude);
       const updatedAt = response.properties.meta.updated_at;
       const firstSeriesTime = response.properties.timeseries[0].time;
+      const lastSeriesTime = last(response.properties.timeseries)?.time;
+      const daysDiff = moment(firstSeriesTime).diff(lastSeriesTime, 'days');
       expect(now.diff(updatedAt, 'hours')).toBeWithin(0, 24);
       expect(now.diff(firstSeriesTime, 'hours')).toBeWithin(0, 24);
+      expect(Math.floor(daysDiff)).toBeLessThan(MetNoApi.MAX_FORECAST_DAYS);
 
       for (const entry of response.properties.timeseries) {
         const time = moment(entry.time);
@@ -36,28 +39,9 @@ describe('Vendor::Weather::Meteorologisk', () => {
         expect(hour).toBeWithin(0, 24);
         expect(month).toBeWithin(0, 12);
         expect(year).toBeWithin(now.year(), now.year() + 2);
-
-        const summary =
-          entry.data.next_1_hours ??
-          entry.data.next_6_hours ??
-          entry.data.next_12_hours;
-
-        if (!summary) {
-          Logger.error(
-            'Missing weather data for location=%s date=%s hour=%s month=%s year=%s entry=%o previous=%o',
-            name,
-            date,
-            hour,
-            month,
-            year,
-            entry,
-            response.properties.timeseries[
-              response.properties.timeseries.indexOf(entry)
-            ].data,
-          );
-        }
-
-        expect(summary?.summary.symbol_code).toBeTruthy();
+        const summary = entry.data.next_1_hours;
+        expect(summary).toBeTruthy();
+        expect(summary?.summary?.symbol_code).toBeTypeOf('string');
       }
     });
   }

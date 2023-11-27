@@ -44,25 +44,12 @@ export async function populateAirportWeather(airportIata: string) {
     const month = time.month();
     const year = time.year();
     const current = entry.data.instant;
-    const nextHour = entry.data.next_1_hours;
-    const status = nextHour?.summary.symbol_code;
+    const nextHour = entry.data.next_1_hours!;
+    const status = nextHour.summary.symbol_code;
     const iconURL = format(
       'https://raw.githubusercontent.com/anduong96/weathericons/main/weather/png/%s.png',
       status,
     );
-
-    if (!status) {
-      Logger.warn(
-        'Missing weather data for airport=%s date=%s hour=%s month=%s year=%s',
-        airportIata,
-        date,
-        hour,
-        month,
-        year,
-      );
-
-      continue;
-    }
 
     const airTemperatureCelsius = current.details.air_temperature;
     const windFromDirectionDegrees = current.details.wind_from_direction;

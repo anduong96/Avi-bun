@@ -5,7 +5,7 @@ import { Coordinates } from '@app/types/coordinates';
 import { MetNoWeatherForecastResponse } from './types';
 
 export class MetNoApi {
-  static readonly MAX_FORECAST_DAYS = 5;
+  static readonly MAX_FORECAST_DAYS = 9;
   private static readonly baseURL = 'https://api.met.no/weatherapi';
   private static client = ky.create({ prefixUrl: this.baseURL });
 
@@ -19,6 +19,11 @@ export class MetNoApi {
         },
       })
       .json<MetNoWeatherForecastResponse>();
+
+    data.properties.timeseries = data.properties.timeseries.slice(
+      0,
+      MetNoApi.MAX_FORECAST_DAYS,
+    );
 
     return data;
   }

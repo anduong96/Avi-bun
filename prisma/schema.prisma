@@ -135,9 +135,23 @@ model AirportCondition {
 }
 
 model AirportWeather {
-  id                 String @id @default(uuid())
-  airportIata        String
-  temperatureCelsius Int
+  id                           String @id @default(uuid())
+  airportIata                  String
+  airTemperatureCelsius        Int
+  precipitationAmountMilimeter Int
+  windSpeedMeterPerSecond      Int
+  windFromDeirectionDegrees    Int
+  status                       String
+  iconURL                      String
+
+  year      Int
+  month     Int
+  date      Int
+  hour      Int
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([airportIata, year, month, date])
 }
 
 model City {

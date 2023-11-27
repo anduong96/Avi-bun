@@ -27,7 +27,11 @@
     "Elysia",
     "Flightera",
     "gitops",
+    "Hokaido",
+    "locationforecast",
+    "Meteorologisk",
     "skybrary",
+    "timeseries",
     "tslog"
   ],
   "editor.codeActionsOnSave": {

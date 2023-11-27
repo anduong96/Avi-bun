@@ -89,6 +89,23 @@ type AirportTsaWaitTime {
   updatedAt: DateTimeISO!
 }
 
+type AirportWeather {
+  airTemperatureCelsius: Int!
+  airportIata: String!
+  createdAt: DateTimeISO!
+  date: Int!
+  hour: Int!
+  iconURL: String!
+  id: ID!
+  month: Int!
+  precipitationAmountMillimeter: Int!
+  status: String!
+  updatedAt: DateTimeISO!
+  windFromDirectionDegrees: Int!
+  windSpeedMeterPerSecond: Int!
+  year: Int!
+}
+
 enum CheckPointStatus {
   CLOSE
   OPEN
@@ -223,6 +240,7 @@ type Query {
   airport(airportIata: String!): Airport!
   airportTsaCheckpointsStatus(airportIata: String!, dayOfWeek: Float!): [AirportTsaCheckPointTerminal!]
   airportTsaWaitTime(airportIata: String!): [AirportTsaWaitTime!]
+  airportWeather(airportIata: String!, date: Float!, hour: Float!, month: Float!, year: Float!): AirportWeather
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!

@@ -144,10 +144,11 @@ model AirportWeather {
   status                        String
   iconURL                       String
 
-  year      Int
-  month     Int
-  date      Int
-  hour      Int
+  year  Int @db.SmallInt
+  month Int @db.SmallInt
+  date  Int @db.SmallInt
+  hour  Int @db.SmallInt
+
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
@@ -189,9 +190,9 @@ model Country {
 model Flight {
   id String @id @default(uuid())
 
-  flightYear  Int
-  flightMonth Int
-  flightDate  Int
+  flightYear  Int @db.SmallInt
+  flightMonth Int @db.SmallInt
+  flightDate  Int @db.SmallInt
 
   airlineIata              String
   flightNumber             String
@@ -320,9 +321,9 @@ model AircraftPosition {
   latitude        Float?
   longitude       Float?
   altitude        Float?
-  flightYear      Int
-  flightMonth     Int
-  flightDate      Int
+  flightYear      Int      @db.SmallInt
+  flightMonth     Int      @db.SmallInt
+  flightDate      Int      @db.SmallInt
   flightNumber    String
   airlineIata     String
   originIata      String

@@ -69,9 +69,9 @@ export class FlightResolver {
   async flights(
     @Arg('flightNumber') flightNumber: string,
     @Arg('airlineIata') airlineIata: string,
-    @Arg('year') year: number,
-    @Arg('month') month: number,
-    @Arg('date') date: number,
+    @Arg('year', () => Int) year: number,
+    @Arg('month', () => Int) month: number,
+    @Arg('date', () => Int) date: number,
   ) {
     const result = await getFlights({
       airlineIata,

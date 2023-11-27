@@ -240,10 +240,10 @@ type Query {
   airport(airportIata: String!): Airport!
   airportTsaCheckpointsStatus(airportIata: String!, dayOfWeek: Float!): [AirportTsaCheckPointTerminal!]
   airportTsaWaitTime(airportIata: String!): [AirportTsaWaitTime!]
-  airportWeather(airportIata: String!, date: Float!, hour: Float!, month: Float!, year: Float!): AirportWeather
+  airportWeather(airportIata: String!, date: Int!, hour: Int!, month: Int!, year: Int!): AirportWeather
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
-  flights(airlineIata: String!, date: Float!, flightNumber: String!, month: Float!, year: Float!): [Flight!]!
+  flights(airlineIata: String!, date: Int!, flightNumber: String!, month: Int!, year: Int!): [Flight!]!
   randomFlight: Flight!
   user: User!
   userActiveFlights: [UserFlight!]!

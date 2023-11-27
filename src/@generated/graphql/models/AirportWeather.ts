@@ -12,13 +12,13 @@ export class GQL_AirportWeather {
   airTemperatureCelsius: number;
 
   @Field(() => Int)
-  precipitationAmountMilimeter: number;
+  precipitationAmountMillimeter: number;
 
   @Field(() => Int)
   windSpeedMeterPerSecond: number;
 
   @Field(() => Int)
-  windFromDeirectionDegrees: number;
+  windFromDirectionDegrees: number;
 
   @Field()
   status: string;

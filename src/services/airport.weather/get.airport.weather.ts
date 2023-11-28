@@ -113,23 +113,12 @@ export async function getAirportWeather(
   const { airportIata, date, hour, month, year } = params;
 
   const airportWeather = await prisma.airportWeather.findFirst({
-    select: {
+    include: {
       Airport: {
         select: {
           timezone: true,
         },
       },
-      airportIata: true,
-      date: true,
-      hour: true,
-      iconURL: true,
-      month: true,
-      precipitationAmountMillimeter: true,
-      status: true,
-      updatedAt: true,
-      windFromDirectionDegrees: true,
-      windSpeedMeterPerSecond: true,
-      year: true,
     },
     where: {
       airportIata,

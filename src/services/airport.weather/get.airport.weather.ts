@@ -57,7 +57,7 @@ export async function populateAirportWeather(airportIata: string) {
     const precipitationAmountMillimeter =
       nextHour?.details.precipitation_amount ?? 0;
 
-    const payload: Prisma.AirportWeatherCreateInput = {
+    const payload: Prisma.AirportWeatherUncheckedCreateInput = {
       airTemperatureCelsius,
       airportIata,
       date,
@@ -111,18 +111,51 @@ export async function getAirportWeather(
   throwIfNotFound?: boolean,
 ) {
   const { airportIata, date, hour, month, year } = params;
+
   const airportWeather = await prisma.airportWeather.findFirst({
+    select: {
+      Airport: {
+        select: {
+          timezone: true,
+        },
+      },
+      airportIata: true,
+      date: true,
+      hour: true,
+      iconURL: true,
+      month: true,
+      precipitationAmountMillimeter: true,
+      status: true,
+      updatedAt: true,
+      windFromDirectionDegrees: true,
+      windSpeedMeterPerSecond: true,
+      year: true,
+    },
     where: {
       airportIata,
       date,
       hour,
       month,
-      year,
     },
   });
 
   if (airportWeather) {
-    return airportWeather;
+    const now = moment();
+    const timezone = airportWeather.Airport.timezone;
+    const requestedTime = moment({ date, hour, month, year }).tz(timezone);
+    const isBeforeInHour = requestedTime.isBefore(now, 'hour');
+    const lastUpdatedAtDiffHour = now.diff(airportWeather.updatedAt, 'hour');
+
+    Logger.debug(
+      'airportWeather=%o isBeforeInHour=%s lastUpdatedAtDiffHour=%s',
+      airportWeather,
+      isBeforeInHour,
+      lastUpdatedAtDiffHour,
+    );
+
+    if (isBeforeInHour || lastUpdatedAtDiffHour < 1) {
+      return airportWeather;
+    }
   } else if (throwIfNotFound) {
     throw new Error('Airport weather not found');
   }

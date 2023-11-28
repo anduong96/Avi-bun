@@ -1,4 +1,5 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { GQL_Airport } from './Airport';
 
 @ObjectType('AirportWeather')
 export class GQL_AirportWeather {
@@ -43,6 +44,9 @@ export class GQL_AirportWeather {
 
   @Field()
   createdAt: Date;
+
+  @Field(() => GQL_Airport)
+  Airport: GQL_Airport;
 
   // skip overwrite 👇
 }

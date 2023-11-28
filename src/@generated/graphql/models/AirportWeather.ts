@@ -45,8 +45,5 @@ export class GQL_AirportWeather {
   @Field()
   createdAt: Date;
 
-  @Field(() => GQL_Airport)
-  Airport: GQL_Airport;
-
   // skip overwrite 👇
 }

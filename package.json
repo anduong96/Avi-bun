@@ -24,34 +24,34 @@
     "seed": "bun ./prisma/seed/index.ts"
   },
   "devDependencies": {
-    "@prisma/generator-helper": "^5.5.2",
-    "@types/lodash": "^4.14.200",
-    "@types/request-ip": "^0.0.40",
-    "@types/uuid": "^9.0.6",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
+    "@prisma/generator-helper": "^5.6.0",
+    "@types/lodash": "^4.14.202",
+    "@types/request-ip": "^0.0.41",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
     "bun-types": "latest",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-perfectionist": "^2.2.0",
+    "eslint-plugin-perfectionist": "^2.5.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "prettier": "^3.0.3",
+    "prettier": "^3.1.0",
     "prisma-typegraphql-types-generator": "^1.5.14",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.2"
   },
   "peerDependencies": {
     "class-validator": "^0.14.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.2"
   },
   "dependencies": {
     "@apollo/server": "^4.9.5",
     "@prisma/client": "latest",
-    "@sentry/bun": "^7.77.0",
+    "@sentry/bun": "^7.83.0",
     "cheerio": "1.0.0-rc.12",
     "cron-parser": "^4.9.0",
     "cron-time-generator": "^2.0.1",
-    "elysia": "^0.7.21",
-    "firebase-admin": "^11.11.0",
+    "elysia": "^0.7.29",
+    "firebase-admin": "^11.11.1",
     "generate-unique-id": "^2.0.3",
     "gitops-secrets": "^0.0.6",
     "graphql-scalars": "^1.22.4",

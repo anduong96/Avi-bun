@@ -90,6 +90,7 @@ type AirportTsaWaitTime {
 }
 
 type AirportWeather {
+  Airport: Airport!
   airTemperatureCelsius: Int!
   airportIata: String!
   createdAt: DateTimeISO!

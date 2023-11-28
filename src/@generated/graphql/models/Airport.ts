@@ -53,8 +53,5 @@ export class GQL_Airport {
   @Field(() => [GQL_Flight])
   ArrivalFlights: GQL_Flight[];
 
-  @Field(() => [GQL_AirportWeather])
-  AirportWeather: GQL_AirportWeather[];
-
   // skip overwrite 👇
 }

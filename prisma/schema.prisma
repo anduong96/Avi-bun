@@ -116,10 +116,12 @@ model Airport {
   latitude    Float
   longitude   Float
 
-  Country          Country          @relation(fields: [countryCode], references: [isoCode])
-  DepartureFlights Flight[]         @relation(name: "DepartureFlights")
-  ArrivalFlights   Flight[]         @relation(name: "ArrivalFlights")
-  AirportWeather   AirportWeather[]
+  Country          Country  @relation(fields: [countryCode], references: [isoCode])
+  DepartureFlights Flight[] @relation(name: "DepartureFlights")
+  ArrivalFlights   Flight[] @relation(name: "ArrivalFlights")
+
+  //@skip
+  AirportWeather AirportWeather[]
 
   @@unique([iata])
 }

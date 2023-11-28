@@ -66,7 +66,6 @@ enum FlightStatus {
 enum MeasurementType {
   AMERICAN
   METRIC
-  IMPERIAL
 }
 
 enum DateFormatType {

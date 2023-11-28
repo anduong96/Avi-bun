@@ -220,7 +220,6 @@ scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/fi
 
 enum MeasurementType {
   AMERICAN
-  IMPERIAL
   METRIC
 }
 

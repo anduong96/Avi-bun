@@ -1,5 +1,5 @@
 import { format } from 'sys';
-import { omit } from 'lodash';
+import { isNil, omit } from 'lodash';
 import moment from 'moment-timezone';
 import { Prisma } from '@prisma/client';
 
@@ -111,7 +111,9 @@ export async function getAirportWeather(
   throwIfNotFound?: boolean,
 ) {
   const { airportIata, date, hour, month, year } = params;
-
+  const now = moment();
+  const requestingDate = moment({ date, hour, month, year });
+  const diffDate = requestingDate.diff(now, 'days');
   const airportWeather = await prisma.airportWeather.findFirst({
     include: {
       Airport: {
@@ -128,7 +130,10 @@ export async function getAirportWeather(
     },
   });
 
-  if (airportWeather) {
+  const hasAirportWeather = !isNil(airportWeather);
+  const isRequestingHistorical = diffDate < 0;
+
+  if (hasAirportWeather) {
     const now = moment();
     const timezone = airportWeather.Airport.timezone;
     const requestedTime = moment({ date, hour, month, year }).tz(timezone);
@@ -145,14 +150,13 @@ export async function getAirportWeather(
     if (isBeforeInHour || lastUpdatedAtDiffHour < 1) {
       return airportWeather;
     }
+  } else if (isRequestingHistorical) {
+    throw new Error(' airport weather not found. Date is in the past');
   } else if (throwIfNotFound) {
     throw new Error('Airport weather not found');
   }
 
-  const requestingDate = moment({ date, hour, month, year });
-  const diffDate = requestingDate.diff(new Date(), 'days');
-
-  if (diffDate < 0) {
+  if (isRequestingHistorical) {
     throw new Error('Airport weather not found. Date is in the past');
   } else if (diffDate > MetNoApi.MAX_FORECAST_DAYS) {
     throw new Error('Airport weather not found. Date is too far in the future');

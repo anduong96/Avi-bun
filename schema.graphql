@@ -260,6 +260,7 @@ input UpdateUserPreferenceInput {
 type User {
   UserFlight: [UserFlight!]!
   UserPreference: UserPreference
+  UserWaitList: [UserWaitList!]!
   avatarURL: String
   createdAt: DateTimeISO!
   displayName: String
@@ -283,5 +284,12 @@ type UserPreference {
   dateFormat: DateFormatType!
   id: ID!
   measurement: MeasurementType!
+  userID: String!
+}
+
+type UserWaitList {
+  createdAt: DateTimeISO!
+  feature: String!
+  id: ID!
   userID: String!
 }

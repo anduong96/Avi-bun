@@ -425,6 +425,7 @@ model User {
   Authentications UserAuthentication[]
   UserFlight      UserFlight[]
   UserPreference  UserPreference?
+  UserWaitList    UserWaitList[]
 }
 
 model UserAuthentication {
@@ -456,6 +457,18 @@ model UserFlight {
   Flight Flight @relation(fields: [flightID], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([flightID, userID])
+}
+
+model UserWaitList {
+  id        String   @id @default(uuid())
+  userID    String
+  feature   String
+  createdAt DateTime @default(now())
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
+
+  @@unique([userID, feature])
 }
 
 model UserPreference {

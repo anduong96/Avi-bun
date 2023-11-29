@@ -2,6 +2,7 @@ import { Flight, User } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
+import { createID } from '@app/lib/create.id';
 
 export async function saveFlightToUser(
   flightID: Flight['id'],
@@ -12,6 +13,7 @@ export async function saveFlightToUser(
   const record = await prisma.userFlight.upsert({
     create: {
       flightID,
+      id: createID(),
       userID,
     },
     update: {},

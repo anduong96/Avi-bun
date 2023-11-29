@@ -1,10 +1,10 @@
-import * as uuid from 'uuid';
 import { format } from 'sys';
 import { startCase } from 'lodash';
 import { Flight } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
+import { createID } from '@app/lib/create.id';
 import { Optional } from '@app/types/optional';
 import { DiffEntry } from '@app/lib/objects/object.difference/types';
 import { getObjectDifference } from '@app/lib/objects/object.difference/get.object.difference';
@@ -110,7 +110,7 @@ async function createFlightChangeTimeline(
             currentValue: entry.currentValue ?? undefined,
             description: entry.description,
             flightID,
-            id: uuid.v4(),
+            id: createID(),
             previousValue: entry.previousValue ?? undefined,
             requireAlert: true,
             timestamp: new Date(),
@@ -119,7 +119,7 @@ async function createFlightChangeTimeline(
         },
       },
       flightID,
-      id: uuid.v4(),
+      id: createID(),
       source: 'Avi',
       timestamp: new Date(),
       title: title,

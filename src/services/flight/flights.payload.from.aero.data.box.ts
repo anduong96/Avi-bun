@@ -1,7 +1,7 @@
-import * as uuid from 'uuid';
 import moment from 'moment-timezone';
 import { FlightStatus, Prisma } from '@prisma/client';
 
+import { createID } from '@app/lib/create.id';
 import { FlightQueryParam } from '@app/types/flight';
 import { AeroDataBox } from '@app/vendors/aircraft/aero.data.box';
 import { AeroDataBoxFlight } from '@app/vendors/aircraft/aero.data.box/types';
@@ -25,7 +25,7 @@ function toFlightPayload(
     flightMonth: departureDate.month(),
     flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
     flightYear: departureDate.year(),
-    id: uuid.v4(),
+    id: createID(),
     originIata: entry.departure.airport.iata,
     originTerminal: entry.departure.terminal,
     originUtcHourOffset: departureDate.utcOffset() / 60,

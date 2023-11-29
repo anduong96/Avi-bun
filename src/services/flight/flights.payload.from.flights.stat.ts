@@ -1,8 +1,8 @@
-import * as uuid from 'uuid';
 import { omit } from 'lodash';
 import { FlightVendor, Prisma } from '@prisma/client';
 
 import { Logger } from '@app/lib/logger';
+import { createID } from '@app/lib/create.id';
 import { toDateOrNull } from '@app/lib/date.or.null';
 import { FlightQueryParam } from '@app/types/flight';
 import { timezoneToUtcOffset } from '@app/lib/timezone';
@@ -14,7 +14,7 @@ import { getFlightTimelinePayload } from '../flight.timeline/get.flight.timeline
 export function flightStatFlightToFlightPayload(
   flight: Awaited<ReturnType<(typeof FlightStats)['getFlightDetails']>>,
 ): RequiredKeys<Prisma.FlightUncheckedCreateInput, 'id'> {
-  const flightID = uuid.v4();
+  const flightID = createID();
   const info = flight.additionalFlightInfo;
   const aircraftTailNumber = info.equipment?.tailNumber;
   const status = toFlightStatus(flight.status.status);

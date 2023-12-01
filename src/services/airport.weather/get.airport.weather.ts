@@ -1,6 +1,6 @@
 import { format } from 'sys';
-import { isNil, omit } from 'lodash';
 import moment from 'moment-timezone';
+import { isNil, omit } from 'lodash';
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -37,6 +37,7 @@ export async function populateAirportWeather(airportIata: string) {
   });
 
   const populatedIDs: string[] = [];
+
   for await (const entry of response.properties.timeseries) {
     const time = moment(entry.time).tz(airport.timezone);
     const date = time.date();
@@ -114,6 +115,7 @@ export async function getAirportWeather(
   const now = moment();
   const requestingDate = moment({ date, hour, month, year });
   const diffDate = requestingDate.diff(now, 'days');
+  const diffHours = requestingDate.diff(now, 'hours');
   const airportWeather = await prisma.airportWeather.findFirst({
     include: {
       Airport: {
@@ -131,7 +133,7 @@ export async function getAirportWeather(
   });
 
   const hasAirportWeather = !isNil(airportWeather);
-  const isRequestingHistorical = diffDate < 0;
+  const isRequestingHistorical = diffHours < 0;
 
   if (hasAirportWeather) {
     const now = moment();

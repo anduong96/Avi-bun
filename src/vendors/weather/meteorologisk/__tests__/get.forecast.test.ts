@@ -10,7 +10,7 @@ describe('Vendor::Weather::Meteorologisk', () => {
   const now = moment();
   const nyc: Coordinates = { latitude: 40.7128, longitude: -74.006 };
   const la: Coordinates = { latitude: 34.0522, longitude: -118.2437 };
-  const hokaido = { latitude: 43.0646, longitude: 141.3464 };
+  const hokaido: Coordinates = { latitude: 43.0646, longitude: 141.3464 };
   const locations = { hokaido, la, nyc };
 
   for (const [name, location] of Object.entries(locations)) {

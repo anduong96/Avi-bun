@@ -206,7 +206,12 @@ export async function getAirportWeather(
   const payload =
     isRequestingHistorical || diffDate > MetNoApi.MAX_FORECAST_DAYS
       ? await getPayloadFromWeatherApi(airport, requestingDate.toDate())
-      : await getPayloadFromMetNo(airport);
+      : await getPayloadFromMetNo(airport).catch((error: Error) => {
+          Logger.debug('getAirportWeather:: error=%s', error.message);
+          Logger.error(error);
+          Sentry.captureException(error);
+          return getPayloadFromWeatherApi(airport, requestingDate.toDate());
+        });
 
   const [deletedResult, createdResult] = await prisma.$transaction([
     prisma.airportWeather.deleteMany({

@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@app/prisma';
 import { Sentry } from '@app/lib/sentry';
 import { Logger } from '@app/lib/logger';
+import { Coordinates } from '@app/types/coordinates';
 import { MetNoApi } from '@app/vendors/weather/meteorologisk';
 import { WeatherAPI } from '@app/vendors/weather/weather.api';
 
@@ -95,12 +96,33 @@ async function getPayloadFromWeatherApi(
   date: Date,
 ) {
   const now = moment();
-  const isPast = now.isSameOrBefore(date);
+  const isPast = now.isSameOrAfter(date);
+  const coordinates: Coordinates = {
+    latitude: airport.latitude,
+    longitude: airport.longitude,
+  };
+
+  Logger.debug(
+    'Getting weather data for airport=%s coordinates=%o date=%s isPast=%s from WeatherAPI',
+    airport.iata,
+    coordinates,
+    moment(date).format('YYYY-MM-DD'),
+    isPast,
+  );
+
   const result = isPast
-    ? await WeatherAPI.getHistoricalWeather(airport, date)
-    : await WeatherAPI.getFutureWeather(airport, date);
+    ? await WeatherAPI.getHistoricalWeather(coordinates, date)
+    : await WeatherAPI.getFutureWeather(coordinates, date);
 
   const payload: Prisma.AirportWeatherUncheckedCreateInput[] = [];
+  Logger.debug(
+    'Got weather data for airport=%s coordinates=%o date=%s length=%s',
+    airport.iata,
+    coordinates,
+    moment(date).format('YYYY-MM-DD'),
+    result.forecast.forecastday.length,
+  );
+
   for (const day of result.forecast.forecastday) {
     for (const entry of day.hour) {
       const iconURL = WeatherAPI.getIconUrl(entry.condition);
@@ -108,7 +130,7 @@ async function getPayloadFromWeatherApi(
       const windFromDirectionDegrees = entry.wind_degree;
       const windSpeedMeterPerSecond = entry.wind_kph;
       const precipitationAmountMillimeter = entry.precip_mm;
-      const ts = moment(day.date).tz(airport.timezone);
+      const ts = moment(entry.time).tz(airport.timezone);
       const hour = ts.hour();
       const month = ts.month();
       const year = ts.year();
@@ -158,10 +180,7 @@ export async function getAirportWeather(
   throwIfNotFound?: boolean,
 ) {
   const { airportIata, date, hour, month, year } = params;
-  const now = moment();
-  const requestingDate = moment({ date, hour, month, year });
-  const diffDate = requestingDate.diff(now, 'days');
-  const diffHours = requestingDate.diff(now, 'hours');
+
   const airportWeather = await prisma.airportWeather.findFirst({
     include: {
       Airport: {
@@ -179,7 +198,6 @@ export async function getAirportWeather(
   });
 
   const hasAirportWeather = !isNil(airportWeather);
-  const isRequestingHistorical = diffHours < 0;
 
   if (hasAirportWeather) {
     const now = moment();
@@ -189,10 +207,10 @@ export async function getAirportWeather(
     const lastUpdatedAtDiffHour = now.diff(airportWeather.updatedAt, 'hour');
 
     Logger.debug(
-      'airportWeather=%o isBeforeInHour=%s lastUpdatedAtDiffHour=%s',
-      airportWeather,
+      'isBeforeInHour=%s lastUpdatedAtDiffHour=%s airportWeather=%o',
       isBeforeInHour,
       lastUpdatedAtDiffHour,
+      airportWeather,
     );
 
     if (isBeforeInHour || lastUpdatedAtDiffHour < 1) {
@@ -203,8 +221,25 @@ export async function getAirportWeather(
   }
 
   const airport = await getAirport(airportIata);
+  const now = moment().tz(airport.timezone);
+  const requestingDate = now.clone().set({ date, hour, month, year });
+  const diffDate = requestingDate.diff(now, 'days');
+  const diffHours = requestingDate.diff(now, 'hours');
+  const isRequestingHistorical = diffHours < 0;
+  const isOverMetNoMax = diffDate > MetNoApi.MAX_FORECAST_DAYS;
+
+  Logger.debug(
+    'isRequestingHistorical=%s isOverMetNoMax=%s now=%s requestingDate=%s diffDate=%s diffHours=%s',
+    isRequestingHistorical,
+    isOverMetNoMax,
+    now.format('LLLL'),
+    requestingDate.format('LLLL'),
+    diffDate,
+    diffHours,
+  );
+
   const payload =
-    isRequestingHistorical || diffDate > MetNoApi.MAX_FORECAST_DAYS
+    isRequestingHistorical || isOverMetNoMax
       ? await getPayloadFromWeatherApi(airport, requestingDate.toDate())
       : await getPayloadFromMetNo(airport).catch((error: Error) => {
           Logger.debug('getAirportWeather:: error=%s', error.message);
@@ -221,6 +256,7 @@ export async function getAirportWeather(
           date: item.date,
           hour: item.hour,
           month: item.month,
+          year: item.year,
         })),
       },
     }),

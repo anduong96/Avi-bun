@@ -26,9 +26,6 @@ export class GQL_AirportWeather {
   @Field()
   iconURL: string;
 
-  @Field()
-  vendor: string;
-
   @Field(() => Int)
   year: number;
 

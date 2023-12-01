@@ -113,6 +113,6 @@ export class WeatherAPI {
    * @returns a formatted URL string for the icon of a given weather condition.
    */
   static getIconUrl(condition: WeatherApi_WeatherCondition) {
-    return format('http:%s', condition.icon);
+    return format('https:%s', condition.icon);
   }
 }

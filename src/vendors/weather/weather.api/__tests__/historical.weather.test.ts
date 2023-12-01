@@ -6,7 +6,7 @@ import { Coordinates } from '@app/types/coordinates';
 import { WeatherAPI } from '..';
 
 describe('Vendor::WeatherAPI', () => {
-  const now = moment().subtract(1, 'day');
+  const now = moment().subtract(0, 'day').startOf('day');
   const nyc: Coordinates = { latitude: 40.7128, longitude: -74.006 };
   const la: Coordinates = { latitude: 34.0522, longitude: -118.2437 };
   const hokaido: Coordinates = { latitude: 43.0646, longitude: 141.3464 };

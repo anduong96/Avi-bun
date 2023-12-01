@@ -1,5 +1,6 @@
 import { format } from 'sys';
 import { startCase } from 'lodash';
+import moment, { isDate } from 'moment';
 import { Flight } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -64,17 +65,28 @@ function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
   const maxDisplay = 3;
   const hasOverMax = changes.length > maxDisplay;
   const title = format('⚠️ %s%s', flight.airlineIata, flight.flightNumber);
-  const body = format(
+  const body =
     changes.length === 1
-      ? '%s was changed'
-      : hasOverMax
-      ? '%s and %d more were changed'
-      : '%s were changed',
-    changes
-      .slice(0, maxDisplay)
-      .map(entry => startCase(entry.key))
-      .join(', '),
-  );
+      ? format(
+          '%s was changed to %s',
+          startCase(changes[0].key),
+          isDate(changes[0].currentValue)
+            ? moment(changes[0].currentValue)
+                .utcOffset(
+                  changes[0].key === 'ArrivalTime'
+                    ? flight.destinationUtcHourOffset
+                    : flight.originUtcHourOffset,
+                )
+                .format('HH:mm A')
+            : changes[0].currentValue,
+        )
+      : format(
+          hasOverMax ? '%s and %d more were changed' : '%s were changed',
+          changes
+            .slice(0, maxDisplay)
+            .map(entry => startCase(entry.key))
+            .join(', '),
+        );
 
   return sendFlightAlert(flight.id, {
     body,

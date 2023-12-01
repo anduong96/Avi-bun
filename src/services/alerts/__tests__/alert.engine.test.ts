@@ -1,10 +1,10 @@
-import { beforeEach, describe, it, mock } from 'bun:test';
+import { describe, it, mock } from 'bun:test';
 
-const mockSendToTopic = mock(() => {
+const mockSendToTopic = () => {
   return {
     messageId: 1,
   };
-});
+};
 
 mock.module('../../../firebase.ts', () => ({
   firebase: {
@@ -15,9 +15,19 @@ mock.module('../../../firebase.ts', () => ({
 }));
 
 describe('services::alerts::alert.engine', () => {
-  beforeEach(() => {
-    mockSendToTopic.mockReset();
+  it.todo('handleFlightChangesForAlerts', async () => {
+    // handleFlightChangesForAlert({
+    //   destination: '1',
+    //   destinationGate: '1',
+    //   destinationTerminal: '1',
+    //   estimatedGateArrival: new Date(),
+    //   estimatedGateDeparture: new Date(),
+    //   id: '1',
+    //   origin: '1',
+    //   originGate: '1',
+    //   originTerminal: '1',
+    //   scheduledGateArrival: new Date(),
+    //   scheduledGateDeparture: new Date(),
+    // });
   });
-
-  it.todo('handleFlightChangesForAlerts', async () => {});
 });

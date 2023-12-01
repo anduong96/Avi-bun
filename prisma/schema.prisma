@@ -145,6 +145,7 @@ model AirportWeather {
   windFromDirectionDegrees      Int
   status                        String
   iconURL                       String
+  vendor                        String
 
   year  Int @db.SmallInt
   month Int @db.SmallInt

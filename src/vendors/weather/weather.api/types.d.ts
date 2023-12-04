@@ -1,3 +1,5 @@
+import { WeatherApi_Conditions } from './constants';
+
 export type WeatherApi_HistoricalParams = {
   dt: string;
   q: string;
@@ -49,23 +51,12 @@ export type WeatherApi_Current = {
   wind_mph: number;
 };
 
-//TODO: map icons
-export type WeatherApiWeatherText =
-  | 'Clear'
-  | 'Cloudy'
-  | 'Mist'
-  | 'Moderate or heavy snow showers'
-  | 'Moderate snow'
-  | 'Overcast'
-  | 'Partly cloudy'
-  | 'Patchy heavy snow'
-  | 'Patchy rain possible'
-  | 'Sunny';
-
 export type WeatherApi_WeatherCondition = {
-  code: number;
-  icon: string;
-  text: WeatherApiWeatherText;
+  code: (typeof WeatherApi_Conditions)[number]['code'];
+  icon: (typeof WeatherApi_Conditions)[number]['icon'];
+  text:
+    | (typeof WeatherApi_Conditions)[number]['day']
+    | (typeof WeatherApi_Conditions)[number]['night'];
 };
 
 export type WeatherApi_DayForecast = {

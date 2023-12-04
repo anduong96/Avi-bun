@@ -28,20 +28,6 @@ export class WeatherAPI {
     name: this.name,
   });
 
-  static async getAllConditions() {
-    // type Response = Array<{
-    //   code: number;
-    //   day: string;
-    //   icon: number;
-    //   night: string;
-    // }>;
-
-    const route = 'https://www.weatherapi.com/docs/conditions.json';
-    const request = await ky.get(route);
-    const result = await request.text();
-    return result;
-  }
-
   /**
    * The function retrieves the forecast weather data for a given set of coordinates.
    * @param {Coordinates} coordinates - The `coordinates` parameter is an object that represents the

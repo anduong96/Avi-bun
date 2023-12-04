@@ -1,4 +1,8 @@
-export type MetNoWeatherForecastResponse = {
+import { MetNo_WeatherConditions } from './constants';
+
+export type MetNo_Conditions = (typeof MetNo_WeatherConditions)[number];
+
+export type MetNo_WeatherForecastResponse = {
   geometry: {
     coordinates: number[];
     type: 'Point';
@@ -36,36 +40,7 @@ export type MetNoWeatherForecastResponse = {
               precipitation_amount?: number;
             };
             summary: {
-              symbol_code:
-                | 'clearsky_day'
-                | 'clearsky_night'
-                | 'cloudy'
-                | 'fair_day'
-                | 'fair_night'
-                | 'fog'
-                | 'heavyrain'
-                | 'heavyrainshowers_night'
-                | 'heavysleet'
-                | 'heavysleetshowers_night'
-                | 'heavysnow'
-                | 'lightrain'
-                | 'lightrainshowers_day'
-                | 'lightrainshowers_night'
-                | 'lightsleet'
-                | 'lightsleetshowers_day'
-                | 'lightsleetshowers_night'
-                | 'lightsnow'
-                | 'lightsnowshowers_day'
-                | 'lightsnowshowers_night'
-                | 'partlycloudy_day'
-                | 'partlycloudy_night'
-                | 'rain'
-                | 'rainshowers_day'
-                | 'rainshowers_night'
-                | 'sleet'
-                | 'sleetshowers_day'
-                | 'sleetshowers_night'
-                | 'snow';
+              symbol_code: MetNo_Conditions;
             };
           }
         >

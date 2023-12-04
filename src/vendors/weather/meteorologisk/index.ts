@@ -2,7 +2,7 @@ import ky from 'ky';
 
 import { Coordinates } from '@app/types/coordinates';
 
-import { MetNoWeatherForecastResponse } from './types';
+import { MetNo_WeatherForecastResponse } from './types';
 
 export class MetNoApi {
   static readonly MAX_FORECAST_DAYS = 9;
@@ -18,7 +18,7 @@ export class MetNoApi {
           lon: coordinate.longitude,
         },
       })
-      .json<MetNoWeatherForecastResponse>();
+      .json<MetNo_WeatherForecastResponse>();
 
     data.properties.timeseries = data.properties.timeseries.slice(
       0,

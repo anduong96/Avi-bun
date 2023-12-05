@@ -15,12 +15,6 @@ export class GQL_FlightAlert {
   @Field()
   body: string;
 
-  @Field(() => [GQL_AlertChannel])
-  channel: GQL_AlertChannel[];
-
-  @Field()
-  receiptID: string;
-
   @Field()
   createdAt: Date;
 

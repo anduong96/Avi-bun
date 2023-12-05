@@ -10,8 +10,8 @@ CREATE TABLE `Airline` (
     `logoCompactImageType` ENUM('SVG', 'PNG') NULL,
     `isLowCost` BOOLEAN NULL,
 
-    UNIQUE INDEX `Airline_icao_key`(`icao`),
     UNIQUE INDEX `Airline_iata_key`(`iata`),
+    UNIQUE INDEX `Airline_icao_key`(`icao`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -44,6 +44,7 @@ CREATE TABLE `Airport` (
     `longitude` DOUBLE NOT NULL,
 
     UNIQUE INDEX `Airport_iata_key`(`iata`),
+    INDEX `Airport_countryCode_idx`(`countryCode`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -94,6 +95,7 @@ CREATE TABLE `City` (
     `longitude` DOUBLE NOT NULL,
 
     UNIQUE INDEX `City_code_key`(`code`),
+    INDEX `City_countryCode_idx`(`countryCode`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -106,8 +108,8 @@ CREATE TABLE `Country` (
     `flagImageURL` VARCHAR(191) NULL,
     `flagImageType` ENUM('SVG', 'PNG') NULL,
 
-    INDEX `Country_name_idx`(`name`),
     UNIQUE INDEX `Country_isoCode_key`(`isoCode`),
+    INDEX `Country_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -205,10 +207,10 @@ CREATE TABLE `Aircraft` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Aircraft_tailNumber_key`(`tailNumber`),
     INDEX `Aircraft_icao_idx`(`icao`),
     INDEX `Aircraft_iata_idx`(`iata`),
     INDEX `Aircraft_airlineIata_idx`(`airlineIata`),
-    UNIQUE INDEX `Aircraft_tailNumber_key`(`tailNumber`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -229,8 +231,8 @@ CREATE TABLE `AircraftPosition` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    INDEX `AircraftPosition_aircraftID_idx`(`aircraftID`),
     UNIQUE INDEX `AircraftPosition_updatedAt_key`(`updatedAt`),
+    INDEX `AircraftPosition_aircraftID_idx`(`aircraftID`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -314,6 +316,7 @@ CREATE TABLE `UserAuthentication` (
     `avatarURL` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `UserAuthentication_userID_idx`(`userID`),
     UNIQUE INDEX `UserAuthentication_provider_userID_key`(`provider`, `userID`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -327,6 +330,7 @@ CREATE TABLE `UserFlight` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    INDEX `UserFlight_userID_idx`(`userID`),
     UNIQUE INDEX `UserFlight_flightID_userID_key`(`flightID`, `userID`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -392,13 +396,13 @@ ALTER TABLE `AirportWeather` ADD CONSTRAINT `AirportWeather_airportIata_fkey` FO
 ALTER TABLE `City` ADD CONSTRAINT `City_countryCode_fkey` FOREIGN KEY (`countryCode`) REFERENCES `Country`(`isoCode`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Flight` ADD CONSTRAINT `Flight_originIata_fkey` FOREIGN KEY (`originIata`) REFERENCES `Airport`(`iata`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Flight` ADD CONSTRAINT `Flight_airlineIata_fkey` FOREIGN KEY (`airlineIata`) REFERENCES `Airline`(`iata`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Flight` ADD CONSTRAINT `Flight_destinationIata_fkey` FOREIGN KEY (`destinationIata`) REFERENCES `Airport`(`iata`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Flight` ADD CONSTRAINT `Flight_airlineIata_fkey` FOREIGN KEY (`airlineIata`) REFERENCES `Airline`(`iata`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Flight` ADD CONSTRAINT `Flight_originIata_fkey` FOREIGN KEY (`originIata`) REFERENCES `Airport`(`iata`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `FlightVendorConnection` ADD CONSTRAINT `FlightVendorConnection_flightID_fkey` FOREIGN KEY (`flightID`) REFERENCES `Flight`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
@@ -425,14 +429,13 @@ ALTER TABLE `FlightAlert` ADD CONSTRAINT `FlightAlert_flightID_fkey` FOREIGN KEY
 ALTER TABLE `UserAuthentication` ADD CONSTRAINT `UserAuthentication_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserFlight` ADD CONSTRAINT `UserFlight_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `UserFlight` ADD CONSTRAINT `UserFlight_flightID_fkey` FOREIGN KEY (`flightID`) REFERENCES `Flight`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE `UserFlight` ADD CONSTRAINT `UserFlight_flightID_fkey` FOREIGN KEY (`flightID`) REFERENCES `Flight`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE `UserFlight` ADD CONSTRAINT `UserFlight_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserWaitList` ADD CONSTRAINT `UserWaitList_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserPreference` ADD CONSTRAINT `UserPreference_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-

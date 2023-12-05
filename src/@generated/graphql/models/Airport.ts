@@ -47,11 +47,5 @@ export class GQL_Airport {
   @Field(() => GQL_Country)
   Country: GQL_Country;
 
-  @Field(() => [GQL_Flight])
-  DepartureFlights: GQL_Flight[];
-
-  @Field(() => [GQL_Flight])
-  ArrivalFlights: GQL_Flight[];
-
   // skip overwrite 👇
 }

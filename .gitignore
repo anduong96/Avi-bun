@@ -133,4 +133,5 @@ dist
 
 .app
 .playground
+.databases
 /.DS_Store

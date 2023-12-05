@@ -92,20 +92,20 @@ export class GQL_Flight {
   @Field(() => Int, { nullable: true })
   reconAttempt?: number;
 
-  @Field(() => GQL_Airport)
-  Origin: GQL_Airport;
-
-  @Field(() => GQL_Airport)
-  Destination: GQL_Airport;
-
-  @Field(() => GQL_Airline)
-  Airline: GQL_Airline;
-
   @Field()
   createdAt: Date;
 
   @Field()
   updatedAt: Date;
+
+  @Field(() => GQL_Airline)
+  Airline: GQL_Airline;
+
+  @Field(() => GQL_Airport)
+  Destination: GQL_Airport;
+
+  @Field(() => GQL_Airport)
+  Origin: GQL_Airport;
 
   // skip overwrite 👇
 

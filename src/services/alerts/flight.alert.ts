@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import { AlertChannel, Flight } from '@prisma/client';
+import { Flight } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
@@ -49,9 +49,7 @@ export async function sendFlightAlert(
     const entry = await prisma.flightAlert.create({
       data: {
         body,
-        channel: [AlertChannel.PUSH],
         flightID,
-        receiptID: response.messageId.toString(),
         title,
       },
     });

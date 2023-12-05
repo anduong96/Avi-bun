@@ -1,38 +1,438 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
+generator PrismaTypeGraphQLTypesGenerator {
+  provider                   = "bunx prisma-typegraphql-types-generator"
+  enumsOutput                = "./src/@generated/graphql/enums"
+  modelsOutput               = "./src/@generated/graphql/models"
+  exportedNamePrefix         = "GQL_"
+  removeTypeInFieldDecorator = "true"
+}
+
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-// https://github.com/YassinEldeeb/prisma-tgql-types-gen
-generator PrismaTypeGraphQLTypesGenerator {
-  provider                   = "bunx prisma-typegraphql-types-generator"
-  modelsOutput               = "./src/@generated/graphql/models" // Optional defaults to "./src/generated/models"
-  enumsOutput                = "./src/@generated/graphql/enums" // Optional defaults to "./src/generated/enums"
-  // useYarn            = true // Optional if you want `graphql-scalars` installation to be done via yarn defaults to "npm"
-  // exportedNameSuffix = "GQL" // Optional if you want to add a suffix to the end of your exported class names and enums
-  exportedNamePrefix         = "GQL_" // Optional if you want to prefix your exported class names and enums
-  removeTypeInFieldDecorator = true
+model Airline {
+  id                   String     @id @default(uuid())
+  name                 String
+  iata                 String     @unique
+  icao                 String?    @unique
+  logoFullImageURL     String?
+  logoFullImageType    ImageType?
+  logoCompactImageURL  String?
+  logoCompactImageType ImageType?
+  isLowCost            Boolean?
+  Flight               Flight[]
 }
 
-// generator gql {
-//   provider = "bun ./prisma/generators/graphql/index.ts"
-//   output   = "../@generated/gql"
-// }
+model Timezone {
+  id          String @id @default(uuid())
+  name        String @unique
+  gmt         Int
+  dst         Int
+  countryCode String
+}
+
+model Airport {
+  id          String  @id @default(uuid())
+  name        String
+  iata        String? @unique
+  icao        String?
+  timezone    String
+  cityName    String
+  cityCode    String
+  countryCode String
+  elevation   Int?
+  countyName  String?
+  state       String?
+  latitude    Float
+  longitude   Float
+  Country     Country @relation(fields: [countryCode], references: [isoCode])
+
+  // @skip
+  AirportWeather AirportWeather[]
+
+  // @skip
+  ArrivalFlights Flight[] @relation("ArrivalFlights")
+
+  // @skip
+  DepartureFlights Flight[] @relation("DepartureFlights")
+
+  @@index([countryCode])
+}
+
+model AirportCondition {
+  id                       String @id @default(uuid())
+  airportIata              String
+  departureDelayPercent    Int
+  departureCanceledPercent Int
+  departureAverageDelayMs  Int
+  arrivalDelayPercent      Int
+  arrivalCanceledPercent   Int
+  arrivalAverageDelayMs    Int
+}
+
+model AirportWeather {
+  id                            String   @id @default(uuid())
+  airportIata                   String
+  airTemperatureCelsius         Int
+  precipitationAmountMillimeter Int
+  windSpeedMeterPerSecond       Int
+  windFromDirectionDegrees      Int
+  status                        String
+  iconURL                       String
+  vendor                        String
+  year                          Int      @db.SmallInt
+  month                         Int      @db.SmallInt
+  date                          Int      @db.SmallInt
+  hour                          Int      @db.SmallInt
+  updatedAt                     DateTime @updatedAt
+  createdAt                     DateTime @default(now())
+
+  // @skip
+  Airport Airport @relation(fields: [airportIata], references: [iata], onDelete: Cascade)
+
+  @@unique([airportIata, year, month, date, hour])
+}
+
+model City {
+  id          String @id @default(uuid())
+  name        String
+  countryCode String
+  code        String @unique
+  timezone    String
+  latitude    Float
+  longitude   Float
+
+  Country Country? @relation(fields: [countryCode], references: [isoCode])
+
+  @@index([countryCode])
+}
+
+model Country {
+  id            String     @id @default(uuid())
+  name          String
+  isoCode       String     @unique
+  dialCode      String
+  flagImageURL  String?
+  flagImageType ImageType?
+
+  // @skip
+  Airport Airport[]
+
+  // @skip
+  City City[]
+
+  @@index([name])
+}
+
+model Flight {
+  id                       String       @id @default(uuid())
+  flightYear               Int          @db.SmallInt
+  flightMonth              Int          @db.SmallInt
+  flightDate               Int          @db.SmallInt
+  airlineIata              String
+  flightNumber             String
+  aircraftTailNumber       String?
+  status                   FlightStatus
+  totalDistanceKm          Int?
+  originUtcHourOffset      Int
+  originIata               String
+  originGate               String?
+  originTerminal           String?
+  destinationIata          String
+  destinationGate          String?
+  destinationUtcHourOffset Int
+  destinationTerminal      String?
+  destinationBaggageClaim  String?
+  scheduledGateDeparture   DateTime
+  estimatedGateDeparture   DateTime
+  actualGateDeparture      DateTime?
+  scheduledGateArrival     DateTime
+  estimatedGateArrival     DateTime
+  actualGateArrival        DateTime?
+  co2EmissionKgEconomy     Float?
+  co2EmissionKgFirst       Float?
+  co2EmissionKgBusiness    Float?
+  co2EmissionKgEco         Float?
+  reconAttempt             Int?         @default(0)
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+  Airline                  Airline      @relation(fields: [airlineIata], references: [iata])
+  Destination              Airport      @relation("ArrivalFlights", fields: [destinationIata], references: [iata])
+  Origin                   Airport      @relation("DepartureFlights", fields: [originIata], references: [iata])
+
+  // @skip
+  FlightAlert FlightAlert[]
+
+  // @skip
+  FlightEvent FlightEvent[]
+
+  // @skip
+  FlightPlan FlightPlan[]
+
+  // @skip
+  FlightTimeline FlightTimeline[]
+
+  // @skip
+  FlightVendorConnection FlightVendorConnection[]
+
+  // @skip
+  UserFlight UserFlight[]
+
+  @@unique([airlineIata, flightNumber, originIata, destinationIata, flightYear, flightMonth, flightDate])
+  @@index([originIata])
+  @@index([destinationIata])
+}
+
+model FlightPromptness {
+  id                 String       @id @default(uuid())
+  airlineIata        String
+  flightNumber       String
+  originIata         String
+  destinationIata    String
+  vendor             FlightVendor
+  rating             Int?
+  onTimePercent      Int?
+  averageDelayTimeMs Int?
+  daysObserved       Int?
+  flightsObserved    Int?
+  onTimeCount        Int?
+  lateCount          Int?
+  veryLateCount      Int?
+  excessiveCount     Int?
+  cancelledCount     Int?
+  divertedCount      Int?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  expiresAt          DateTime
+
+  @@unique([airlineIata, flightNumber, originIata, destinationIata])
+  @@index([expiresAt])
+  @@index([vendor])
+}
+
+model FlightVendorConnection {
+  id               Int          @id @default(autoincrement())
+  vendor           FlightVendor
+  vendorResourceID String
+  flightID         String
+
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id], onUpdate: Restrict)
+
+  @@unique([flightID, vendor])
+}
+
+model Aircraft {
+  id          Int       @id @default(autoincrement())
+  iata        String?
+  icao        String
+  model       String
+  airlineIata String
+  description String?
+  tailNumber  String    @unique
+  imageURL    String?
+  firstFlight DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // @skip
+  AircraftPositions AircraftPosition[]
+
+  @@index([icao])
+  @@index([iata])
+  @@index([airlineIata])
+}
+
+model AircraftPosition {
+  id              Int      @id @default(autoincrement())
+  aircraftID      Int
+  latitude        Float?
+  longitude       Float?
+  altitude        Float?
+  flightYear      Int      @db.SmallInt
+  flightMonth     Int      @db.SmallInt
+  flightDate      Int      @db.SmallInt
+  flightNumber    String
+  airlineIata     String
+  originIata      String
+  destinationIata String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @unique
+
+  // @skip
+  Aircraft Aircraft @relation(fields: [aircraftID], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([aircraftID])
+}
+
+model FlightEvent {
+  id               String      @id
+  flightTimelineID String
+  index            Int         @default(0)
+  flightID         String
+  description      String
+  requireAlert     Boolean
+  valueType        ValueType?
+  changeType       ChangeType?
+  currentValue     Json?
+  previousValue    Json?
+  timestamp        DateTime
+
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
+
+  // @skip
+  Timeline FlightTimeline @relation(fields: [flightTimelineID], references: [id])
+
+  @@unique([flightID, flightTimelineID, index])
+  @@index([flightTimelineID])
+}
+
+model FlightTimeline {
+  id         String   @id
+  flightID   String
+  title      String
+  source     String
+  timestamp  DateTime
+  hasAlerted Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+
+  // @skip
+  FlightEvents FlightEvent[]
+
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
+
+  @@unique([flightID, timestamp])
+}
+
+model FlightPlan {
+  id        Int    @id @default(autoincrement())
+  flightID  String
+  index     Int
+  latitude  Float
+  longitude Float
+
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
+
+  @@index([flightID])
+}
+
+model FlightAlert {
+  id        String   @id @default(uuid())
+  flightID  String
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+
+  // @skip
+  Flight Flight @relation(fields: [flightID], references: [id])
+
+  @@index([flightID])
+}
+
+model User {
+  id           String   @id
+  displayName  String?
+  isAnonymous  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  avatarURL    String?
+  lastSignInAt DateTime @default(now())
+
+  // @skip
+  Authentications UserAuthentication[]
+  UserFlight      UserFlight[]
+  UserPreference  UserPreference?
+  UserWaitList    UserWaitList[]
+}
+
+model UserAuthentication {
+  id        String   @id
+  provider  String
+  email     String?
+  phone     String?
+  userID    String
+  avatarURL String?
+  createdAt DateTime @default(now())
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
+
+  @@unique([provider, userID])
+  @@index([userID])
+}
+
+model UserFlight {
+  id          String   @id @default(uuid())
+  userID      String
+  flightID    String
+  shouldAlert Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Flight      Flight   @relation(fields: [flightID], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
+
+  @@unique([flightID, userID])
+  @@index([userID])
+}
+
+model UserWaitList {
+  id        String   @id @default(uuid())
+  userID    String
+  feature   String
+  createdAt DateTime @default(now())
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
+
+  @@unique([userID, feature])
+}
+
+model UserPreference {
+  id          String          @id @default(uuid())
+  userID      String          @unique
+  measurement MeasurementType @default(AMERICAN)
+  dateFormat  DateFormatType  @default(AMERICAN)
+
+  // @skip
+  User User @relation(fields: [userID], references: [id])
+}
+
+model ScheduledJob {
+  id               String    @id @default(uuid())
+  name             String    @unique
+  lockDuration     Int
+  cronTime         String
+  lastFailedReason String?
+  lastFailedAt     DateTime?
+  lastSucceedAt    DateTime?
+  unlockAt         DateTime?
+  nextRunAt        DateTime?
+  lastRunAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model JsonCache {
+  id        String   @id
+  data      Json
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
 
 enum ImageType {
   SVG
   PNG
-}
-
-enum AlertChannel {
-  PUSH
 }
 
 enum FlightVendor {
@@ -71,444 +471,4 @@ enum MeasurementType {
 enum DateFormatType {
   AMERICAN
   WORLD
-}
-
-model Airline {
-  id String @id @default(uuid())
-
-  name                 String
-  iata                 String
-  icao                 String?
-  logoFullImageURL     String?
-  logoFullImageType    ImageType?
-  logoCompactImageURL  String?
-  logoCompactImageType ImageType?
-  isLowCost            Boolean?
-  Flight               Flight[]
-
-  @@unique([icao])
-  @@unique([iata])
-}
-
-model Timezone {
-  id          String @id @default(uuid())
-  name        String
-  gmt         Int
-  dst         Int
-  countryCode String
-
-  @@unique([name])
-}
-
-model Airport {
-  id          String  @id @default(uuid())
-  name        String
-  iata        String?
-  icao        String?
-  timezone    String
-  cityName    String
-  cityCode    String
-  countryCode String
-  elevation   Int?
-  countyName  String?
-  state       String?
-  latitude    Float
-  longitude   Float
-
-  Country          Country  @relation(fields: [countryCode], references: [isoCode])
-  DepartureFlights Flight[] @relation(name: "DepartureFlights")
-  ArrivalFlights   Flight[] @relation(name: "ArrivalFlights")
-
-  //@skip
-  AirportWeather AirportWeather[]
-
-  @@unique([iata])
-}
-
-model AirportCondition {
-  id                       String @id @default(uuid())
-  airportIata              String
-  departureDelayPercent    Int
-  departureCanceledPercent Int
-  departureAverageDelayMs  Int
-  arrivalDelayPercent      Int
-  arrivalCanceledPercent   Int
-  arrivalAverageDelayMs    Int
-}
-
-model AirportWeather {
-  id                            String @id @default(uuid())
-  airportIata                   String
-  airTemperatureCelsius         Int
-  precipitationAmountMillimeter Int
-  windSpeedMeterPerSecond       Int
-  windFromDirectionDegrees      Int
-  status                        String
-  iconURL                       String
-
-  // @skip
-  vendor String
-
-  year  Int @db.SmallInt
-  month Int @db.SmallInt
-  date  Int @db.SmallInt
-  hour  Int @db.SmallInt
-
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
-
-  //@skip
-  Airport Airport @relation(fields: [airportIata], references: [iata], onDelete: Cascade)
-
-  @@unique([airportIata, year, month, date, hour])
-}
-
-model City {
-  id          String @id @default(uuid())
-  name        String
-  countryCode String
-  code        String
-  timezone    String
-  latitude    Float
-  longitude   Float
-
-  Country Country? @relation(fields: [countryCode], references: [isoCode])
-
-  @@unique([code])
-}
-
-model Country {
-  id            String     @id @default(uuid())
-  name          String
-  isoCode       String
-  dialCode      String
-  flagImageURL  String?
-  flagImageType ImageType?
-
-  // @skip
-  Airport Airport[]
-
-  // @skip
-  City City[]
-
-  @@unique([isoCode])
-  @@index([name])
-}
-
-model Flight {
-  id String @id @default(uuid())
-
-  flightYear  Int @db.SmallInt
-  flightMonth Int @db.SmallInt
-  flightDate  Int @db.SmallInt
-
-  airlineIata              String
-  flightNumber             String
-  aircraftTailNumber       String?
-  status                   FlightStatus
-  totalDistanceKm          Int?
-  originUtcHourOffset      Int
-  originIata               String
-  originGate               String?
-  originTerminal           String?
-  destinationIata          String
-  destinationGate          String?
-  destinationUtcHourOffset Int
-  destinationTerminal      String?
-  destinationBaggageClaim  String?
-  scheduledGateDeparture   DateTime
-  estimatedGateDeparture   DateTime
-  actualGateDeparture      DateTime?
-  scheduledGateArrival     DateTime
-  estimatedGateArrival     DateTime
-  actualGateArrival        DateTime?
-  co2EmissionKgEconomy     Float?
-  co2EmissionKgFirst       Float?
-  co2EmissionKgBusiness    Float?
-  co2EmissionKgEco         Float?
-  reconAttempt             Int?         @default(0)
-
-  // @skip
-  UserFlight             UserFlight[]
-  // @skip
-  FlightPlan             FlightPlan[]
-  // @skip
-  FlightVendorConnection FlightVendorConnection[]
-  // @skip
-  FlightEvent            FlightEvent[]
-  // @skip
-  FlightTimeline         FlightTimeline[]
-  // @skip
-  FlightAlert            FlightAlert[]
-
-  Origin      Airport @relation(fields: [originIata], references: [iata], name: "DepartureFlights")
-  Destination Airport @relation(fields: [destinationIata], references: [iata], name: "ArrivalFlights")
-  Airline     Airline @relation(fields: [airlineIata], references: [iata])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([airlineIata, flightNumber, originIata, destinationIata, flightYear, flightMonth, flightDate])
-  @@index([originIata])
-  @@index([destinationIata])
-}
-
-model FlightPromptness {
-  id              String       @id @default(uuid())
-  airlineIata     String
-  flightNumber    String
-  originIata      String
-  destinationIata String
-  vendor          FlightVendor
-
-  rating             Int?
-  onTimePercent      Int?
-  averageDelayTimeMs Int?
-
-  daysObserved    Int?
-  flightsObserved Int?
-
-  onTimeCount    Int?
-  lateCount      Int?
-  veryLateCount  Int?
-  excessiveCount Int?
-  cancelledCount Int?
-  divertedCount  Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  expiresAt DateTime
-
-  // @skip
-  // Flights Flight[]
-
-  @@unique([airlineIata, flightNumber, originIata, destinationIata])
-  @@index([expiresAt])
-  @@index([vendor])
-}
-
-model FlightVendorConnection {
-  id               Int          @id @default(autoincrement())
-  vendor           FlightVendor
-  vendorResourceID String
-  flightID         String
-
-  // @skip
-  Flight Flight @relation(fields: [flightID], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  @@unique([flightID, vendor])
-}
-
-model Aircraft {
-  id          Int       @id @default(autoincrement())
-  iata        String?
-  icao        String
-  model       String
-  airlineIata String
-  description String?
-  tailNumber  String
-  imageURL    String?
-  firstFlight DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // @skip
-  AircraftPositions AircraftPosition[]
-  // Flight            Flight[]
-
-  @@unique([tailNumber])
-  @@index([icao])
-  @@index([iata])
-  @@index([airlineIata])
-}
-
-model AircraftPosition {
-  id              Int      @id @default(autoincrement())
-  aircraftID      Int
-  latitude        Float?
-  longitude       Float?
-  altitude        Float?
-  flightYear      Int      @db.SmallInt
-  flightMonth     Int      @db.SmallInt
-  flightDate      Int      @db.SmallInt
-  flightNumber    String
-  airlineIata     String
-  originIata      String
-  destinationIata String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime
-
-  // @skip
-  Aircraft Aircraft @relation(fields: [aircraftID], references: [id], onUpdate: Restrict, onDelete: Cascade)
-
-  @@unique([updatedAt])
-  @@index([aircraftID])
-}
-
-model FlightEvent {
-  id               String  @id
-  flightTimelineID String
-  index            Int     @default(0)
-  flightID         String
-  description      String
-  requireAlert     Boolean
-
-  valueType     ValueType?
-  changeType    ChangeType?
-  currentValue  Json?
-  previousValue Json?
-  timestamp     DateTime
-
-  //@skip
-  Flight   Flight         @relation(fields: [flightID], references: [id])
-  //@skip
-  Timeline FlightTimeline @relation(fields: [flightTimelineID], references: [id])
-
-  @@unique([flightID, flightTimelineID, index])
-  @@index([flightTimelineID])
-}
-
-model FlightTimeline {
-  id         String   @id
-  flightID   String
-  title      String
-  source     String
-  timestamp  DateTime
-  hasAlerted Boolean  @default(false)
-  updatedAt  DateTime @updatedAt
-
-  // @skip
-  Flight Flight @relation(fields: [flightID], references: [id])
-
-  // @skip
-  FlightEvents FlightEvent[]
-
-  @@unique([flightID, timestamp])
-}
-
-model FlightPlan {
-  id        Int    @id @default(autoincrement())
-  flightID  String
-  index     Int
-  latitude  Float
-  longitude Float
-
-  // @skip
-  Flight Flight @relation(fields: [flightID], references: [id])
-
-  @@index([flightID])
-}
-
-model FlightAlert {
-  id        String         @id @default(uuid())
-  flightID  String
-  title     String
-  body      String
-  channel   AlertChannel[]
-  receiptID String
-  createdAt DateTime       @default(now())
-
-  // @skip
-  Flight Flight @relation(fields: [flightID], references: [id])
-
-  @@index([flightID])
-}
-
-model User {
-  id           String   @id
-  displayName  String?
-  isAnonymous  Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  avatarURL    String?
-  lastSignInAt DateTime @default(now())
-
-  // @skip
-  Authentications UserAuthentication[]
-  UserFlight      UserFlight[]
-  UserPreference  UserPreference?
-  UserWaitList    UserWaitList[]
-}
-
-model UserAuthentication {
-  id        String   @id
-  provider  String
-  email     String?
-  phone     String?
-  userID    String
-  avatarURL String?
-  createdAt DateTime @default(now())
-
-  // @skip
-  User User @relation(fields: [userID], references: [id])
-
-  @@unique([provider, userID])
-}
-
-model UserFlight {
-  id       String @id @default(uuid())
-  userID   String
-  flightID String
-
-  shouldAlert Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // @skip
-  User   User   @relation(fields: [userID], references: [id])
-  Flight Flight @relation(fields: [flightID], references: [id], onDelete: Cascade, onUpdate: Restrict)
-
-  @@unique([flightID, userID])
-}
-
-model UserWaitList {
-  id        String   @id @default(uuid())
-  userID    String
-  feature   String
-  createdAt DateTime @default(now())
-
-  // @skip
-  User User @relation(fields: [userID], references: [id])
-
-  @@unique([userID, feature])
-}
-
-model UserPreference {
-  id     String @id @default(uuid())
-  userID String
-
-  measurement MeasurementType @default(AMERICAN)
-  dateFormat  DateFormatType  @default(AMERICAN)
-
-  // @skip
-  User User @relation(fields: [userID], references: [id])
-
-  @@unique([userID])
-}
-
-model ScheduledJob {
-  id           String @id @default(uuid())
-  name         String
-  lockDuration Int
-  cronTime     String
-
-  lastFailedReason String?
-  lastFailedAt     DateTime?
-  lastSucceedAt    DateTime?
-  unlockAt         DateTime?
-  nextRunAt        DateTime?
-  lastRunAt        DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  @@unique([name])
-}
-
-model JsonCache {
-  id        String   @id
-  data      Json
-  expiresAt DateTime
-
-  @@index([expiresAt])
 }

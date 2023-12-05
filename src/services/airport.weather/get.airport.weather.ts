@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isNil, pick } from 'lodash';
 import moment from 'moment-timezone';
 
 import { prisma } from '@app/prisma';
@@ -101,6 +101,24 @@ export async function getAirportWeather(
       return airportWeather;
     }
   } else if (throwIfNotFound) {
+    Sentry.captureException(new Error('Airport weather not found'), {
+      extra: {
+        airportIata,
+        date,
+        hour,
+        month,
+        year,
+      },
+    });
+    Logger.error(
+      'Airport weather not found airportIata=%s date=%s hour=%s month=%s year=%s',
+      airportIata,
+      date,
+      hour,
+      month,
+      year,
+    );
+
     throw new Error('Airport weather not found');
   }
 
@@ -113,13 +131,14 @@ export async function getAirportWeather(
   const isOverMetNoMax = diffDate > MetNoApi.MAX_FORECAST_DAYS;
 
   Logger.debug(
-    'isRequestingHistorical=%s isOverMetNoMax=%s now=%s requestingDate=%s diffDate=%s diffHours=%s',
+    'isRequestingHistorical=%s isOverMetNoMax=%s now=%s requestingDate=%s diffDate=%s diffHours=%s airport=%o',
     isRequestingHistorical,
     isOverMetNoMax,
     now.format('LLLL'),
     requestingDate.format('LLLL'),
     diffDate,
     diffHours,
+    airport,
   );
 
   const payload = isRequestingHistorical
@@ -130,6 +149,11 @@ export async function getAirportWeather(
         Sentry.captureException(error);
         return getPayloadFromWeatherApi(airport, requestingDate.toDate());
       });
+
+  Logger.debug(
+    'Creating airport weather payload=%o',
+    payload.map(entry => pick(entry, ['hour', 'date', 'year', 'month'])),
+  );
 
   const [deletedResult, createdResult] = await prisma.$transaction([
     prisma.airportWeather.deleteMany({
@@ -150,8 +174,8 @@ export async function getAirportWeather(
 
   Logger.debug(
     'getAirportWeather:: deletedResult=%o createdResult=%o',
-    deletedResult,
-    createdResult,
+    deletedResult.count,
+    createdResult.count,
   );
 
   return getAirportWeather(params, true);

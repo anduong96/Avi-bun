@@ -17,7 +17,7 @@ CREATE TYPE "ChangeType" AS ENUM ('ADDED', 'REMOVED', 'MODIFIED');
 CREATE TYPE "FlightStatus" AS ENUM ('SCHEDULED', 'DEPARTED', 'DELAYED', 'ARRIVED', 'CANCELED', 'ARCHIVED', 'LANDED');
 
 -- CreateEnum
-CREATE TYPE "MeasurementType" AS ENUM ('AMERICAN', 'METRIC', 'IMPERIAL');
+CREATE TYPE "MeasurementType" AS ENUM ('AMERICAN', 'METRIC');
 
 -- CreateEnum
 CREATE TYPE "DateFormatType" AS ENUM ('AMERICAN', 'WORLD');
@@ -85,7 +85,19 @@ CREATE TABLE "AirportCondition" (
 CREATE TABLE "AirportWeather" (
     "id" TEXT NOT NULL,
     "airportIata" TEXT NOT NULL,
-    "temperatureCelsius" INTEGER NOT NULL,
+    "airTemperatureCelsius" INTEGER NOT NULL,
+    "precipitationAmountMillimeter" INTEGER NOT NULL,
+    "windSpeedMeterPerSecond" INTEGER NOT NULL,
+    "windFromDirectionDegrees" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    "iconURL" TEXT NOT NULL,
+    "vendor" TEXT NOT NULL,
+    "year" SMALLINT NOT NULL,
+    "month" SMALLINT NOT NULL,
+    "date" SMALLINT NOT NULL,
+    "hour" SMALLINT NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "AirportWeather_pkey" PRIMARY KEY ("id")
 );
@@ -118,9 +130,9 @@ CREATE TABLE "Country" (
 -- CreateTable
 CREATE TABLE "Flight" (
     "id" TEXT NOT NULL,
-    "flightYear" INTEGER NOT NULL,
-    "flightMonth" INTEGER NOT NULL,
-    "flightDate" INTEGER NOT NULL,
+    "flightYear" SMALLINT NOT NULL,
+    "flightMonth" SMALLINT NOT NULL,
+    "flightDate" SMALLINT NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "flightNumber" TEXT NOT NULL,
     "aircraftTailNumber" TEXT,
@@ -212,9 +224,9 @@ CREATE TABLE "AircraftPosition" (
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
     "altitude" DOUBLE PRECISION,
-    "flightYear" INTEGER NOT NULL,
-    "flightMonth" INTEGER NOT NULL,
-    "flightDate" INTEGER NOT NULL,
+    "flightYear" SMALLINT NOT NULL,
+    "flightMonth" SMALLINT NOT NULL,
+    "flightDate" SMALLINT NOT NULL,
     "flightNumber" TEXT NOT NULL,
     "airlineIata" TEXT NOT NULL,
     "originIata" TEXT NOT NULL,
@@ -318,6 +330,16 @@ CREATE TABLE "UserFlight" (
 );
 
 -- CreateTable
+CREATE TABLE "UserWaitList" (
+    "id" TEXT NOT NULL,
+    "userID" TEXT NOT NULL,
+    "feature" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserWaitList_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "UserPreference" (
     "id" TEXT NOT NULL,
     "userID" TEXT NOT NULL,
@@ -365,6 +387,9 @@ CREATE UNIQUE INDEX "Timezone_name_key" ON "Timezone"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Airport_iata_key" ON "Airport"("iata");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AirportWeather_airportIata_year_month_date_hour_key" ON "AirportWeather"("airportIata", "year", "month", "date", "hour");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "City_code_key" ON "City"("code");
@@ -436,6 +461,9 @@ CREATE UNIQUE INDEX "UserAuthentication_provider_userID_key" ON "UserAuthenticat
 CREATE UNIQUE INDEX "UserFlight_flightID_userID_key" ON "UserFlight"("flightID", "userID");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "UserWaitList_userID_feature_key" ON "UserWaitList"("userID", "feature");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserPreference_userID_key" ON "UserPreference"("userID");
 
 -- CreateIndex
@@ -446,6 +474,9 @@ CREATE INDEX "JsonCache_expiresAt_idx" ON "JsonCache"("expiresAt");
 
 -- AddForeignKey
 ALTER TABLE "Airport" ADD CONSTRAINT "Airport_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AirportWeather" ADD CONSTRAINT "AirportWeather_airportIata_fkey" FOREIGN KEY ("airportIata") REFERENCES "Airport"("iata") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "City" ADD CONSTRAINT "City_countryCode_fkey" FOREIGN KEY ("countryCode") REFERENCES "Country"("isoCode") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -488,6 +519,9 @@ ALTER TABLE "UserFlight" ADD CONSTRAINT "UserFlight_userID_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "UserFlight" ADD CONSTRAINT "UserFlight_flightID_fkey" FOREIGN KEY ("flightID") REFERENCES "Flight"("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+
+-- AddForeignKey
+ALTER TABLE "UserWaitList" ADD CONSTRAINT "UserWaitList_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserPreference" ADD CONSTRAINT "UserPreference_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

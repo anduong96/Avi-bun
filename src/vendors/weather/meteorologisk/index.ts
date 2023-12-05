@@ -20,11 +20,6 @@ export class MetNoApi {
       })
       .json<MetNo_WeatherForecastResponse>();
 
-    data.properties.timeseries = data.properties.timeseries.slice(
-      0,
-      MetNoApi.MAX_FORECAST_DAYS,
-    );
-
     return data;
   }
 }

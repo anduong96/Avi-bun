@@ -15,4 +15,4 @@ services:
     expose:
       - 3306
     volumes:
-      - '../.databases/mysql:/var/lib/mysql'
+      - '.databases/mysql:/var/lib/mysql'

@@ -4,6 +4,7 @@ import { GQL_ChangeType } from '../enums/ChangeType';
 import { Prisma } from '@prisma/client';
 import * as GraphQLScalars from 'graphql-scalars';
 import GraphQLScalars from 'graphql-scalars';
+import { Prisma } from '@app/@generated/prisma.client';
 
 @ObjectType('FlightEvent')
 export class GQL_FlightEvent {

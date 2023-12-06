@@ -1,15 +1,4 @@
 import * as Yup from 'yup';
-import { merge } from 'lodash';
-import { providers } from 'gitops-secrets';
-
-import { BasicObject } from '@app/types/common';
-
-const DOPPLER_TOKEN = process.env.DOPPLER_TOKEN;
-const remoteConfig: BasicObject = DOPPLER_TOKEN
-  ? await providers.doppler
-      .fetch({ dopplerToken: DOPPLER_TOKEN })
-      .catch(() => ({}))
-  : {};
 
 /**
  * @see {@link https://github.com/jquense/yup}
@@ -41,10 +30,7 @@ const schema = Yup.object({
   WEATHER_API_KEY: Yup.string().required(),
 });
 
-export const ENV = await schema
-  .constantCase()
-  .validate(merge(remoteConfig, process.env));
-
+export const ENV = await schema.constantCase().validate(process.env);
 export const isDev = ENV.NODE_ENV === 'development';
 export const isProd = ENV.NODE_ENV === 'production';
 export const isStaging = ENV.NODE_ENV === 'staging';

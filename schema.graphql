@@ -49,9 +49,7 @@ type Airline {
 }
 
 type Airport {
-  ArrivalFlights: [Flight!]!
   Country: Country!
-  DepartureFlights: [Flight!]!
   cityCode: String!
   cityName: String!
   countryCode: String!
@@ -101,6 +99,7 @@ type AirportWeather {
   precipitationAmountMillimeter: Int!
   status: String!
   updatedAt: DateTimeISO!
+  vendor: String!
   windFromDirectionDegrees: Int!
   windSpeedMeterPerSecond: Int!
   year: Int!

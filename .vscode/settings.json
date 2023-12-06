@@ -24,6 +24,8 @@
     "bunx",
     "codegen",
     "DATABOX",
+    "datasource",
+    "datasources",
     "Elysia",
     "Flightera",
     "gitops",

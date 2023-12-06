@@ -1,7 +1,15 @@
+import { chunk } from 'lodash';
+import { Airline, Airport, City, Country } from '@prisma/client';
+
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
 
-function getData(name: string) {
+/**
+ * Sometimes database is not large enough to create 1000s at a time
+ */
+const maxCreationPerTransaction = 20;
+
+function getData<T>(name: string): Promise<T[]> {
   return Bun.file(`./prisma/seed/data/${name}.json`).json();
 }
 
@@ -15,23 +23,39 @@ async function nuke() {
 }
 
 async function populateCountry() {
-  const data = await getData('country');
-  await prisma.country.createMany({ data });
+  const counties = await getData<Country>('country');
+  for (const data of chunk(counties, maxCreationPerTransaction)) {
+    await prisma.country.createMany({
+      data,
+    });
+  }
 }
 
 async function populateCity() {
-  const data = await getData('city');
-  await prisma.city.createMany({ data });
+  const cities = await getData<City>('city');
+  for (const data of chunk(cities, maxCreationPerTransaction)) {
+    await prisma.city.createMany({
+      data,
+    });
+  }
 }
 
 async function populateAirport() {
-  const data = await getData('airport');
-  await prisma.airport.createMany({ data });
+  const airports = await getData<Airport>('airport');
+  for (const data of chunk(airports, maxCreationPerTransaction)) {
+    await prisma.airport.createMany({
+      data,
+    });
+  }
 }
 
 async function populateAirline() {
-  const data = await getData('airline');
-  await prisma.airline.createMany({ data });
+  const airlines = await getData<Airline>('airline');
+  for (const data of chunk(airlines, maxCreationPerTransaction)) {
+    await prisma.airline.createMany({
+      data,
+    });
+  }
 }
 
 Logger.warn('Upsert database');

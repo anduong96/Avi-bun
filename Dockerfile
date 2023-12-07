@@ -4,13 +4,6 @@
 FROM oven/bun:1 as base
 WORKDIR /app
 
-# Install Doppler
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg && \
-  curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg && \
-  echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list && \
-  apt-get update && \
-  apt-get -y install doppler
-
 # install dependencies into temp directory
 # this will cache them and speed up future builds
 FROM base AS install
@@ -39,9 +32,6 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# [optional] tests & build
-ENV NODE_ENV=production
-
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
@@ -49,11 +39,10 @@ COPY --from=install /temp/dev/node_modules/.prisma node_modules/.prisma
 COPY --from=prerelease /app/src src
 COPY --from=prerelease /app/package.json package.json
 COPY --from=prerelease /app/tsconfig.json tsconfig.json
+COPY --from=prerelease /app/scripts/with.remote.env.ts with.remote.env.ts
 
 # run the app
 USER bun
 EXPOSE 3000/tcp
 
-
-ENTRYPOINT ["doppler", "run", "--"]
-CMD ["bun", "run", "src/index.ts"]
+CMD ["bun", "run", "with.remote.env.ts", "bun", "run", "src/index.ts"]

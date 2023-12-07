@@ -1,5 +1,5 @@
 import ky from 'ky';
-import { mapValues } from 'lodash';
+import { mapValues, merge } from 'lodash';
 
 type NodeEnv = 'development' | 'production' | 'staging' | 'test';
 const PROJECT_NAME = 'avi-bun';
@@ -33,7 +33,7 @@ const result = await ky
 const env = mapValues(result.secrets, value => value.computed);
 const args = Bun.argv.slice(2);
 const proc = Bun.spawn(args, {
-  env,
+  env: merge(Bun.env, env),
   stdout: 'inherit',
 });
 

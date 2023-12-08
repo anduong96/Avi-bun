@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   db-mysql:
-    platform: linux/x86_64
     image: mysql:8.0.23
     restart: always
     environment:
@@ -16,3 +15,23 @@ services:
       - 3306
     volumes:
       - '.databases/mysql:/var/lib/mysql'
+  server:
+    depends_on:
+      - db-mysql
+    environment:
+      DATABASE_URL: mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@host.docker.internal:${DATABASE_PORT}/${DATABASE_NAME}?tls=false
+      DOPPLER_TOKEN: ${DOPPLER_TOKEN}
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - './src:/app/src'
+      - './scripts:/app/scripts'
+      - './tsconfig.json:/app/tsconfig.json'
+      - './yarn.lock:/app/yarn.lock'
+      - './package.json:/app/package.json'
+      - './bun.lockb:/app/bun.lockb'
+      - './prisma/schema.prisma:/app/prisma/schema.prisma'

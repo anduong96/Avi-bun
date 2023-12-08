@@ -3,7 +3,7 @@
   "module": "index.ts",
   "license": "UNLICENSED",
   "scripts": {
-    "start": "bun ./src/index.ts",
+    "start": "bun scripts/with.remote.env.t bun ./src/index.ts",
     "dev": "bun scripts/with.remote.env.ts bun --watch --inspect ./src/index.ts",
     "codegen": "prisma generate",
     "build": "bun build ./src/index.ts --compile --outfile .app",

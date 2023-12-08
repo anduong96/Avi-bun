@@ -1,0 +1,25 @@
+# use the official Bun image
+# see all versions at https://hub.docker.com/r/oven/bun/tags
+## Need the --platform to be linux because otherwise it will build for M1 and not work on the server
+FROM oven/bun:1 as base
+WORKDIR /app
+
+ENV DEST=/app
+
+COPY --from=node:18 /usr/local/bin/node /usr/local/bin/node
+COPY \
+  package.json\
+  bun.lockb\
+  src\
+  scripts/with.remote.env.ts\
+  tsconfig.json\
+  patches\
+  package.json\
+  prisma/schema.prisma\
+  yarn.lock ${DEST}/
+
+RUN bun install --frozen-lockfile
+RUN bunx prisma generate
+
+EXPOSE 3000
+CMD ["bun", "dev"]

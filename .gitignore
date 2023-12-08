@@ -135,3 +135,6 @@ dist
 .playground
 .databases
 /.DS_Store
+
+certs/*
+!certs/cert.pem

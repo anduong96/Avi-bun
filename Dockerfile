@@ -4,6 +4,7 @@
 FROM oven/bun:1 as base
 WORKDIR /app
 
+
 # install dependencies into temp directory
 # this will cache them and speed up future builds
 FROM base AS install
@@ -16,6 +17,7 @@ COPY patches /temp/dev/patches
 COPY --from=node:18 /usr/local/bin/node /usr/local/bin/node
 
 ENV DEBUG="*"
+
 RUN cd /temp/dev && bun install --frozen-lockfile
 RUN cd /temp/dev && bunx prisma generate
 
@@ -40,6 +42,7 @@ COPY --from=prerelease /app/src src
 COPY --from=prerelease /app/package.json package.json
 COPY --from=prerelease /app/tsconfig.json tsconfig.json
 COPY --from=prerelease /app/scripts/with.remote.env.ts with.remote.env.ts
+COPY --from=prerelease /app/certs/cert.pem /etc/ssl/certs/cert.pem
 
 # run the app
 USER bun

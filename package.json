@@ -4,7 +4,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "bun scripts/with.remote.env.t bun ./src/index.ts",
-    "dev": "bun scripts/with.remote.env.ts bun --watch --inspect ./src/index.ts",
+    "dev": "bun scripts/with.remote.env.ts bun --watch --inspect=ws://localhost:6499/dev ./src/index.ts",
     "codegen": "prisma generate",
     "build": "bun build ./src/index.ts --compile --outfile .app",
     "lint": "eslint . --ext .ts",

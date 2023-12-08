@@ -27,6 +27,7 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - '3000:3000'
+      - '6499:6499'
     volumes:
       - './src:/app/src'
       - './scripts:/app/scripts'

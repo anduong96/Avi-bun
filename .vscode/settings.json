@@ -32,9 +32,11 @@
     "Hokaido",
     "locationforecast",
     "Meteorologisk",
+    "outfile",
     "skybrary",
     "timeseries",
-    "tslog"
+    "tslog",
+    "typegraphql"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "always"

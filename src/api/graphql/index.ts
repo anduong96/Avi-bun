@@ -15,6 +15,7 @@ import { NoopResolver } from './resolvers/_noop.resolver';
 import { validateApolloAuth } from './_auth/validate.auth';
 import { DebugResolver } from './resolvers/_debug.resolver';
 import { FlightResolver } from './resolvers/flight.resolver';
+import { HealthResolver } from './resolvers/health.resolver';
 import { ApolloSentryPlugin } from './_plugins/sentry.plugin';
 import { AirlineResolver } from './resolvers/airline.resolver';
 import { AirportResolver } from './resolvers/airport.resolver';
@@ -34,6 +35,7 @@ const gqlSchema = await buildSchema({
   authChecker: validateApolloAuth,
   emitSchemaFile,
   resolvers: [
+    HealthResolver,
     isDev ? DebugResolver : NoopResolver,
     FlightResolver,
     FlightPromptnessResolver,

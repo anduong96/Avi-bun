@@ -1,5 +1,4 @@
 import { Context } from 'elysia';
-import { tryNice } from 'try-nice';
 import { DecodedIdToken } from 'firebase-admin/auth';
 
 import { isDev } from '@app/env';
@@ -14,13 +13,14 @@ export async function getRequestUser(
   const authorization = headers.get('Authorization') || '';
   const token = authorization.replace('Bearer', '').trim();
 
-  let [user] = await tryNice(() =>
-    token ? firebase.auth().verifyIdToken(token, true) : Promise.resolve(null),
-  );
-
-  if (!user && isDev) {
-    user = getDevUser();
+  try {
+    const user = await firebase.auth().verifyIdToken(token);
+    return user;
+  } catch (error) {
+    if (isDev) {
+      return getDevUser();
+    }
   }
 
-  return user;
+  return null;
 }

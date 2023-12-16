@@ -4,6 +4,7 @@ import { ENV } from '@app/env';
 
 import { Logger } from './lib/logger';
 
+const logger = Logger.getSubLogger({ name: 'Firebase' });
 const credential = firebaseAdmin.credential.cert({
   clientEmail: ENV.FIREBASE_CLIENT_EMAIL,
   privateKey: ENV.FIREBASE_PRIVATE_KEY,
@@ -14,7 +15,7 @@ export const firebase = firebaseAdmin.initializeApp({
   credential,
 });
 
-Logger.getSubLogger({ name: 'Firebase' }).debug(
+logger.debug(
   'initialized projectID=%s clientEmail=%s',
   ENV.FIREBASE_PROJECT_ID,
   ENV.FIREBASE_CLIENT_EMAIL,

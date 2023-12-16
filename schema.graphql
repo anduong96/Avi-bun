@@ -243,6 +243,7 @@ type Query {
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Int!, flightNumber: String!, month: Int!, year: Int!): [Flight!]!
+  health: String!
   randomFlight: Flight!
   user: User!
   userActiveFlights: [UserFlight!]!

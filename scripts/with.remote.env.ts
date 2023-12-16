@@ -33,7 +33,7 @@ const result = await ky
 const env = mapValues(result.secrets, value => value.computed);
 const args = Bun.argv.slice(2);
 const proc = Bun.spawn(args, {
-  env: merge(Bun.env, env),
+  env: merge(env, Bun.env),
   stdout: 'inherit',
 });
 

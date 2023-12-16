@@ -17,9 +17,9 @@ import { UserCreatedTopic } from '@app/topics/defined.topics/user.created.topic'
  * user with the authentication provider data in the Prisma database.
  */
 export async function syncAuthProviderForUser(userID: string) {
+  Logger.debug('Syncing user=%s', userID);
   const firebaseUser = await firebase.auth().getUser(userID);
   assert(firebaseUser, 'User not found');
-  Logger.debug('Syncing user', firebaseUser);
   const isAnonymous = isEmpty(firebaseUser.providerData);
   const authPayload = firebaseUser.providerData.map(entry => ({
     avatarURL: entry.photoURL,

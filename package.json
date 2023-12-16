@@ -5,6 +5,7 @@
   "scripts": {
     "start": "bun scripts/with.remote.env.t bun ./src/index.ts",
     "dev": "bun scripts/with.remote.env.ts bun --watch --inspect=ws://localhost:6499/dev ./src/index.ts",
+    "docker:dev:tail": "docker logs --follow avi-bun-server-1",
     "codegen": "prisma generate",
     "build": "bun build ./src/index.ts --compile --outfile .app",
     "lint": "eslint . --ext .ts",
@@ -21,7 +22,7 @@
     "ext:services:down": "sh ./scripts/down.services.sh"
   },
   "prisma": {
-    "seed": "bun ./prisma/seed/index.ts"
+    "seed": "bun scripts/with.remote.env.ts bun ./prisma/seed/index.ts"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",

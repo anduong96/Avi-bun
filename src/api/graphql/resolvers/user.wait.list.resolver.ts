@@ -10,7 +10,7 @@ export class UserWaitListResolver {
   @Mutation(() => String, {
     description: 'Add user to wait list',
   })
-  async subscribeToWaitList(
+  async addToWaitList(
     @CurrentUserID() userID: string,
     @Arg('feature', { description: 'Wait list feature' }) feature: string,
   ) {
@@ -23,6 +23,31 @@ export class UserWaitListResolver {
         id: true,
       },
       update: {},
+      where: {
+        userID_feature: {
+          feature,
+          userID,
+        },
+      },
+    });
+
+    return entry.id;
+  }
+
+  @Mutation(() => String, {
+    description: 'Remove user from wait list',
+  })
+  async removeFromWaitList(
+    @CurrentUserID() userID: string,
+    @Arg('feature', {
+      description: 'Wait list feature',
+    })
+    feature: string,
+  ) {
+    const entry = await prisma.userWaitList.delete({
+      select: {
+        id: true,
+      },
       where: {
         userID_feature: {
           feature,

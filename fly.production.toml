@@ -38,8 +38,8 @@ strategy = "immediate"
 
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = "shared-cpu-4x"
+  memory = "1gb"
   cpu_kind = "shared"
 
 

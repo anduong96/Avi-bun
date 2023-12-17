@@ -1,3 +1,4 @@
+import { isNil } from 'lodash';
 import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 
 import { prisma } from '@app/prisma';
@@ -59,6 +60,30 @@ export class UserWaitListResolver {
     });
 
     return entry.id;
+  }
+
+  @Authorized()
+  @Query(() => Boolean, {
+    description: 'Check if user is in wait list',
+  })
+  async userIsInWaitList(
+    @CurrentUserID() userID: string,
+    @Arg('feature', { description: 'Wait list feature' })
+    feature: string,
+  ) {
+    const entry = await prisma.userWaitList.findUnique({
+      select: {
+        id: true,
+      },
+      where: {
+        userID_feature: {
+          feature,
+          userID,
+        },
+      },
+    });
+
+    return !isNil(entry?.id);
   }
 
   @Authorized()

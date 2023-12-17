@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 
 import { prisma } from '@app/prisma';
 import { GQL_UserWaitList } from '@app/@generated/graphql/models/UserWaitList';
@@ -7,6 +7,7 @@ import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 
 @Resolver(() => GQL_UserWaitList)
 export class UserWaitListResolver {
+  @Authorized()
   @Mutation(() => String, {
     description: 'Add user to wait list',
   })
@@ -34,6 +35,7 @@ export class UserWaitListResolver {
     return entry.id;
   }
 
+  @Authorized()
   @Mutation(() => String, {
     description: 'Remove user from wait list',
   })
@@ -59,6 +61,7 @@ export class UserWaitListResolver {
     return entry.id;
   }
 
+  @Authorized()
   @Query(() => [String], {
     description: 'Get user wait list features',
   })

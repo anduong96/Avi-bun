@@ -65,6 +65,8 @@ function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
   const maxDisplay = 3;
   const hasOverMax = changes.length > maxDisplay;
   const title = format('⚠️ %s%s', flight.airlineIata, flight.flightNumber);
+  Logger.debug('Flight[%s] alert created changes=%o', flight.id, changes);
+
   const body =
     changes.length === 1
       ? format(

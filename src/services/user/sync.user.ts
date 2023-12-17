@@ -5,6 +5,7 @@ import { isEmpty, omit } from 'lodash';
 import { prisma } from '@app/prisma';
 import { firebase } from '@app/firebase';
 import { Logger } from '@app/lib/logger';
+import { createID } from '@app/lib/create.id';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { UserCreatedTopic } from '@app/topics/defined.topics/user.created.topic';
 
@@ -24,7 +25,7 @@ export async function syncAuthProviderForUser(userID: string) {
   const authPayload = firebaseUser.providerData.map(entry => ({
     avatarURL: entry.photoURL,
     email: entry.email,
-    id: entry.uid,
+    id: createID(),
     phone: entry.phoneNumber,
     provider: entry.providerId,
   }));
@@ -48,7 +49,12 @@ export async function syncAuthProviderForUser(userID: string) {
         upsert: authPayload.map(entry => ({
           create: entry,
           update: omit(entry, 'id'),
-          where: { id: entry.id },
+          where: {
+            provider_userID: {
+              provider: entry.provider,
+              userID,
+            },
+          },
         })),
       },
       isAnonymous,

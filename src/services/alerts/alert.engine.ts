@@ -170,6 +170,7 @@ export async function handleFlightChangesForAlert(
   Logger.debug('Handling Flight[%s] changes for alert', flightID);
   const difference = findAlertableFlightDiff(current, previous);
   Logger.debug('%s changes for Flight[%s]', difference.length, flightID);
+  Logger.debug('Flight[%s] changes difference=%o', flightID, difference);
 
   const [createdTimeline, sentAlerts] = await Promise.allSettled([
     createFlightChangeTimeline(current, difference),

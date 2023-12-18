@@ -233,7 +233,7 @@ model Aircraft {
   icao        String
   model       String
   airlineIata String
-  description String?
+  description String?   @db.LongText
   tailNumber  String    @unique
   imageURL    String?
   firstFlight DateTime?

@@ -61,7 +61,10 @@ function findAlertableFlightDiff(current: Flight, previous: Flight) {
  * @returns the result of calling the `sendFlightAlert` function with the `flight.id` and an object
  * containing the `body` and `title` properties.
  */
-function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
+function getFlightAlertPayload(
+  flight: Flight,
+  changes: DiffEntry[],
+): Parameters<typeof sendFlightAlert>[1] {
   const maxDisplay = 3;
   const hasOverMax = changes.length > maxDisplay;
   const title = format('⚠️ %s%s', flight.airlineIata, flight.flightNumber);
@@ -90,10 +93,10 @@ function createAndSendFlightAlert(flight: Flight, changes: DiffEntry[]) {
             .join(', '),
         );
 
-  return sendFlightAlert(flight.id, {
+  return {
     body,
     title,
-  });
+  };
 }
 
 /**
@@ -171,7 +174,7 @@ export async function handleFlightChangesForAlert(
   const [createdTimeline, sentAlerts] = await Promise.allSettled([
     createFlightChangeTimeline(current, difference),
     difference.length > 0
-      ? createAndSendFlightAlert(current, difference)
+      ? sendFlightAlert(flightID, getFlightAlertPayload(current, difference))
       : null,
   ]);
 

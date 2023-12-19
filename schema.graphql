@@ -129,6 +129,24 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+type Feedback {
+  createdAt: DateTimeISO!
+  id: ID!
+  message: String!
+  rating: Int!
+  type: FeedbackType!
+  updatedAt: DateTimeISO!
+  userID: String!
+}
+
+enum FeedbackType {
+  APP_ENHANCEMENT
+  BUG_REPORT
+  FEATURE_REQUEST
+  INQUIRY
+  QUESTION
+}
+
 type Flight {
   Airline: Airline!
   Destination: Airport!
@@ -224,8 +242,22 @@ enum MeasurementType {
 
 type Mutation {
   _sendFlightNotification(body: String!, data: JSON, flightID: String!, title: String!): Float!
+
+  """Add user to wait list"""
+  addToWaitList(
+    """Wait list feature"""
+    feature: String!
+  ): String!
   addUserFlight(flightID: String!): String!
+  deleteUser: Boolean!
   deleteUserFlight(flightID: String!): String!
+
+  """Remove user from wait list"""
+  removeFromWaitList(
+    """Wait list feature"""
+    feature: String!
+  ): String!
+  submitFeedback(message: String!, rating: Float!, type: FeedbackType!): String!
   syncUser: Boolean!
   updateUserPreference(data: UpdateUserPreferenceInput!): Boolean!
 }
@@ -250,7 +282,19 @@ type Query {
   userArchivedFlights: [UserFlight!]!
   userFlight(flightID: String!): UserFlight
   userHasFlights: Boolean!
+
+  """Check if user is in wait list"""
+  userIsInWaitList(
+    """Wait list feature"""
+    feature: String!
+  ): Boolean!
   userPreference: UserPreference!
+
+  """Get user wait list features"""
+  userWaitList(
+    """Wait list features"""
+    features: [String!]!
+  ): [String!]!
 }
 
 input UpdateUserPreferenceInput {
@@ -259,6 +303,7 @@ input UpdateUserPreferenceInput {
 }
 
 type User {
+  Feedback: [Feedback!]!
   UserFlight: [UserFlight!]!
   UserPreference: UserPreference
   UserWaitList: [UserWaitList!]!

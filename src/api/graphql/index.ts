@@ -21,6 +21,7 @@ import { AirlineResolver } from './resolvers/airline.resolver';
 import { AirportResolver } from './resolvers/airport.resolver';
 import { createApolloContext } from './_context/create.context';
 import { AircraftResolver } from './resolvers/aircraft.resolver';
+import { FeedbackResolver } from './resolvers/feedback.resolver';
 import { UserFlightResolver } from './resolvers/user.flights.resolver';
 import { UserWaitListResolver } from './resolvers/user.wait.list.resolver';
 import { UserPreferenceResolver } from './resolvers/user.preference.resolver';
@@ -49,6 +50,7 @@ const gqlSchema = await buildSchema({
     UserPreferenceResolver,
     UserWaitListResolver,
     UserResolver,
+    FeedbackResolver,
   ],
 });
 

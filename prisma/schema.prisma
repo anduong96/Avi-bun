@@ -351,6 +351,7 @@ model User {
   UserFlight      UserFlight[]
   UserPreference  UserPreference?
   UserWaitList    UserWaitList[]
+  Feedback        Feedback[]
 }
 
 model UserAuthentication {
@@ -420,6 +421,29 @@ model ScheduledJob {
   lastRunAt        DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+}
+
+model Feedback {
+  id      String       @id @default(uuid())
+  userID  String
+  message String       @db.LongText
+  rating  Int
+  type    FeedbackType
+
+  // @skip
+  user      User     @relation(fields: [userID], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userID])
+}
+
+enum FeedbackType {
+  FEATURE_REQUEST
+  APP_ENHANCEMENT
+  BUG_REPORT
+  INQUIRY
+  QUESTION
 }
 
 model JsonCache {

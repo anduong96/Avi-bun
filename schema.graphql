@@ -277,6 +277,7 @@ type Query {
   flights(airlineIata: String!, date: Int!, flightNumber: String!, month: Int!, year: Int!): [Flight!]!
   health: String!
   randomFlight: Flight!
+  recentFeedback: Feedback
   user: User!
   userActiveFlights: [UserFlight!]!
   userArchivedFlights: [UserFlight!]!

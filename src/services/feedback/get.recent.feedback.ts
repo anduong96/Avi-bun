@@ -1,9 +1,8 @@
 import moment from 'moment';
-import { isNil } from 'lodash';
 
 import { prisma } from '@app/prisma';
 
-export async function hasSubmittedFeedbackRecently(userID: string) {
+export async function getRecentFeedback(userID: string) {
   const exists = await prisma.feedback.findFirst({
     where: {
       createdAt: {
@@ -13,5 +12,5 @@ export async function hasSubmittedFeedbackRecently(userID: string) {
     },
   });
 
-  return isNil(exists);
+  return exists;
 }

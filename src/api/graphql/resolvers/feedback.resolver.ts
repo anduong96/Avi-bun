@@ -1,17 +1,24 @@
 import { FeedbackType } from '@prisma/client';
-import { Arg, Authorized, Mutation, Resolver } from 'type-graphql';
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 
 import { prisma } from '@app/prisma';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { GQL_Feedback } from '@app/@generated/graphql/models/Feedback';
 import { GQL_FeedbackType } from '@app/@generated/graphql/enums/FeedbackType';
+import { getRecentFeedback } from '@app/services/feedback/get.recent.feedback';
 import { FeedbackCreatedTopic } from '@app/topics/defined.topics/feedback.created.topic';
-import { hasSubmittedFeedbackRecently } from '@app/services/feedback/has.submitted.feedback.recently';
 
 import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 
 @Resolver(() => GQL_Feedback)
 export class FeedbackResolver {
+  @Authorized()
+  @Query(() => GQL_Feedback, { nullable: true })
+  async recentFeedback(@CurrentUserID() userID: string) {
+    const feedback = await getRecentFeedback(userID);
+    return feedback;
+  }
+
   @Authorized()
   @Mutation(() => String)
   async submitFeedback(
@@ -20,8 +27,8 @@ export class FeedbackResolver {
     @Arg('rating') rating: number,
     @Arg('type', () => GQL_FeedbackType) type: FeedbackType,
   ) {
-    const submittedRecently = await hasSubmittedFeedbackRecently(userID);
-    if (submittedRecently) {
+    const exists = await getRecentFeedback(userID);
+    if (exists) {
       throw new Error('You have already recently submitted feedback');
     }
 
@@ -38,7 +45,6 @@ export class FeedbackResolver {
     });
 
     TopicPublisher.broadcast(new FeedbackCreatedTopic(entry.id));
-
     return entry;
   }
 }

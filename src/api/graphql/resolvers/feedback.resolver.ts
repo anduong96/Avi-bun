@@ -2,6 +2,7 @@ import { FeedbackType } from '@prisma/client';
 import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 
 import { prisma } from '@app/prisma';
+import { assertAuth } from '@app/services/user/has.auth';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { GQL_Feedback } from '@app/@generated/graphql/models/Feedback';
 import { GQL_FeedbackType } from '@app/@generated/graphql/enums/FeedbackType';
@@ -27,6 +28,7 @@ export class FeedbackResolver {
     @Arg('rating') rating: number,
     @Arg('type', () => GQL_FeedbackType) type: FeedbackType,
   ) {
+    await assertAuth(userID, 'User is not authenticated');
     const exists = await getRecentFeedback(userID);
     if (exists) {
       throw new Error('You have already recently submitted feedback');

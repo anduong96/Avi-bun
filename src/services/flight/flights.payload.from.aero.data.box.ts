@@ -9,8 +9,12 @@ import { AeroDataBoxFlight } from '@app/vendors/aircraft/aero.data.box/types';
 function toFlightPayload(
   entry: AeroDataBoxFlight,
 ): RequiredKeys<Prisma.FlightUncheckedCreateInput, 'id'> {
-  const departureDate = moment.parseZone(entry.departure.actualTimeLocal);
-  const arrivalDate = moment.parseZone(entry.arrival.actualTimeLocal);
+  const departureDate = moment.parseZone(
+    entry.departure.actualTimeLocal ?? entry.departure.scheduledTime.local,
+  );
+  const arrivalDate = moment.parseZone(
+    entry.arrival.actualTimeLocal ?? entry.arrival.scheduledTime.local,
+  );
 
   return {
     aircraftTailNumber: entry.aircraft.reg,
@@ -35,8 +39,8 @@ function toFlightPayload(
       entry.status === 'Arrived'
         ? FlightStatus.ARRIVED
         : entry.status === 'Departed'
-        ? FlightStatus.DEPARTED
-        : FlightStatus.SCHEDULED,
+          ? FlightStatus.DEPARTED
+          : FlightStatus.SCHEDULED,
     totalDistanceKm: entry.greatCircleDistance.km,
   };
 }

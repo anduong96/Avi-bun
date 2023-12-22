@@ -34,7 +34,7 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-perfectionist": "^2.5.0",
-    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-prettier": "^5.1.1",
     "prettier": "^3.1.1",
     "prisma": "^5.7.1",
     "prisma-typegraphql-types-generator": "^1.5.14",
@@ -47,7 +47,7 @@
   "dependencies": {
     "@apollo/server": "^4.9.5",
     "@prisma/client": "^5.7.1",
-    "@sentry/bun": "^7.89.0",
+    "@sentry/bun": "^7.91.0",
     "cheerio": "1.0.0-rc.12",
     "cron-parser": "^4.9.0",
     "cron-time-generator": "^2.0.1",

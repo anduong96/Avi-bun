@@ -27,5 +27,6 @@ export const Logger = new TsLog.Logger({
   },
   prettyLogTemplate:
     '\n{{rawIsoStr}} {{logLevelName}} {{name}} {{filePathWithLine}}\n',
+  stylePrettyLogs: isDev,
   type: 'pretty',
 });

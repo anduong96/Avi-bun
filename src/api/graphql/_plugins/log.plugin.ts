@@ -6,7 +6,7 @@ import {
   GraphQLRequestContext,
 } from '@apollo/server';
 
-import { isDev, isProd } from '@app/env';
+import { isProd } from '@app/env';
 import { Logger } from '@app/lib/logger';
 
 import { ApolloServerContext } from '../_context/types';

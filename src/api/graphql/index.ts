@@ -57,7 +57,7 @@ const gqlSchema = await buildSchema({
 const apollo = new ApolloServer({
   plugins: [
     ApolloLogPlugin,
-    ApolloSentryPlugin,
+    // ApolloSentryPlugin,
     isDev
       ? ApolloServerPluginLandingPageLocalDefault({ footer: false })
       : ApolloServerPluginLandingPageProductionDefault({ footer: false }),

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import moment from 'moment-timezone';
 import { FlightStatus, Prisma } from '@prisma/client';
 

@@ -34,7 +34,11 @@ function getFlights(params: FlightQueryParam) {
       ? getFlightsPayloadFromFlightStats(params)
       : getFlightsPayloadFromAeroDataBox(params);
   } catch (error) {
-    Sentry.captureException(error);
+    Sentry.captureException(error, {
+      contexts: {
+        params,
+      },
+    });
     return getFlightsPayloadFromAeroDataBox(params);
   }
 }

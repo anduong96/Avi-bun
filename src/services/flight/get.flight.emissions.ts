@@ -30,7 +30,11 @@ export async function getFlightEmissions(
     };
   } catch (error) {
     Logger.error('Unable to get flight details from Flightera', error);
-    Sentry.captureException(error);
+    Sentry.captureException(error, {
+      contexts: {
+        flight: params,
+      },
+    });
     return null;
   }
 }

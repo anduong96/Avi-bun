@@ -29,7 +29,7 @@ async function getAirport(airportIata: string) {
     isNil(airport.timezone)
   ) {
     Sentry.captureException(new Error('Airport is missing location data'), {
-      extra: {
+      contexts: {
         airport,
       },
     });
@@ -102,12 +102,14 @@ export async function getAirportWeather(
     }
   } else if (throwIfNotFound) {
     Sentry.captureException(new Error('Airport weather not found'), {
-      extra: {
-        airportIata,
-        date,
-        hour,
-        month,
-        year,
+      contexts: {
+        query: {
+          airportIata,
+          date,
+          hour,
+          month,
+          year,
+        },
       },
     });
     Logger.error(
@@ -146,7 +148,14 @@ export async function getAirportWeather(
     : await getPayloadFromMetNo(airport).catch((error: Error) => {
         Logger.debug('getAirportWeather:: error=%s', error.message);
         Logger.error(error);
-        Sentry.captureException(error);
+        Sentry.captureException(error, {
+          contexts: {
+            query: {
+              airport,
+              requestingDate,
+            },
+          },
+        });
         return getPayloadFromWeatherApi(airport, requestingDate.toDate());
       });
 

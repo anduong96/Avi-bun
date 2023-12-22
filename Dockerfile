@@ -1,7 +1,7 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
 ## Need the --platform to be linux because otherwise it will build for M1 and not work on the server
-FROM oven/bun:1 as base
+FROM oven/bun:latest as base
 WORKDIR /app
 
 ARG COMMIT

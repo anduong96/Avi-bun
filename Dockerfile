@@ -4,6 +4,8 @@
 FROM oven/bun:1 as base
 WORKDIR /app
 
+ARG COMMIT
+ENV COMMIT_SHA=$COMMIT
 
 # install dependencies into temp directory
 # this will cache them and speed up future builds

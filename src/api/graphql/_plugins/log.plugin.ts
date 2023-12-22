@@ -6,7 +6,7 @@ import {
   GraphQLRequestContext,
 } from '@apollo/server';
 
-import { isDev } from '@app/env';
+import { isDev, isProd } from '@app/env';
 import { Logger } from '@app/lib/logger';
 
 import { ApolloServerContext } from '../_context/types';
@@ -42,7 +42,7 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
     let shouldLog = false;
 
     if (op !== 'IntrospectionQuery' && !query?.includes('IntrospectionQuery')) {
-      shouldLog = isDev;
+      shouldLog = !isProd;
     }
 
     return Promise.resolve({

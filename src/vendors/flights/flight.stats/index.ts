@@ -76,12 +76,12 @@ export class FlightStats {
     });
 
     const dateStr = date.format('YYYY/M/D');
-    const { airlineIata, flightID, flightNumber } = args;
-    const route = flightID
-      ? `api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}/${flightID}`
-      : `api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}`;
+    const { airlineIata, flightNumber } = args;
+    const route = `api/extendedDetails/${airlineIata}/${flightNumber}/${dateStr}`;
 
-    const request = await this.client.get(route);
+    const request = await this.client.get(route, {
+      throwHttpErrors: false,
+    });
 
     this.logger.debug(
       'Status: [%s], Request: %s',

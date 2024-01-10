@@ -4,6 +4,7 @@ import CronTime from 'cron-time-generator';
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
+import { Sentry } from '@app/lib/sentry';
 import { TopicPublisher } from '@app/topics/topic.publisher';
 import { FlightStats } from '@app/vendors/flights/flight.stats';
 import { FlightUpdatedTopic } from '@app/topics/defined.topics/flight.updated.topic';
@@ -43,6 +44,10 @@ export class SyncActiveFlightsJob extends Job {
         flightStatsID,
         error,
       );
+
+      if (error) {
+        Sentry.captureException(error);
+      }
 
       return;
     }
@@ -123,7 +128,7 @@ export class SyncActiveFlightsJob extends Job {
     this.logger.info('Flights to sync', flights.length);
     const result = await Promise.allSettled(
       flights.map(entry =>
-        this.checkRemote(entry.Flight, entry.vendorResourceID).then(
+        this.checkRemote(entry.Flight, entry.vendorResourceID).finally(
           () => entry.Flight.id,
         ),
       ),

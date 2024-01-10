@@ -62,6 +62,7 @@ export class SyncActiveFlightsJob extends Job {
     const updateData: Prisma.FlightUpdateInput = {
       actualGateArrival: payload.actualGateArrival,
       actualGateDeparture: payload.actualGateDeparture,
+      aircraftTailNumber: payload.aircraftTailNumber,
       destinationBaggageClaim: payload.destinationBaggageClaim,
       destinationGate: payload.destinationGate,
       destinationTerminal: payload.destinationTerminal,

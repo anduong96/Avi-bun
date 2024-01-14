@@ -40,6 +40,12 @@ export class Scheduler {
     await this.upsertJob(applyNextRunAt(job.definition, time));
   }
 
+  static async scheduleMany(jobs: Array<{ job: Job; time: Date | string }>) {
+    await Promise.allSettled(
+      jobs.map(({ job, time }) => this.schedule(time, job)),
+    );
+  }
+
   static async start() {
     this.run();
     await delay(this.INTERVAL_MS);
@@ -172,7 +178,11 @@ export class Scheduler {
   }
 
   private static async unlockJob(job: Job<unknown>) {
-    const nextRunAt = getNextCronTime(job.definition.cronTime);
+    const nextRunAt =
+      !job.definition.nextRunAt || moment().isAfter(job.definition.nextRunAt)
+        ? getNextCronTime(job.definition.cronTime)
+        : job.definition.nextRunAt;
+
     const deleteAt = moment(nextRunAt ?? new Date())
       .add(10, 'day')
       .toDate();
@@ -195,6 +205,7 @@ export class Scheduler {
           lastRunAt: job.definition.lastRunAt,
           lastSucceedAt: job.definition.lastSucceedAt,
           nextRunAt: nextRunAt,
+          runCount: { increment: 1 },
           unlockAt: null,
         },
         select: {

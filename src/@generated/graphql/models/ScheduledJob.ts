@@ -13,6 +13,9 @@ export class GQL_ScheduledJob {
   @Field(() => Int)
   lockDurationMs: number;
 
+  @Field(() => Int)
+  runCount: number;
+
   @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
   props?: Prisma.JsonValue;
 

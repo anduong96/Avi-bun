@@ -440,6 +440,7 @@ model ScheduledJob {
   id               String    @id
   name             String
   lockDurationMs   Int
+  runCount         Int       @default(0)
   props            Json?
   cronTime         String?
   error            String?

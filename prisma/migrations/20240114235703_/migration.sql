@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `ScheduledJob` ADD COLUMN `runCount` INTEGER NOT NULL DEFAULT 0;

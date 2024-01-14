@@ -16,14 +16,11 @@ import { GQL_Airline } from '@app/@generated/graphql/models/Airline';
 import { GQL_Airport } from '@app/@generated/graphql/models/Airport';
 import { getRandomFlight } from '@app/services/flight/get.random.flight';
 
-import { Selections } from '../_decorators/selection.decorator';
-
 @Resolver(() => GQL_Flight)
 export class FlightResolver {
   @FieldResolver(() => GQL_Airline)
-  async Airline(@Root() root: GQL_Flight, @Selections() selections: object) {
+  async Airline(@Root() root: GQL_Flight) {
     return prisma.airline.findFirstOrThrow({
-      select: selections,
       where: {
         iata: root.airlineIata,
       },
@@ -31,12 +28,8 @@ export class FlightResolver {
   }
 
   @FieldResolver(() => GQL_Airport)
-  async Destination(
-    @Root() root: GQL_Flight,
-    @Selections('Destination') selections: object,
-  ) {
+  async Destination(@Root() root: GQL_Flight) {
     return prisma.airport.findFirstOrThrow({
-      select: selections,
       where: {
         iata: root.destinationIata,
       },
@@ -44,12 +37,8 @@ export class FlightResolver {
   }
 
   @FieldResolver(() => GQL_Airport)
-  async Origin(
-    @Root() root: GQL_Flight,
-    @Selections('Origin') selections: object,
-  ) {
+  async Origin(@Root() root: GQL_Flight) {
     return prisma.airport.findFirstOrThrow({
-      select: selections,
       where: {
         iata: root.originIata,
       },
@@ -65,12 +54,8 @@ export class FlightResolver {
 
   @Authorized()
   @Query(() => GQL_Flight)
-  async flight(
-    @Arg('flightID') flightID: string,
-    @Selections() selections: object,
-  ) {
+  async flight(@Arg('flightID') flightID: string) {
     const flight = await prisma.flight.findFirstOrThrow({
-      select: selections,
       where: {
         id: flightID,
       },

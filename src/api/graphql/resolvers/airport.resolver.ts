@@ -49,6 +49,11 @@ export class AirportResolver {
     @Arg('airportIata') iata: string,
   ): Promise<MaybeNil<GQL_AirportTsaEstimatedWaitTime[]>> {
     const entry = await getCurrentTsaTerminalWaitTime(iata);
+
+    if (!entry) {
+      return null;
+    }
+
     return entry?.map(item => ({
       airportIata: iata,
       estimatedWaitMinutes: item.estimatedWaitMinutes,

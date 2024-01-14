@@ -24,7 +24,7 @@ export async function upsertCurrentTsaTerminalWaitTime(airportIata: string) {
     await assertIsAirportUSA(airportIata);
     const result = await QSensor.getCurrentSecurityMetadata(airportIata);
     const key = getKey(airportIata);
-    await upsertCachedEntry(key, result);
+    await upsertCachedEntry(key, result.terminals);
     return result.terminals;
   } catch (error) {
     Logger.error('Failed to get current TSA terminal wait time\n', error);

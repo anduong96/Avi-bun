@@ -37,7 +37,7 @@ export abstract class Job<Props = never> {
 
   static clone<T>(def: Partial<ScheduledJob> = {}): Job<T> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-    const job = new (this as any)() as Job<T>;
+    const job = new (this as any)(def.props) as Job<T>;
     job.updateInternal(def);
     return job;
   }

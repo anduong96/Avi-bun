@@ -1,7 +1,7 @@
 import type { GraphQLResolveInfo } from 'graphql';
 
-import { omit } from 'lodash';
 import { Kind } from 'graphql';
+import { get, omit } from 'lodash';
 import { createParamDecorator } from 'type-graphql';
 
 import { ApolloServerContext } from '../_context/types';
@@ -23,6 +23,8 @@ function parseGraphQLInfo<T extends object = object>(
   for (const fieldNode of info.fieldNodes[0].selectionSet.selections) {
     if (fieldNode.kind === Kind.FIELD) {
       const fieldName = fieldNode.name.value;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       projection[fieldName] = fieldNode.selectionSet
         ? parseGraphQLInfo({ ...info, fieldNodes: [fieldNode] })
         : true;
@@ -32,8 +34,14 @@ function parseGraphQLInfo<T extends object = object>(
   return projection;
 }
 
-export function Selections() {
+export function Selections(root?: string) {
   return createParamDecorator<ApolloServerContext>(({ info }) => {
-    return omit(parseGraphQLInfo(info), ['__typename']);
+    const selection = omit(parseGraphQLInfo(info), ['__typename']);
+    if (root) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return get(selection, root);
+    }
+
+    return selection;
   });
 }

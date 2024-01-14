@@ -1,6 +1,5 @@
 import { tryNice } from 'try-nice';
 import moment from 'moment-timezone';
-import CronTime from 'cron-time-generator';
 import { Flight, FlightStatus, FlightVendor, Prisma } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -13,7 +12,6 @@ import { flightStatFlightToFlightPayload } from '@app/services/flight/flights.pa
 import { Job } from '../job';
 
 export class SyncActiveFlightsJob extends Job {
-  cronTime: string = CronTime.every(5).minutes();
   constructor() {
     super();
   }

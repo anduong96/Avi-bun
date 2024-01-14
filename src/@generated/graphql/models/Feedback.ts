@@ -1,6 +1,5 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { GQL_FeedbackType } from '../enums/FeedbackType';
-import { GQL_User } from './User';
 
 @ObjectType('Feedback')
 export class GQL_Feedback {

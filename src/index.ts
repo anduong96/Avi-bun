@@ -2,9 +2,9 @@ import 'reflect-metadata';
 
 import '@app/prisma';
 import '@app/firebase';
-import '@app/scheduler';
-import '@app/lib/sentry';
+import '@app/scheduler/init.jobs';
 import '@app/topic.listeners';
+import '@app/lib/sentry';
 
 import { Elysia } from 'elysia';
 

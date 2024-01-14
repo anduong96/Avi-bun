@@ -248,6 +248,34 @@ model Aircraft {
   @@index([airlineIata])
 }
 
+model AircraftSeatMeta {
+  id                 Int    @id @default(autoincrement())
+  aircraftTailNumber String
+  name               String
+  pitchInches        Int
+  widthInches        Int
+
+  @@index([aircraftTailNumber])
+}
+
+enum AircraftAmenityType {
+  INTERNET
+  FOOD
+  AC_POWER
+  AUDIO
+  VIDEO
+}
+
+model AircraftAmenity {
+  id                  Int                 @id @default(autoincrement())
+  aircraftTailNumber  String
+  type                AircraftAmenityType
+  descriptionMarkdown String              @db.LongText
+
+  @@unique([aircraftTailNumber, type])
+  @@index([aircraftTailNumber])
+}
+
 model AircraftPosition {
   id              Int      @id @default(autoincrement())
   aircraftID      Int
@@ -409,18 +437,26 @@ model UserPreference {
 }
 
 model ScheduledJob {
-  id               String    @id @default(uuid())
-  name             String    @unique
-  lockDuration     Int
-  cronTime         String
+  id               String    @id
+  name             String
+  lockDurationMs   Int
+  props            Json?
+  cronTime         String?
+  error            String?
   lastFailedReason String?
   lastFailedAt     DateTime?
   lastSucceedAt    DateTime?
+  deleteAt         DateTime?
   unlockAt         DateTime?
   nextRunAt        DateTime?
   lastRunAt        DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+
+  @@index([name])
+  @@index([nextRunAt])
+  @@index([deleteAt])
+  @@index([unlockAt])
 }
 
 model Feedback {
@@ -450,6 +486,8 @@ model JsonCache {
   id        String   @id
   data      Json
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([expiresAt])
 }

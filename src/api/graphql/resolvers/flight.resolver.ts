@@ -45,7 +45,7 @@ export class FlightResolver {
     });
   }
 
-  @FieldResolver()
+  @FieldResolver(() => Int)
   durationMs(@Root() root: GQL_Flight) {
     const gateDeparture = moment(root.estimatedGateDeparture);
     const gateArrival = moment(root.estimatedGateArrival);
@@ -84,9 +84,15 @@ export class FlightResolver {
     return result;
   }
 
-  @FieldResolver()
+  @FieldResolver(() => Int)
   progressPercent(@Root() root: GQL_Flight) {
-    return 1 - this.remainingDurationMs(root) / this.durationMs(root);
+    const flightDurationMs = this.durationMs(root);
+    const remainingDurationMs = this.remainingDurationMs(root);
+    if (remainingDurationMs > 0) {
+      return 0;
+    }
+
+    return 1 - remainingDurationMs / flightDurationMs;
   }
 
   @Authorized()
@@ -96,7 +102,9 @@ export class FlightResolver {
     return flight;
   }
 
-  @FieldResolver(() => Int)
+  @FieldResolver(() => Int, {
+    description: 'Time in milliseconds until the flight departs',
+  })
   remainingDurationMs(@Root() root: GQL_Flight) {
     const now = moment();
     const gateArrival = moment(root.estimatedGateArrival);

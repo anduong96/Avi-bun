@@ -33,10 +33,14 @@
     "locationforecast",
     "Meteorologisk",
     "outfile",
+    "qsensor",
     "skybrary",
     "timeseries",
     "tslog",
-    "typegraphql"
+    "typegraphql",
+    "Upserted",
+    "Upserting",
+    "upserts"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "always"
@@ -44,5 +48,6 @@
   "eslint.validate": ["typescript"],
   "eslint.format.enable": true,
   "editor.acceptSuggestionOnEnter": "smart",
-  "editor.tabCompletion": "on"
+  "editor.tabCompletion": "on",
+  "todo-tree.tree.showBadges": true
 }

@@ -1,10 +1,8 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
 import { GQL_ValueType } from '../enums/ValueType';
 import { GQL_ChangeType } from '../enums/ChangeType';
-import { Prisma } from '@prisma/client';
-import * as GraphQLScalars from 'graphql-scalars';
-import GraphQLScalars from 'graphql-scalars';
 import { Prisma } from '@app/@generated/prisma.client';
+import * as GraphQLScalars from 'graphql-scalars';
 
 @ObjectType('FlightEvent')
 export class GQL_FlightEvent {

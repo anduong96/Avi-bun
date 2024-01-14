@@ -1,4 +1,6 @@
 import { Field, ObjectType, ID, Int } from 'type-graphql';
+import { Prisma } from '@app/@generated/prisma.client';
+import * as GraphQLScalars from 'graphql-scalars';
 
 @ObjectType('ScheduledJob')
 export class GQL_ScheduledJob {
@@ -9,10 +11,16 @@ export class GQL_ScheduledJob {
   name: string;
 
   @Field(() => Int)
-  lockDuration: number;
+  lockDurationMs: number;
 
-  @Field()
-  cronTime: string;
+  @Field(() => GraphQLScalars.JSONResolver, { nullable: true })
+  props?: Prisma.JsonValue;
+
+  @Field({ nullable: true })
+  cronTime?: string;
+
+  @Field({ nullable: true })
+  error?: string;
 
   @Field({ nullable: true })
   lastFailedReason?: string;
@@ -22,6 +30,9 @@ export class GQL_ScheduledJob {
 
   @Field({ nullable: true })
   lastSucceedAt?: Date;
+
+  @Field({ nullable: true })
+  deleteAt?: Date;
 
   @Field({ nullable: true })
   unlockAt?: Date;

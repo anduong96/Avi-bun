@@ -1,7 +1,5 @@
 import { Field, ObjectType, ID, Int, Float } from 'type-graphql';
 import { GQL_Country } from './Country';
-import { GQL_Flight } from './Flight';
-import { GQL_AirportWeather } from './AirportWeather';
 
 @ObjectType('Airport')
 export class GQL_Airport {

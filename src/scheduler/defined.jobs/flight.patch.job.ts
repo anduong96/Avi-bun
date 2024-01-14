@@ -1,5 +1,4 @@
 import moment from 'moment';
-import CronTime from 'cron-time-generator';
 import { FlightVendor } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -8,7 +7,9 @@ import { patchFlight } from '@app/services/flight/patch.flight';
 import { Job } from '../job';
 
 export class PatchFlightsJob extends Job {
-  cronTime: string = CronTime.every(5).minutes();
+  constructor() {
+    super();
+  }
 
   private async getFlights() {
     const ceil = moment().add(3, 'days').toDate();

@@ -18,6 +18,21 @@ type Aircraft {
   updatedAt: DateTimeISO!
 }
 
+type AircraftAmenity {
+  aircraftTailNumber: String!
+  descriptionMarkdown: String!
+  id: Int!
+  type: AircraftAmenityType!
+}
+
+enum AircraftAmenityType {
+  AC_POWER
+  AUDIO
+  FOOD
+  INTERNET
+  VIDEO
+}
+
 type AircraftPosition {
   aircraftID: Int!
   airlineIata: String!
@@ -33,6 +48,14 @@ type AircraftPosition {
   longitude: Float
   originIata: String!
   updatedAt: DateTimeISO!
+}
+
+type AircraftSeatMeta {
+  aircraftTailNumber: String!
+  id: Int!
+  name: String!
+  pitchInches: Int!
+  widthInches: Int!
 }
 
 type Airline {
@@ -78,6 +101,12 @@ type AirportTsaCheckPointTerminal {
 type AirportTsaCheckPoints {
   checkPointName: String!
   hours: [AirportTsaCheckPointHour!]!
+}
+
+type AirportTsaEstimatedWaitTime {
+  airportIata: String!
+  estimatedWaitMinutes: Float!
+  terminal: String!
 }
 
 type AirportTsaWaitTime {
@@ -165,7 +194,7 @@ type Flight {
   destinationIata: String!
   destinationTerminal: String
   destinationUtcHourOffset: Int!
-  durationMs: Float!
+  durationMs: Int!
   estimatedGateArrival: DateTimeISO!
   estimatedGateDeparture: DateTimeISO!
   flightDate: Int!
@@ -177,9 +206,11 @@ type Flight {
   originIata: String!
   originTerminal: String
   originUtcHourOffset: Int!
-  progressPercent: Float!
+  progressPercent: Int!
   reconAttempt: Int
-  remainingDurationMs: Float!
+
+  """Time in milliseconds until the flight departs"""
+  remainingDurationMs: Int!
   scheduledGateArrival: DateTimeISO!
   scheduledGateDeparture: DateTimeISO!
   status: FlightStatus!
@@ -264,11 +295,20 @@ type Mutation {
 
 type Query {
   aircraft(tailNumber: String!): Aircraft
+  aircraftAmenities(tailNumber: String!): [AircraftAmenity!]!
   aircraftPosition(aircraftID: Float!): AircraftPosition
+  aircraftSeatMeta(tailNumber: String!): [AircraftSeatMeta!]!
   airline(iata: String!): Airline!
   airlines: [Airline!]!
   airport(airportIata: String!): Airport!
+
+  """TSA check points status"""
   airportTsaCheckpointsStatus(airportIata: String!, dayOfWeek: Float!): [AirportTsaCheckPointTerminal!]
+
+  """Current TSA estimated wait time"""
+  airportTsaCurrentWaitTime(airportIata: String!): [AirportTsaEstimatedWaitTime!]
+
+  """History TSA averaged wait time"""
   airportTsaWaitTime(airportIata: String!): [AirportTsaWaitTime!]
   airportWeather(airportIata: String!, date: Int!, hour: Int!, month: Int!, year: Int!): AirportWeather!
   airportWeatherDay(airportIata: String!, date: Int!, month: Int!, year: Int!): [AirportWeather!]!

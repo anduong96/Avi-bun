@@ -1,8 +1,6 @@
 import { Field, ObjectType, ID } from 'type-graphql';
-import { Prisma } from '@prisma/client';
-import * as GraphQLScalars from 'graphql-scalars';
-import GraphQLScalars from 'graphql-scalars';
 import { Prisma } from '@app/@generated/prisma.client';
+import * as GraphQLScalars from 'graphql-scalars';
 
 @ObjectType('JsonCache')
 export class GQL_JsonCache {
@@ -14,6 +12,12 @@ export class GQL_JsonCache {
 
   @Field()
   expiresAt: Date;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 
   // skip overwrite 👇
 }

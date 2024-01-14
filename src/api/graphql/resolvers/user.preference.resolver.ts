@@ -6,6 +6,7 @@ import { prisma } from '@app/prisma';
 import { removeNilProp } from '@app/lib/objects/remove.nil.props';
 import { GQL_UserPreference } from '@app/@generated/graphql/models/UserPreference';
 
+import { Selections } from '../_decorators/selection.decorator';
 import { CurrentUserID } from '../_decorators/current.user.id.decorator';
 import { UpdateUserPreferenceInput } from '../inputs/update.user.preference.input';
 
@@ -20,10 +21,9 @@ export class UserPreferenceResolver {
     const data = removeNilProp(args);
     assert(!isEmpty(data), 'Update payload cannot be empty');
     await prisma.userPreference.update({
-      data,
-      where: {
-        userID,
-      },
+      data: data,
+      select: { id: true },
+      where: { userID },
     });
 
     return true;
@@ -31,23 +31,13 @@ export class UserPreferenceResolver {
 
   @Authorized()
   @Query(() => GQL_UserPreference)
-  async userPreference(@CurrentUserID() userID: string) {
-    const result = await prisma.$transaction(async tx => {
-      let preference = await tx.userPreference.findFirst({
-        where: {
-          userID,
-        },
-      });
-
-      if (!preference) {
-        preference = await tx.userPreference.create({
-          data: {
-            userID,
-          },
-        });
-      }
-
-      return preference;
+  async userPreference(
+    @CurrentUserID() userID: string,
+    @Selections() selections: object,
+  ) {
+    const result = prisma.userPreference.findFirstOrThrow({
+      select: selections,
+      where: { userID },
     });
 
     return result;

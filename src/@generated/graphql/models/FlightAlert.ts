@@ -1,5 +1,4 @@
 import { Field, ObjectType, ID } from 'type-graphql';
-import { GQL_AlertChannel } from '../enums/AlertChannel';
 
 @ObjectType('FlightAlert')
 export class GQL_FlightAlert {

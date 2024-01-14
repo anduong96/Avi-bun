@@ -27,7 +27,7 @@ const schema = Yup.object({
   PORT: Yup.number().default(3000).required(),
 
   SENTRY_DSN: Yup.string().optional(),
-  WEATHER_API_KEY: Yup.string().required(),
+  WEATHER_API_KEY: Yup.string().optional(),
 });
 
 export const ENV = await schema.constantCase().validate(process.env);

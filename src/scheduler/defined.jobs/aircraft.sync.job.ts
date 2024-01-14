@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import CronTime from 'cron-time-generator';
 import { FlightStatus } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -8,12 +7,9 @@ import { updateAircraftPosition } from '@app/services/aircraft/update.aircraft.p
 
 import { Job } from '../job';
 
-export class SyncActivePlaneLocationJob extends Job {
-  override cronTime = CronTime.every(7).minutes();
-
+export class SyncActiveAircraftLocationJob extends Job {
   constructor() {
     super();
-    this.onProcess();
   }
 
   private async getTailNumbers() {

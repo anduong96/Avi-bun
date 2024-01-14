@@ -1,5 +1,4 @@
 import moment from 'moment';
-import CronTime from 'cron-time-generator';
 import { FlightStatus } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
@@ -7,7 +6,9 @@ import { prisma } from '@app/prisma';
 import { Job } from '../job';
 
 export class ArchiveFlightJob extends Job {
-  readonly cronTime = CronTime.every(10).minutes();
+  constructor() {
+    super();
+  }
 
   async onProcess() {
     const result = await prisma.flight.updateMany({

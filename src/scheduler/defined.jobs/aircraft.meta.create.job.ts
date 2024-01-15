@@ -17,6 +17,7 @@ export class CreateAircraftMetaJob extends Job<Props> {
   }
 
   override async onProcess(props: Props): Promise<void> {
+    this.logger.debug('Creating aircraft meta for flight=%s', props.flightID);
     const flight = await prisma.flight.findFirstOrThrow({
       select: {
         aircraftTailNumber: true,
@@ -38,6 +39,10 @@ export class CreateAircraftMetaJob extends Job<Props> {
         .subtract(10, 'day')
         .toDate();
     } catch (error) {
+      this.logger.error(
+        'Failed to create aircraft meta for flight=%s',
+        props.flightID,
+      );
       this.logger.error(error);
     }
   }

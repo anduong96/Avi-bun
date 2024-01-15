@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-import { ENV, isDev } from './env';
+import { ENV } from './env';
 
 class _prisma extends PrismaClient {
   static _instance: PrismaClient;
@@ -12,7 +12,6 @@ class _prisma extends PrismaClient {
           url: ENV.DATABASE_URL!.replaceAll('"', ''),
         },
       },
-      log: isDev ? ['query', 'info', 'warn', 'error'] : ['error'],
     });
   }
 

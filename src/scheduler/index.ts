@@ -36,11 +36,16 @@ export class Scheduler {
     return this._isProcessing;
   }
 
-  static async schedule<T>(time: Date | string, job: Job<T>) {
+  static async schedule(time: Date | string, job: Job<unknown>) {
     await this.upsertJob(applyNextRunAt(job.definition, time));
   }
 
-  static async scheduleMany(jobs: Array<{ job: Job; time: Date | string }>) {
+  static async scheduleMany(
+    jobs: Array<{
+      job: Job<unknown>;
+      time: Date | string;
+    }>,
+  ) {
     await Promise.allSettled(
       jobs.map(({ job, time }) => this.schedule(time, job)),
     );

@@ -31,6 +31,7 @@ export abstract class Job<Props = never> {
       name: jobName,
       nextRunAt: null,
       props: jobProps ?? null,
+      runCount: 0,
       unlockAt: null,
     };
   }
@@ -82,6 +83,10 @@ export abstract class Job<Props = never> {
     return Logger.getSubLogger({
       name: this.constructor.name,
     });
+  }
+
+  protected get props() {
+    return this.definition.props as Props;
   }
 
   abstract onProcess(props: Props): Promise<void>;

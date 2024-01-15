@@ -50,5 +50,9 @@ export async function getFlightsPayloadFromAeroDataBox(
   params: FlightQueryParam,
 ) {
   const remoteFlights = await AeroDataBox.getFlights(params);
+  if (!remoteFlights) {
+    throw new Error('Flight not found');
+  }
+
   return remoteFlights.map(toFlightPayload);
 }

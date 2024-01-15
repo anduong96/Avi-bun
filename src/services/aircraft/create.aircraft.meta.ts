@@ -40,7 +40,9 @@ export async function createAircraftMeta(
     flight.flightDate,
   );
 
-  if (moment().diff(flightDate, 'day') > -SeatGuru.MAX_FUTURE_DAYS) {
+  const daysUntilFlight = moment(flightDate).diff(moment(), 'days');
+
+  if (daysUntilFlight >= SeatGuru.MAX_FUTURE_DAYS) {
     throw new Error('Flight date is too far in the future!');
   } else if (isNil(flight.aircraftTailNumber)) {
     throw new Error('Aircraft tail number is required!');

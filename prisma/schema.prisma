@@ -255,6 +255,7 @@ model AircraftSeatMeta {
   pitchInches        Int
   widthInches        Int
 
+  @@unique([aircraftTailNumber, name])
   @@index([aircraftTailNumber])
 }
 

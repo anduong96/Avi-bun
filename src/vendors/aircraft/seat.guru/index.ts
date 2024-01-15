@@ -5,6 +5,7 @@ import * as Cheerio from 'cheerio';
 
 import { Logger } from '@app/lib/logger';
 import { toNumber } from '@app/lib/to.number';
+import { SPECIAL_CHAR_REGEX } from '@app/lib/constants/regex';
 
 import { SeatGuruAmenityTypes, SeatGuruSeat } from './types';
 
@@ -53,8 +54,8 @@ export class SeatGuru {
         const item3 = $(element).find('.item3').text().trim();
         seatingsMap.push({
           name: item1,
-          pitchInches: toNumber(item2),
-          widthInches: toNumber(item3),
+          pitchInches: toNumber(item2.split(SPECIAL_CHAR_REGEX)[0]),
+          widthInches: toNumber(item3.split(SPECIAL_CHAR_REGEX)[0]),
         });
       });
 

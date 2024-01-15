@@ -16,7 +16,7 @@ export function flightStatFlightToFlightPayload(
 ): RequiredKeys<Prisma.FlightUncheckedCreateInput, 'id'> {
   const flightID = createID();
   const info = flight.additionalFlightInfo;
-  const aircraftTailNumber = info.equipment?.tailNumber;
+  const aircraftTailNumber = info?.equipment?.tailNumber;
   const status = toFlightStatus(flight.status.status);
   const { arrivalAirport, departureAirport, schedule } = flight;
   const {

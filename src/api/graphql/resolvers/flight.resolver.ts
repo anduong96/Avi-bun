@@ -3,6 +3,7 @@ import {
   Arg,
   Authorized,
   FieldResolver,
+  Float,
   Int,
   Query,
   Resolver,
@@ -84,10 +85,15 @@ export class FlightResolver {
     return result;
   }
 
-  @FieldResolver(() => Int)
+  @FieldResolver(() => Float)
   progressPercent(@Root() root: GQL_Flight) {
     const flightDurationMs = this.durationMs(root);
     const remainingDurationMs = this.remainingDurationMs(root);
+
+    if (moment(root.estimatedGateArrival).isBefore(moment())) {
+      return 1;
+    }
+
     if (remainingDurationMs > 0) {
       return 0;
     }

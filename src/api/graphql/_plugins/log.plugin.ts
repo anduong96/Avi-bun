@@ -53,6 +53,7 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
         error.name = gqlError.name;
         error.cause = gqlError.cause;
         requestContext.document;
+
         logger.error(
           'GQL Error => User[%s] Transaction[%s] Op[%s]',
           requestContext.contextValue.user?.uid ?? 'UNKNOWN',
@@ -60,6 +61,8 @@ export const ApolloLogPlugin: ApolloServerPlugin<ApolloServerContext> = {
           getOps(requestContext),
           error,
         );
+
+        logger.error(requestContext.errors);
 
         return Promise.resolve();
       },

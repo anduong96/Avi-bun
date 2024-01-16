@@ -206,7 +206,7 @@ type Flight {
   originIata: String!
   originTerminal: String
   originUtcHourOffset: Int!
-  progressPercent: Int!
+  progressPercent: Float!
   reconAttempt: Int
 
   """Time in milliseconds until the flight departs"""

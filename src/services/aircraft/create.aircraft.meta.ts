@@ -60,7 +60,7 @@ export async function createAircraftMeta(
     data,
   );
 
-  await Promise.all([
+  const results = await Promise.all([
     prisma.aircraftSeatMeta.createMany({
       data: data.seatingsMap.map(seat => ({
         aircraftTailNumber: flight.aircraftTailNumber!,
@@ -79,4 +79,10 @@ export async function createAircraftMeta(
         })),
     }),
   ]);
+
+  Logger.debug(
+    'Created aircraft meta for aircraft=%s',
+    flight.aircraftTailNumber,
+    results,
+  );
 }

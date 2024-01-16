@@ -36,15 +36,20 @@ export class CreateAircraftMetaJob extends Job<Props> {
 
     try {
       await createAircraftMeta(flight);
+    } catch (error) {
       this.definition.nextRunAt = moment(flight.scheduledGateDeparture)
         .subtract(10, 'day')
         .toDate();
-    } catch (error) {
       this.logger.error(
-        'Failed to create aircraft meta for flight=%s',
+        'Failed to create aircraft meta for flight=%s aircraftTailNumber=%s',
         flightID,
+        flight.aircraftTailNumber,
       );
       this.logger.error(error);
     }
   }
 }
+
+// new CreateAircraftMetaJob({
+//   flightID: 'hWEMN4',
+// }).onProcess();

@@ -3,7 +3,7 @@
   "module": "index.ts",
   "license": "UNLICENSED",
   "scripts": {
-    "start": "bun scripts/with.remote.env.t bun ./src/index.ts",
+    "start": "bun scripts/with.remote.env.ts bun ./src/index.ts",
     "dev": "bun scripts/with.remote.env.ts bun --watch --inspect=ws://localhost:6499/dev ./src/index.ts",
     "with:env": "bun scripts/with.remote.env.ts",
     "docker:dev:tail": "docker logs --follow avi-bun-server-1",

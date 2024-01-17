@@ -5,6 +5,7 @@ import {
   FieldResolver,
   Float,
   Int,
+  Mutation,
   Query,
   Resolver,
   Root,
@@ -102,7 +103,7 @@ export class FlightResolver {
   }
 
   @Authorized()
-  @Query(() => GQL_Flight)
+  @Mutation(() => GQL_Flight)
   async randomFlight() {
     const flight = await getRandomFlight();
     return flight;

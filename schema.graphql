@@ -282,6 +282,7 @@ type Mutation {
   addUserFlight(flightID: String!): String!
   deleteUser: Boolean!
   deleteUserFlight(flightID: String!): String!
+  randomFlight: Flight!
 
   """Remove user from wait list"""
   removeFromWaitList(
@@ -316,7 +317,6 @@ type Query {
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Int!, flightNumber: String!, month: Int!, year: Int!): [Flight!]!
   health: String!
-  randomFlight: Flight!
   recentFeedback: Feedback
   user: User!
   userActiveFlights: [UserFlight!]!

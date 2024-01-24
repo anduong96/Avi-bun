@@ -187,7 +187,7 @@ export class FlightStats {
     const response = await request.json<Response>();
 
     const flights = flatten(
-      response.data.map(entry => {
+      response?.data?.map(entry => {
         const dateStr = `${entry.date1}-${entry.year}`;
         const date = moment(dateStr, 'DD-MMM-YYYY');
         return uniqBy(

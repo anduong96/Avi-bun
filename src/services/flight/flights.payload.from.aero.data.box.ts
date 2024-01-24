@@ -10,12 +10,19 @@ import { AeroDataBoxFlight } from '@app/vendors/aircraft/aero.data.box/types';
 function toFlightPayload(
   entry: AeroDataBoxFlight,
 ): RequiredKeys<Prisma.FlightUncheckedCreateInput, 'id'> {
-  const departureDate = moment.parseZone(
-    entry.departure.actualTimeLocal ?? entry.departure.scheduledTime.local,
-  );
-  const arrivalDate = moment.parseZone(
-    entry.arrival.actualTimeLocal ?? entry.arrival.scheduledTime.local,
-  );
+  const scheduledDeparture = entry.departure.scheduledTime?.local;
+  const scheduledArrival = entry.arrival.scheduledTime?.local;
+  const actualDeparture = entry.departure.actualTimeLocal;
+  const actualArrival = entry.arrival.actualTimeLocal;
+
+  if (!scheduledDeparture && !actualDeparture) {
+    throw new Error('Unable to find scheduled time for flight');
+  } else if (!actualArrival && !actualArrival) {
+    throw new Error('Unable to find arrival time for flight');
+  }
+
+  const departureDate = moment.parseZone(actualDeparture ?? scheduledDeparture);
+  const arrivalDate = moment.parseZone(actualArrival ?? scheduledArrival);
 
   return {
     aircraftTailNumber: entry.aircraft.reg,

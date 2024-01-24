@@ -30,7 +30,18 @@ function getFlights(params: FlightQueryParam) {
   });
 
   try {
-    return searchDate.diff(new Date(), 'days') <= 2
+    const now = moment();
+    const searchDateDiff = Math.ceil(
+      moment.duration(searchDate.diff(now)).asDays(),
+    );
+    const shouldGetFlightsFromFlightStats = searchDateDiff <= 2;
+    Logger.debug(
+      'Should get flights from flight stats=%s',
+      shouldGetFlightsFromFlightStats,
+      { searchDateDiff },
+    );
+
+    return shouldGetFlightsFromFlightStats
       ? getFlightsPayloadFromFlightStats(params)
       : getFlightsPayloadFromAeroDataBox(params);
   } catch (error) {

@@ -203,8 +203,6 @@ export class FlightStats {
       }),
     );
 
-    this.logger.debug('mapped', flights);
-
     return flights;
   }
 }

@@ -75,6 +75,7 @@ export function flightStatFlightToFlightPayload(
     flightNumber: flight.flightNumber,
     flightYear: flight.flightYear,
     id: flightID,
+    isArchived: false,
     originGate: flight.departureAirport.gate,
     originIata: flight.departureAirport.iata,
     originTerminal: flight.departureAirport.terminal,

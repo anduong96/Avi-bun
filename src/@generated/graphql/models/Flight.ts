@@ -18,6 +18,9 @@ export class GQL_Flight {
   flightDate: number;
 
   @Field()
+  isArchived: boolean;
+
+  @Field()
   airlineIata: string;
 
   @Field()

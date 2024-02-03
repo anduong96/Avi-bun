@@ -13,8 +13,9 @@ export async function getUserActiveFlights(userID: User['id']) {
     },
     where: {
       Flight: {
+        isArchived: false,
         status: {
-          notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
+          notIn: [FlightStatus.ARCHIVED],
         },
       },
       userID,

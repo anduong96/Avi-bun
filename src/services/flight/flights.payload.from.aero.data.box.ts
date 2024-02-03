@@ -38,6 +38,7 @@ function toFlightPayload(
     flightNumber: entry.number.replace(entry.airline.iata, '').trim(),
     flightYear: departureDate.year(),
     id: createID(),
+    isArchived: false,
     originIata: entry.departure.airport.iata,
     originTerminal: entry.departure.terminal,
     originUtcHourOffset: departureDate.utcOffset() / 60,

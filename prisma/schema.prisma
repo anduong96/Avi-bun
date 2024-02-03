@@ -134,6 +134,7 @@ model Flight {
   flightYear               Int          @db.SmallInt
   flightMonth              Int          @db.SmallInt
   flightDate               Int          @db.SmallInt
+  isArchived               Boolean      @default(true)
   airlineIata              String
   flightNumber             String
   aircraftTailNumber       String?
@@ -186,6 +187,7 @@ model Flight {
   @@unique([airlineIata, flightNumber, originIata, destinationIata, flightYear, flightMonth, flightDate])
   @@index([originIata])
   @@index([destinationIata])
+  @@index([isArchived])
 }
 
 model FlightPromptness {

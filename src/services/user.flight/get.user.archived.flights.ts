@@ -1,4 +1,4 @@
-import { FlightStatus, User } from '@prisma/client';
+import { User } from '@prisma/client';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
@@ -13,9 +13,7 @@ export async function getUserArchivedFlights(userID: User['id']) {
     },
     where: {
       Flight: {
-        status: {
-          in: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
-        },
+        isArchived: true,
       },
       userID,
     },

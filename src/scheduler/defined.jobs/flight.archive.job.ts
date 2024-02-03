@@ -13,14 +13,15 @@ export class ArchiveFlightJob extends Job {
   async onProcess() {
     const result = await prisma.flight.updateMany({
       data: {
-        status: FlightStatus.ARCHIVED,
+        isArchived: true,
       },
       where: {
         estimatedGateArrival: {
           lte: moment().subtract(60, 'minutes').toDate(),
         },
+        isArchived: false,
         status: {
-          notIn: [FlightStatus.ARCHIVED, FlightStatus.CANCELED],
+          notIn: [FlightStatus.ARCHIVED],
         },
       },
     });

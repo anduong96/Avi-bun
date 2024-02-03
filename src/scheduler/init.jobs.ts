@@ -11,7 +11,7 @@ import { SyncActiveAircraftLocationJob } from './defined.jobs/aircraft.sync.job'
 import { UserPreferenceCreateJob } from './defined.jobs/user.preference.create.job';
 import { RemindCheckInFlightsJob } from './defined.jobs/flight.check.in.reminder.job';
 
-const EVERY_5_MIN = CronTime.every(3).minutes();
+const EVERY_5_MIN = CronTime.every(5).minutes();
 
 Scheduler.define(SyncActiveFlightsJob);
 Scheduler.define(PatchFlightsJob);

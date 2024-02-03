@@ -89,13 +89,17 @@ export function findAlertableFlightDiff(current: Flight, previous: Flight) {
  * @returns the result of calling the `sendFlightAlert` function with the `flight.id` and an object
  * containing the `body` and `title` properties.
  */
-function getFlightAlertPayload(
+export function getFlightAlertPayload(
   flight: Flight,
   changes: DiffEntry[],
 ): Parameters<typeof sendFlightAlert>[1] {
   const maxDisplay = 3;
   const hasOverMax = changes.length > maxDisplay;
-  const title = format('⚠️ %s%s', flight.airlineIata, flight.flightNumber);
+  const title = format(
+    '⚠️ %s%s Updates',
+    flight.airlineIata,
+    flight.flightNumber,
+  );
   Logger.debug('Flight[%s] alert created changes=%o', flight.id, changes);
 
   const body =

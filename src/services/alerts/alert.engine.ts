@@ -156,12 +156,13 @@ async function createFlightChangeTimeline(
     data: {
       FlightEvents: {
         createMany: {
-          data: changes.map(entry => ({
+          data: changes.map((entry, index) => ({
             changeType: entry.changeType,
             currentValue: entry.currentValue ?? undefined,
             description: entry.description,
             flightID,
             id: createID(),
+            index,
             previousValue: entry.previousValue ?? undefined,
             requireAlert: true,
             timestamp: new Date(),

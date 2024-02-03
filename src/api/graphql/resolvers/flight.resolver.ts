@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { LongResolver } from 'graphql-scalars';
 import {
   Arg,
   Authorized,
@@ -109,7 +110,7 @@ export class FlightResolver {
     return flight;
   }
 
-  @FieldResolver(() => Int, {
+  @FieldResolver(() => LongResolver, {
     description: 'Time in milliseconds until the flight departs',
   })
   remainingDurationMs(@Root() root: GQL_Flight) {

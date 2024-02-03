@@ -214,7 +214,14 @@ export async function handleFlightChangesForAlert(
 
   const [createdTimeline, sentAlerts] = await Promise.allSettled([
     createFlightChangeTimeline(current, difference).catch(error => {
-      Sentry.captureException(error);
+      Sentry.captureException(error, {
+        contexts: {
+          params: {
+            current,
+            difference,
+          },
+        },
+      });
       Logger.error('Failed to create flight timeline', error);
     }),
     difference.length > 0
@@ -222,7 +229,14 @@ export async function handleFlightChangesForAlert(
           flightID,
           getFlightAlertPayload(current, difference),
         ).catch(error => {
-          Sentry.captureException(error);
+          Sentry.captureException(error, {
+            contexts: {
+              params: {
+                current,
+                difference,
+              },
+            },
+          });
           Logger.error('Failed to send flight alert', error);
         })
       : null,

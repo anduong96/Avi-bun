@@ -44,7 +44,14 @@ export class SyncActiveFlightsJob extends Job {
       );
 
       if (error) {
-        Sentry.captureException(error);
+        Sentry.captureException(error, {
+          contexts: {
+            params: {
+              flight,
+              flightStatsID,
+            },
+          },
+        });
       }
 
       return;

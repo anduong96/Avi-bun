@@ -47,9 +47,10 @@ export async function updateAircraftPosition(
     },
     update: {},
     where: {
-      aircraftID: aircraft.id,
-      airlineIata: aircraft.airlineIata,
-      updatedAt: position.updatedAt,
+      aircraftID_updatedAt: {
+        aircraftID: aircraft.id,
+        updatedAt: position.updatedAt,
+      },
     },
   });
 

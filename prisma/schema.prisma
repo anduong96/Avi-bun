@@ -293,11 +293,12 @@ model AircraftPosition {
   originIata      String
   destinationIata String
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @unique
+  updatedAt       DateTime
 
   // @skip
   Aircraft Aircraft @relation(fields: [aircraftID], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
+  @@unique([aircraftID, updatedAt])
   @@index([aircraftID])
 }
 

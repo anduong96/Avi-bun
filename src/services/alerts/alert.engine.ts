@@ -1,7 +1,7 @@
 import { format } from 'sys';
-import { startCase } from 'lodash';
-import moment, { isDate } from 'moment';
 import { Flight } from '@prisma/client';
+import moment, { isDate } from 'moment';
+import { isEmpty, startCase } from 'lodash';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
@@ -19,6 +19,7 @@ type AlertableFlight = {
   DepartureGate: Optional<string>;
   DepartureTerminal: Optional<string>;
   DepartureTime: Date;
+  Status: string;
 };
 
 /**
@@ -31,25 +32,52 @@ type AlertableFlight = {
  * It contains the following properties:
  * @returns the difference between the scheduled flight details and the estimated flight details.
  */
-function findAlertableFlightDiff(current: Flight, previous: Flight) {
+export function findAlertableFlightDiff(current: Flight, previous: Flight) {
   const scheduled: AlertableFlight = {
     ArrivalGate: previous.destinationGate,
     ArrivalTerminal: previous.destinationTerminal,
-    ArrivalTime: previous.scheduledGateArrival,
+    ArrivalTime: moment(
+      previous.scheduledGateArrival || previous.estimatedGateArrival,
+    )
+      .utcOffset(previous.destinationUtcHourOffset)
+      .toDate(),
     DepartureGate: previous.originGate,
     DepartureTerminal: previous.originTerminal,
-    DepartureTime: previous.scheduledGateDeparture,
+    DepartureTime: moment(
+      previous.scheduledGateDeparture || previous.estimatedGateDeparture,
+    )
+      .utcOffset(previous.originUtcHourOffset)
+      .toDate(),
+    Status: previous.status,
   };
+
   const estimated: AlertableFlight = {
     ArrivalGate: current.destinationGate,
     ArrivalTerminal: current.destinationTerminal,
-    ArrivalTime: current.estimatedGateArrival,
+    ArrivalTime: moment(current.estimatedGateArrival)
+      .utcOffset(current.destinationUtcHourOffset)
+      .toDate(),
     DepartureGate: current.originGate,
     DepartureTerminal: current.originTerminal,
-    DepartureTime: current.estimatedGateDeparture,
+    DepartureTime: moment(current.estimatedGateDeparture)
+      .utcOffset(current.originUtcHourOffset)
+      .toDate(),
+    Status: current.status,
   };
 
-  return getObjectDifference(scheduled, estimated);
+  return getObjectDifference(estimated, scheduled, (k, value, type) => {
+    const keyName = startCase(k);
+
+    return type === 'ADDED'
+      ? format('%s was added', keyName)
+      : type === 'REMOVED'
+        ? format('%s was removed', keyName)
+        : format(
+            '%s was changed to %s',
+            keyName,
+            isDate(value) ? moment(value).format('LT') : value,
+          );
+  });
 }
 
 /**
@@ -171,6 +199,11 @@ export async function handleFlightChangesForAlert(
   const difference = findAlertableFlightDiff(current, previous);
   Logger.debug('%s changes for Flight[%s]', difference.length, flightID);
   Logger.debug('Flight[%s] changes difference=%o', flightID, difference);
+  Logger.debug('Flight[%s] diff', flightID, { current, previous });
+
+  if (isEmpty(difference)) {
+    return;
+  }
 
   const [createdTimeline, sentAlerts] = await Promise.allSettled([
     createFlightChangeTimeline(current, difference),

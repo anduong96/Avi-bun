@@ -10,3 +10,7 @@ import moment from 'moment';
 export function toDateOrNull(date: moment.MomentInput) {
   return date ? moment(date).toDate() : null;
 }
+
+export function toMomentOrNull(date: moment.MomentInput) {
+  return date ? moment(date) : null;
+}

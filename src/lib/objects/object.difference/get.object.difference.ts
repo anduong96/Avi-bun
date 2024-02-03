@@ -1,6 +1,6 @@
 import { format } from 'sys';
-import { isNil } from 'lodash';
 import { ChangeType } from '@prisma/client';
+import { isDate, isEqual, isNil } from 'lodash';
 
 import { Optional } from '@app/types/optional';
 import { castAsPrimitiveValue } from '@app/lib/casts/cast.as.primitive.value';
@@ -47,7 +47,12 @@ export function _getObjectDifferenceWithOpts<
       continue;
     }
 
-    if (typeof current[key] === 'object' && typeof previous[key] === 'object') {
+    if (
+      typeof current[key] === 'object' &&
+      typeof previous[key] === 'object' &&
+      !isDate(current[key]) &&
+      !isDate(previous[key])
+    ) {
       _getObjectDifferenceWithOpts(
         current[key] as object,
         previous[key] as object,
@@ -55,7 +60,7 @@ export function _getObjectDifferenceWithOpts<
         currentPath,
         onDescription,
       );
-    } else if (current[key] !== previous[key]) {
+    } else if (!isEqual(current[key], previous[key])) {
       const currentValue = isNil(current[key])
         ? undefined
         : castAsPrimitiveValue(current[key], currentType);
@@ -90,7 +95,7 @@ export function _getObjectDifferenceWithOpts<
           previousValue: previousValue,
           valueType: currentType,
         });
-      } else if (currentValue !== previousValue) {
+      } else if (!isEqual(currentValue, previousValue)) {
         const description =
           onDescription?.(currentKey, currentValue, ChangeType.MODIFIED) ??
           format('%s was changed to %s', currentPath, currentValue);

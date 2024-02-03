@@ -68,7 +68,14 @@ export class SyncActiveAircraftLocationJob extends Job {
 
     const result = await Promise.allSettled(
       aircraftList.map(entry =>
-        updateAircraftPosition(entry).then(() => entry.tailNumber),
+        updateAircraftPosition(entry)
+          .catch(error => ({
+            error: error,
+            tailNumber: entry.tailNumber,
+          }))
+          .then(() => ({
+            tailNumber: entry.tailNumber,
+          })),
       ),
     );
 

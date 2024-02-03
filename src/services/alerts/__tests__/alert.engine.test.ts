@@ -81,7 +81,7 @@ describe('services::alerts::alert.engine', () => {
     const payload = getFlightAlertPayload(nextFlight, changes);
     expect(payload).toEqual({
       body: 'Arrival Time, Departure Time, Status were changed',
-      title: '⚠️ AA100 Updates',
+      title: '⚠️ AA100 on 04/01/2023 Updates',
     });
   });
 });

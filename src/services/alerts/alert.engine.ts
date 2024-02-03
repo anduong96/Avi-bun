@@ -5,6 +5,7 @@ import { isEmpty, startCase } from 'lodash';
 
 import { prisma } from '@app/prisma';
 import { Logger } from '@app/lib/logger';
+import { Sentry } from '@app/lib/sentry';
 import { createID } from '@app/lib/create.id';
 import { Optional } from '@app/types/optional';
 import { DiffEntry } from '@app/lib/objects/object.difference/types';
@@ -96,9 +97,10 @@ export function getFlightAlertPayload(
   const maxDisplay = 3;
   const hasOverMax = changes.length > maxDisplay;
   const title = format(
-    '⚠️ %s%s Updates',
+    '⚠️ %s%s on %s Updates',
     flight.airlineIata,
     flight.flightNumber,
+    moment(flight.estimatedGateDeparture).format('MM/DD/YYYY'),
   );
   Logger.debug('Flight[%s] alert created changes=%o', flight.id, changes);
 
@@ -210,9 +212,18 @@ export async function handleFlightChangesForAlert(
   }
 
   const [createdTimeline, sentAlerts] = await Promise.allSettled([
-    createFlightChangeTimeline(current, difference),
+    createFlightChangeTimeline(current, difference).catch(error => {
+      Sentry.captureException(error);
+      Logger.error('Failed to create flight timeline', error);
+    }),
     difference.length > 0
-      ? sendFlightAlert(flightID, getFlightAlertPayload(current, difference))
+      ? sendFlightAlert(
+          flightID,
+          getFlightAlertPayload(current, difference),
+        ).catch(error => {
+          Sentry.captureException(error);
+          Logger.error('Failed to send flight alert', error);
+        })
       : null,
   ]);
 

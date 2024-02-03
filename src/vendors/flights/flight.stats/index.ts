@@ -93,8 +93,16 @@ export class FlightStats {
       throw new Error('Failed to get flight details: ' + request.statusText);
     }
 
-    const response = await request.json<FlightDetails>();
-    this.logger.debug('Flight Detail\n args=%o\nresponse:%o', args, response);
+    const response = await request.json<
+      { details: FlightDetails } | FlightDetails
+    >();
+
+    if ('details' in response) {
+      return {
+        ...response.details,
+        ...args,
+      };
+    }
 
     return {
       ...response,

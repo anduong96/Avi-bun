@@ -330,7 +330,7 @@ export type FlightDetails = {
     scheduledRunwayDepartureUTC: string;
   };
   sortTime: string;
-  status: {
+  status?: {
     color: string;
     delay: {
       arrival: {

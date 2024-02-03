@@ -1,6 +1,6 @@
 import ShortUniqueId from 'short-unique-id';
 
-const uid = new ShortUniqueId({ length: 6 });
+const uid = new ShortUniqueId({ length: 10 });
 export function createID() {
   return uid.rnd();
 }

@@ -202,6 +202,7 @@ type Flight {
   flightNumber: String!
   flightYear: Int!
   id: ID!
+  isArchived: Boolean!
   originGate: String
   originIata: String!
   originTerminal: String

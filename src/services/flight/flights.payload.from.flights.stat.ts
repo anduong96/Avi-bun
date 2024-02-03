@@ -17,7 +17,12 @@ export function flightStatFlightToFlightPayload(
   const flightID = createID();
   const info = flight.additionalFlightInfo;
   const aircraftTailNumber = info?.equipment?.tailNumber;
-  const status = toFlightStatus(flight.status.status);
+  if (!flight.status?.status) {
+    Logger.error('Flight status not found', flight);
+    throw new Error('Flight status not found');
+  }
+
+  const status = toFlightStatus(flight.status?.status);
   const { arrivalAirport, departureAirport, schedule } = flight;
   const {
     actualGateArrivalUTC,

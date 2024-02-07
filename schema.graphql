@@ -319,9 +319,13 @@ type Query {
   airportTsaWaitTime(airportIata: String!): [AirportTsaWaitTime!]
   airportWeather(airportIata: String!, date: Int!, hour: Int!, month: Int!, year: Int!): AirportWeather!
   airportWeatherDay(airportIata: String!, date: Int!, month: Int!, year: Int!): [AirportWeather!]!
+
+  """List of airports"""
+  airports: [Airport!]!
   flight(flightID: String!): Flight!
   flightPromptness(flightID: String!): FlightPromptness!
   flights(airlineIata: String!, date: Int!, flightNumber: String!, month: Int!, year: Int!): [Flight!]!
+  flightsWithAirports(airlineIata: String!, date: Int!, destinationIata: String!, month: Int!, originIata: String!, year: Int!): [Flight!]!
   health: String!
   recentFeedback: Feedback
   user: User!

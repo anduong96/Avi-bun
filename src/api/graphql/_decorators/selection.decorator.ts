@@ -37,6 +37,7 @@ function parseGraphQLInfo<T extends object = object>(
 export function Selections(root?: string) {
   return createParamDecorator<ApolloServerContext>(({ info }) => {
     const selection = omit(parseGraphQLInfo(info), ['__typename']);
+
     if (root) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return get(selection, root);

@@ -70,4 +70,14 @@ export class AirportResolver {
     const entry = await getTsaWaitTimeForFlight(iata);
     return entry;
   }
+
+  @Authorized()
+  @Query(() => [GQL_Airport], {
+    description: 'List of airports',
+  })
+  airports(@Selections() selections: object) {
+    return prisma.airport.findMany({
+      select: selections,
+    });
+  }
 }

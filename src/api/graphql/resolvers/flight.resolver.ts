@@ -18,6 +18,7 @@ import { GQL_Flight } from '@app/@generated/graphql/models/Flight';
 import { GQL_Airline } from '@app/@generated/graphql/models/Airline';
 import { GQL_Airport } from '@app/@generated/graphql/models/Airport';
 import { getRandomFlight } from '@app/services/flight/get.random.flight';
+import { getFlightsFromAirports } from '@app/services/flight/get.flights.with.airports';
 
 @Resolver(() => GQL_Flight)
 export class FlightResolver {
@@ -82,6 +83,28 @@ export class FlightResolver {
       flightMonth: month,
       flightNumber,
       flightYear: year,
+    });
+
+    return result;
+  }
+
+  @Authorized()
+  @Query(() => [GQL_Flight])
+  async flightsWithAirports(
+    @Arg('originIata') originIata: string,
+    @Arg('airlineIata') airlineIata: string,
+    @Arg('destinationIata') destinationIata: string,
+    @Arg('year', () => Int) flightYear: number,
+    @Arg('month', () => Int) flightMonth: number,
+    @Arg('date', () => Int) flightDate: number,
+  ) {
+    const result = await getFlightsFromAirports({
+      airlineIata,
+      destinationIata,
+      flightDate,
+      flightMonth,
+      flightYear,
+      originIata,
     });
 
     return result;

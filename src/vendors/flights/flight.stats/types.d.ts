@@ -330,7 +330,7 @@ export type FlightDetails = {
     scheduledRunwayDepartureUTC: string;
   };
   sortTime: string;
-  status?: {
+  status: {
     color: string;
     delay: {
       arrival: {
@@ -480,39 +480,62 @@ export type FlightSearchItem = {
   };
 };
 
+export type FlightStat_CompactFlight = {
+  arrivalAirport: {
+    city: string;
+    country: string;
+    fs: string;
+    iata: string;
+    name: string;
+    state: string;
+  };
+  arrivalTime: string;
+  arrivalTimeAmPm: 'AM' | 'PM';
+  arrivalTimezone: string;
+  departureAirport: {
+    city: string;
+    country: string;
+    fs: string;
+    iata: string;
+    name: string;
+    state: string;
+  };
+  departureAirport: {
+    iata: string;
+  };
+  departureTime: string;
+  departureTime24: string;
+  departureTimeAmPm: 'AM' | 'PM';
+  departureTimezone: string;
+  sortTime: string;
+  url: string;
+};
+
 export type FlightStatSearchItemV2 = {
   date1: string;
   date2: string;
   day: string;
-  flights: Array<{
-    arrivalAirport: {
-      city: string;
-      country: string;
-      fs: string;
-      iata: string;
-      name: string;
-      state: string;
-    };
-    arrivalTime: string;
-    arrivalTimeAmPm: 'AM' | 'PM';
-    arrivalTimezone: string;
-    departureAirport: {
-      city: string;
-      country: string;
-      fs: string;
-      iata: string;
-      name: string;
-      state: string;
-    };
-    departureAirport: {
-      iata: string;
-    };
-    departureTime: string;
-    departureTime24: string;
-    departureTimeAmPm: 'AM' | 'PM';
-    departureTimezone: string;
-    sortTime: string;
-    url: string;
-  }>;
+  flights: FlightStat_CompactFlight[];
   year: string;
+};
+
+export type FlightStat_SearchFlight = {
+  data: {
+    flights: Array<{
+      arrivalTime: {
+        time24: string;
+        timeAMPM: string;
+      };
+      carrier: {
+        flightNumber: string;
+        fs: string;
+        name: string;
+      };
+      departureTime: {
+        time24: string;
+        timeAMPM: string;
+      };
+      url: string;
+    }>;
+  };
 };

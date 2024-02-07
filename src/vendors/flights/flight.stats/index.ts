@@ -1,15 +1,18 @@
-import ky from 'ky';
+import { format } from 'sys';
 import moment from 'moment-timezone';
 import { flatten, uniqBy } from 'lodash';
+import ky, { SearchParamsOption } from 'ky';
 import generateUniqueId from 'generate-unique-id';
 
 import { Logger } from '@app/lib/logger';
-import { FlightQueryParam } from '@app/types/flight';
+import { PartialBy } from '@app/types/common';
+import { FlightQueryAirportsParams, FlightQueryParam } from '@app/types/flight';
 
 import { parseFlightIdFromUrl } from './utils';
 import {
   FlightDetails,
   FlightProgress,
+  FlightStat_SearchFlight,
   FlightStatAirportCondition,
   FlightStatPromptness,
   FlightStatResp,
@@ -184,7 +187,9 @@ export class FlightStats {
   ) {
     type Response = FlightStatResp<FlightStatSearchItemV2[]>;
     const route = `api-next/flight-tracker/other-days/${args.airlineIata}/${args.flightNumber}`;
-    const request = await this.client.get(route);
+    const request = await this.client.get(route, {
+      throwHttpErrors: false,
+    });
     this.logger.debug('Search flights param[%s] url[%s]', args, request.url);
 
     if (!request.ok) {
@@ -212,5 +217,46 @@ export class FlightStats {
     );
 
     return flights;
+  }
+
+  static async searchFlightsWithAirports(
+    args: PartialBy<FlightQueryAirportsParams, 'airlineIata'>,
+  ) {
+    const date = moment({
+      date: args.flightDate,
+      month: args.flightMonth,
+      year: args.flightYear,
+    });
+
+    const route = format(
+      'api-next/flight-tracker/route/%s/%s/%s',
+      args.originIata,
+      args.destinationIata,
+      date.format('YYYY/M/D'),
+    );
+
+    const searchParams: SearchParamsOption = {
+      hour: 0,
+      numHours: 24,
+    };
+
+    if (args.airlineIata) {
+      searchParams.carrierCode = args.airlineIata;
+    }
+
+    const request = await this.client.get(route, {
+      searchParams,
+      throwHttpErrors: false,
+    });
+
+    this.logger.info('Search flights param[%s] url[%s]', args, request.url);
+
+    if (!request.ok) {
+      this.logger.debug('Search flights failed');
+      return [];
+    }
+
+    const response = await request.json<FlightStat_SearchFlight>();
+    return response.data.flights;
   }
 }

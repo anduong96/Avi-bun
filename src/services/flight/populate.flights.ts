@@ -112,7 +112,7 @@ export async function populateFlights(params: FlightQueryParam) {
     );
 
     TopicPublisher.broadcastAll(
-      flights.map(flight => new FlightCreatedTopic(flight.id!)),
+      flights.map(flight => new FlightCreatedTopic(flight.id)),
     );
   } catch (error) {
     Logger.error('Unable to create flight(s) in populateFlights', error);

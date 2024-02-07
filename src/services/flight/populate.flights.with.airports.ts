@@ -1,3 +1,5 @@
+import { uniqBy } from 'lodash';
+
 import { FlightQueryAirportsParams } from '@app/types/flight';
 import { FlightStats } from '@app/vendors/flights/flight.stats';
 
@@ -8,7 +10,10 @@ export async function populateFlightsWithAirports(
 ) {
   const flights = await FlightStats.searchFlightsWithAirports(params);
   await Promise.allSettled(
-    flights.map(flight =>
+    uniqBy(
+      flights,
+      flight => flight.carrier.fs + flight.carrier.flightNumber,
+    ).map(flight =>
       populateFlights({
         airlineIata: flight.carrier.fs,
         flightDate: params.flightDate,

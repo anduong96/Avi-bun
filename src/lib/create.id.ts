@@ -1,5 +1,5 @@
-import ShortUniqueId from 'short-unique-id';
+import uuid from 'uuid';
 
-export function createID(length: number = 10) {
-  return new ShortUniqueId({ length: length }).randomUUID();
+export function createID() {
+  return uuid.v4();
 }

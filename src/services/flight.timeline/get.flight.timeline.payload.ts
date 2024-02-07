@@ -35,6 +35,7 @@ function transformEvent(
       return null;
     }
 
+    Logger.debug('Event changed=%s', event.changed, { event });
     const timezone = isOrigin ? originTimezone : destinationTimezone;
     const timezoneOffset = timezoneToUtcOffset(timezone);
     const originTimeStr = format(
@@ -55,6 +56,11 @@ function transformEvent(
     const newTime = moment(newTimeStr, 'to DD-MMM-YYYY HH:mm')
       .utcOffset(timezoneOffset)
       .toDate();
+
+    if (!moment(originalTime).isValid() || !moment(newTime).isValid()) {
+      Logger.debug('Invalid time: %s', event);
+      return null;
+    }
 
     return {
       currentValue: newTime,

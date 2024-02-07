@@ -75,7 +75,8 @@ export async function populateFlights(params: FlightQueryParam) {
     const result = await prisma.$transaction(
       data.map(entry => {
         Logger.debug(
-          'Creating flight=%s%s on date=%s-%s-%s',
+          'Creating id=%s flight=%s%s on date=%s-%s-%s',
+          entry.id,
           entry.airlineIata,
           entry.flightNumber,
           entry.flightYear,
@@ -85,10 +86,8 @@ export async function populateFlights(params: FlightQueryParam) {
 
         return prisma.flight.upsert({
           create: entry,
-          select: {
-            id: true,
-          },
-          update: {},
+          select: { id: true },
+          update: { updatedAt: moment().toDate() },
           where: {
             airlineIata_flightNumber_originIata_destinationIata_flightYear_flightMonth_flightDate:
               {

@@ -130,7 +130,7 @@ model Country {
 }
 
 model Flight {
-  id                       String       @id @default(uuid())
+  id                       String       @id
   flightYear               Int          @db.SmallInt
   flightMonth              Int          @db.SmallInt
   flightDate               Int          @db.SmallInt

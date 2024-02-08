@@ -72,7 +72,7 @@ export async function populateFlights(params: FlightQueryParam) {
   try {
     Logger.debug('Creating flights for param[%o]', params);
     const data = flights.map(flight => Object.assign(flight, emissions));
-    const result = await prisma.$transaction(
+    const result = await Promise.all(
       data.map(entry => {
         Logger.debug(
           'Creating id=%s flight=%s%s on date=%s-%s-%s',

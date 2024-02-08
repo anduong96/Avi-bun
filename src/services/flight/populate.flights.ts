@@ -72,7 +72,7 @@ export async function populateFlights(params: FlightQueryParam) {
   try {
     Logger.debug('Creating flights for param[%o]', params);
     const data = flights.map(flight => Object.assign(flight, emissions));
-    const result = await Promise.all(
+    const result = await Promise.allSettled(
       data.map(entry => {
         Logger.debug(
           'Creating id=%s flight=%s%s on date=%s-%s-%s',
@@ -84,22 +84,9 @@ export async function populateFlights(params: FlightQueryParam) {
           entry.flightDate,
         );
 
-        return prisma.flight.upsert({
-          create: entry,
+        return prisma.flight.create({
+          data: entry,
           select: { id: true },
-          update: { updatedAt: moment().toDate() },
-          where: {
-            airlineIata_flightNumber_originIata_destinationIata_flightYear_flightMonth_flightDate:
-              {
-                airlineIata: entry.airlineIata,
-                destinationIata: entry.destinationIata,
-                flightDate: entry.flightDate,
-                flightMonth: entry.flightMonth,
-                flightNumber: entry.flightNumber,
-                flightYear: entry.flightYear,
-                originIata: entry.originIata,
-              },
-          },
         });
       }),
     );
